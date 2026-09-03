@@ -1,0 +1,96 @@
+name: Director — record & upload a fight
+
+on:
+  schedule:
+    # offset onto odd minutes so it doesn't collide with the other bots'
+    # cron jobs. Two fights a day (UTC).
+    - cron: "17 8 * * *"
+    - cron: "43 16 * * *"
+  workflow_dispatch:
+    inputs:
+      seed:
+        description: "Seed (blank = random)"
+        required: false
+      max_seconds:
+        description: "Max clip length"
+        required: false
+        default: "45"
+      dry_run:
+        description: "Render only, don't upload"
+        type: boolean
+        default: false
+      privacy:
+        description: "YouTube privacy"
+        type: choice
+        options: [public, unlisted, private]
+        default: public
+
+concurrency:
+  group: director
+  cancel-in-progress: false
+
+jobs:
+  fight:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install ffmpeg
+        run: sudo apt-get update && sudo apt-get install -y ffmpeg
+
+      - name: Install recorder deps + Chrome
+        working-directory: record
+        run: |
+          npm ci --no-audit --no-fund
+          npx --yes puppeteer browsers install chrome
+
+      - name: Install uploader deps
+        working-directory: upload
+        run: npm ci --no-audit --no-fund
+
+      - name: Pick a seed
+        id: seed
+        run: |
+          SEED="${{ github.event.inputs.seed }}"
+          if [ -z "$SEED" ]; then SEED=$(( (RANDOM<<15 | RANDOM) )); fi
+          echo "seed=$SEED" >> "$GITHUB_OUTPUT"
+          echo "Seed: $SEED"
+
+      - name: Record the fight
+        run: |
+          node record/record.js \
+            --seed=${{ steps.seed.outputs.seed }} \
+            --max-seconds=${{ github.event.inputs.max_seconds || '45' }} \
+            --out=out/wba_${{ steps.seed.outputs.seed }}.mp4 \
+            --verbose
+
+      - name: Upload artifacts (for inspection)
+        uses: actions/upload-artifact@v4
+        with:
+          name: fight-${{ steps.seed.outputs.seed }}
+          path: |
+            out/wba_${{ steps.seed.outputs.seed }}.mp4
+            out/wba_${{ steps.seed.outputs.seed }}.jpg
+            out/wba_${{ steps.seed.outputs.seed }}.json
+          retention-days: 7
+
+      - name: Upload to YouTube
+        if: ${{ github.event.inputs.dry_run != 'true' }}
+        env:
+          WBA_CLIENT_SECRETS_JSON: ${{ secrets.WBA_CLIENT_SECRETS_JSON }}
+          WBA_YOUTUBE_TOKEN_JSON: ${{ secrets.WBA_YOUTUBE_TOKEN_JSON }}
+          WBA_TELEGRAM_NOTIFY_TOKEN: ${{ secrets.WBA_TELEGRAM_NOTIFY_TOKEN }}
+          WBA_TELEGRAM_NOTIFY_CHAT_ID: ${{ secrets.WBA_TELEGRAM_NOTIFY_CHAT_ID }}
+        run: |
+          if [ -z "$WBA_YOUTUBE_TOKEN_JSON" ]; then
+            echo "::warning::WBA_YOUTUBE_TOKEN_JSON not set — skipping upload. Add the repo secrets to go live."
+            exit 0
+          fi
+          node upload/upload.js \
+            --video=out/wba_${{ steps.seed.outputs.seed }}.mp4 \
+            --privacy=${{ github.event.inputs.privacy || 'public' }}

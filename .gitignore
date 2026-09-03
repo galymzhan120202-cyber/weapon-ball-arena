@@ -7,6 +7,9 @@ youtube_token.json
 # node
 node_modules/
 package-lock.json
+# ...but the recorder / uploader lockfiles are committed so CI is reproducible
+!record/package-lock.json
+!upload/package-lock.json
 
 # generated media
 *.mp4
