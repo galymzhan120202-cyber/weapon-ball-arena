@@ -1,0 +1,14 @@
+{
+  "name": "weapon-ball-arena-upload",
+  "version": "0.1.0",
+  "private": true,
+  "description": "One-time OAuth + YouTube uploader for Weapon Ball Arena director clips",
+  "main": "upload.js",
+  "scripts": {
+    "login": "node login.js",
+    "upload": "node upload.js"
+  },
+  "dependencies": {
+    "googleapis": "^144.0.0"
+  }
+}
