@@ -46,6 +46,9 @@ function parseArgs(argv) {
     else if (k === "max-seconds") a.maxSeconds = parseFloat(v) || 60;
     else if (k === "keep-json") a.keepJson = true;
     else if (k === "no-json") a.keepJson = false;
+    else if (k === "mode") a.mode = v;                 // "webcodecs" (default) | "screenshot"
+    else if (k === "batch") a.batch = Math.max(1, parseInt(v, 10) || 15);
+    else if (k === "keep-frames") a.keepFrames = true; // keep the intermediate .h264
     else if (k === "verbose") a.verbose = true;
     else if (k === "help") a.help = true;
   }
@@ -119,7 +122,8 @@ function checkFfmpeg() {
 
   const srv = await startServer();
   const port = srv.address().port;
-  const url = `http://127.0.0.1:${port}/index.html?auto=1&drive=ext&seed=${SEED}`;
+  const forceShot = args.mode === "screenshot";
+  const url = `http://127.0.0.1:${port}/index.html?auto=1&drive=ext&seed=${SEED}` + (forceShot ? "" : "&encode=wc");
   log(`● seed ${SEED}  →  ${path.relative(process.cwd(), OUT)}`);
   vlog(`  serving ${GAME_DIR} on :${port}`);
 
@@ -143,38 +147,89 @@ function checkFfmpeg() {
 
     await page.goto(url, { waitUntil: "load", timeout: 20000 });
     await page.waitForFunction("window.__WBA_READY__ === true", { timeout: 15000 });
-    const canvas = await page.$("#c");
-    if (!canvas) throw new Error("canvas #c not found");
 
-    ff = spawn(FFMPEG, [
-      "-y", "-loglevel", args.verbose ? "info" : "error",
-      "-f", "image2pipe", "-framerate", String(FPS), "-i", "pipe:0",
-      "-c:v", "libx264", "-pix_fmt", "yuv420p", "-preset", "veryfast", "-crf", "20",
-      "-movflags", "+faststart", OUT,
-    ], { stdio: ["pipe", "inherit", "inherit"] });
-    ff.on("error", (e) => { throw e; });
+    const wcState = forceShot ? { ok: false } : await page.evaluate(() => window.__WBA_WC__ && window.__WBA_WC_STATE__());
+    const useWC = !!(wcState && wcState.ok);
+    log(useWC ? "  encoder: WebCodecs H.264 (in-page)" : "  encoder: canvas screenshot → ffmpeg" + (wcState && wcState.error ? " (WebCodecs: " + wcState.error + ")" : ""));
 
     const t0 = Date.now();
-    let done = false;
-    while (!done && frame < MAX_FRAMES) {
-      const st = await page.evaluate(() => window.__WBA_TICK__());
-      const buf = await canvas.screenshot({ type: "png", optimizeForSpeed: true });
-      await writeFrame(ff.stdin, buf);
-      done = st.done;
-      frame++;
-      if (args.verbose && frame % 120 === 0) vlog(`  ${frame} frames  (sim ${st.t.toFixed(1)}s, state ${st.state})`);
+    let done = false, lastLog = Date.now();
+    const progress = (st) => {
+      if (frame % 60 === 0 && Date.now() - lastLog > 1500) {
+        process.stdout.write(`\r  ${frame} frames · sim ${st.t.toFixed(1)}s · ${((Date.now() - t0) / 1000).toFixed(0)}s   `);
+        lastLog = Date.now();
+      }
+    };
+
+    if (useWC) {
+      // ---- fast path: browser encodes H.264, we pull the Annex-B stream ----
+      // Batch many ticks per page.evaluate call: the per-call CDP round-trip
+      // (~80ms) dwarfs a tick (sim+render+VideoFrame ~3ms), so 1 call/frame
+      // was the real bottleneck. The encoder still captures every frame.
+      const BATCH = args.batch || 15;
+      const h264Path = OUT.replace(/\.mp4$/i, "") + ".h264";
+      const h264 = fs.createWriteStream(h264Path);
+      const drain = async () => {
+        for (;;) {
+          const batch = await page.evaluate((n) => window.__WBA_WC_PULL__(n), 200);
+          if (!batch.length) break;
+          for (const b64 of batch) await writeFrame(h264, Buffer.from(b64, "base64"));
+        }
+      };
+      while (!done && frame < MAX_FRAMES) {
+        const st = await page.evaluate((n) => {
+          let s; for (let i = 0; i < n; i++) { s = window.__WBA_TICK__(); if (s.done) break; }
+          return s;
+        }, Math.min(BATCH, MAX_FRAMES - frame));
+        frame = st.frame; done = st.done;
+        await drain();
+        progress(st);
+      }
+      await page.evaluate(() => window.__WBA_WC_FLUSH__());
+      await drain();
+      await new Promise((res) => h264.end(res));
+      process.stdout.write("\n");
+
+      ff = spawn(FFMPEG, [
+        "-y", "-loglevel", args.verbose ? "info" : "error",
+        "-fflags", "+genpts", "-r", String(FPS), "-f", "h264", "-i", h264Path,
+        "-c:v", "copy", "-movflags", "+faststart", OUT,
+      ], { stdio: ["ignore", "inherit", "inherit"] });
+      await ffmpegExit(ff);
+      if (!args.keepFrames) fs.unlinkSync(h264Path);
+    } else {
+      // ---- fallback: screenshot every frame, pipe JPEGs to ffmpeg ----
+      const canvas = await page.$("#c");
+      if (!canvas) throw new Error("canvas #c not found");
+      ff = spawn(FFMPEG, [
+        "-y", "-loglevel", args.verbose ? "info" : "error",
+        "-f", "image2pipe", "-framerate", String(FPS), "-i", "pipe:0",
+        "-c:v", "libx264", "-pix_fmt", "yuv420p", "-preset", "veryfast", "-crf", "20",
+        "-movflags", "+faststart", OUT,
+      ], { stdio: ["pipe", "inherit", "inherit"] });
+      ff.on("error", (e) => { throw e; });
+      while (!done && frame < MAX_FRAMES) {
+        const st = await page.evaluate(() => window.__WBA_TICK__());
+        const buf = await canvas.screenshot({ type: "jpeg", quality: 92, optimizeForSpeed: true });
+        await writeFrame(ff.stdin, buf);
+        done = st.done; frame++;
+        progress(st);
+      }
+      process.stdout.write("\n");
+      ff.stdin.end();
+      await ffmpegExit(ff);
     }
-    ff.stdin.end();
-    await ffmpegExit(ff);
 
     const meta = await page.evaluate(() => window.__WBA_META__());
     meta.seed = SEED; meta.fps = FPS; meta.frames = frame; meta.durationSec = +(frame / FPS).toFixed(2);
+    meta.truncated = !done;
+    meta.encoder = useWC ? "webcodecs" : "screenshot";
     if (args.keepJson) fs.writeFileSync(JSON_OUT, JSON.stringify(meta, null, 2));
 
     const secs = ((Date.now() - t0) / 1000).toFixed(1);
     const size = (fs.statSync(OUT).size / 1e6).toFixed(1);
-    log(`✓ ${frame} frames / ${meta.durationSec}s video  ·  ${size} MB  ·  rendered in ${secs}s`);
-    log(`  ${meta.fighters.map((f) => f.name).join(" vs ")}  →  ${meta.winner}  (${meta.finishText})`);
+    log(`✓ ${frame} frames / ${meta.durationSec}s video  ·  ${size} MB  ·  ${secs}s  (${(frame / secs).toFixed(1)} fps)`);
+    log(`  ${meta.fighters.map((f) => f.name).join(" vs ")}  →  ${meta.winner || "—"}  (${meta.finishText || "truncated"})`);
     if (args.keepJson) log(`  meta: ${path.relative(process.cwd(), JSON_OUT)}`);
   } catch (err) {
     console.error("✗ record failed:", err && err.message || err);
