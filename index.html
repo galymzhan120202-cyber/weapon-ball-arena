@@ -265,6 +265,35 @@ const HAZARDS_ON = Q.get("hz") !== "0";
 const hazRng = mulberry32(hashStr(SEED + "hazard"));
 
 // ---------------------------------------------------------------------
+// WEAPON IDENTITY — per-kind behaviour so "Chainsaw vs Rapier" plays
+// nothing like "Axe vs Sword". Checked at the point of use.
+//   cd    : re-hit cooldown multiplier (fast daggers / slow hammers)
+//   knock : extra shove on a clean hit
+//   crit/parry : added chance when this weapon is involved
+//   dot   : chainsaw grind — damage/sec while in contact
+//   pull  : reel the victim in on a clean hit (whip family)
+//   proj  : this weapon throws a projectile {speed,dmg,cd,returns,col,spin}
+// ---------------------------------------------------------------------
+const TRAIT = {
+  chainsaw:     { dot: 32, cd: 0.5 },
+  hammer:       { knock: 1.9, cd: 1.5 },
+  warhammer:    { knock: 2.1, cd: 1.6 },
+  mace:         { knock: 1.7, cd: 1.35 },
+  flail:        { knock: 1.6, cd: 1.25 },
+  rapier:       { crit: 0.12, parry: 0.22 },
+  katana:       { crit: 0.10, parry: 0.16 },
+  dagger:       { cd: 0.55 },
+  kunai:        { cd: 0.6 },
+  dual_daggers: { cd: 0.5 },
+  claws:        { cd: 0.62 },
+  whip:         { pull: 620 },
+  nunchaku:     { pull: 380 },
+  pistol:       { proj: { speed: 1500, dmg: 13, cd: 2.6, returns: false, col: "#ffd27a", spin: 0 } },
+  shuriken:     { proj: { speed: 1150, dmg: 8,  cd: 1.7, returns: false, col: "#ff4d6a", spin: 46 } },
+  boomerang:    { proj: { speed: 950,  dmg: 9,  cd: 2.7, returns: true,  col: "#e0b070", spin: 34 } },
+};
+
+// ---------------------------------------------------------------------
 // small vec + color helpers
 // ---------------------------------------------------------------------
 const len = (x, y) => Math.hypot(x, y);
@@ -326,6 +355,8 @@ class Fighter {
     this.mass = 0.80 + (this.power - 0.80) * 0.55;   // compressed (ported)
     this.hitFlash = 0; this.scale = 1;
     this.lungeCd = rnd(0.6, 1.6);
+    this._projCd = TRAIT[this.kind] && TRAIT[this.kind].proj ? rnd(1.2, 2.4) : 0;
+    this._dot = null;  // {by, dps, t} chainsaw grind
     this.eDmg = 0;      // accumulated damage popup
     this.dmgPopT = 0;
     this.trail = [];   // recent {x,y} for the motion trail
@@ -348,6 +379,7 @@ class World {
     this.rings = [];                 // expanding impact rings
     this.shards = [];               // weapon-piece debris from a KO
     this.confetti = [];            // winner-card confetti
+    this.projectiles = [];        // pistol / shuriken / boomerang shots
     this.shakes = 0;
     this.flash = 0;
     this.hitstop = 0;               // brief freeze on big hits (juice)
@@ -535,6 +567,14 @@ class World {
       if (f.buff) { f.buff.t -= dt; if (f.buff.t <= 0) f.buff = null; }
       const regen = REGEN_PER_SEC + (f.buff && f.buff.id === "heal" ? f.buff.rate : 0);
       if (regen > 0 && f.hp > 0) f.hp = Math.min(f.maxHp, f.hp + regen * dt);
+      // chainsaw grind DoT
+      if (f._dot) {
+        f._dot.t -= dt; f.hp -= f._dot.dps * dt;
+        f.hitFlash = Math.max(f.hitFlash, 0.3);
+        const by = f._dot.by;
+        if (f._dot.t <= 0) f._dot = null;
+        if (f.hp <= 0) { this._kill(f, by); continue; }
+      }
       f.chipHp += (f.hp - f.chipHp) * Math.min(1, dt * 3.5);   // chip-damage trail
       f.trail.push({ x: f.x, y: f.y });
       if (f.trail.length > TRAIL_LEN) f.trail.shift();
@@ -554,6 +594,9 @@ class World {
 
     // ---- pickups ----
     this._stepPickups(dt);
+
+    // ---- thrown weapons (pistol / shuriken / boomerang) ----
+    this._stepWeapons(dt);
 
     // ---- arena hazard ----
     if (this.hazard) this._stepHazard(dt);
@@ -615,6 +658,7 @@ class World {
     // clear any in-flight damage / tag popups so they don't freeze on the winner card
     for (const g of this.fighters) { g.dmgPopT = 0; g.eDmg = 0; g._tag = null; }
     this.zoom = 1.18;               // render-side punch-in on the winner, eases back
+    this.projectiles = [];
     // confetti burst for the winner card
     const cols = [this.theme.accent, "#ffd27a", "#ffffff", f ? f.tint : "#fff", "#5affa0"];
     for (let i = 0; i < 46; i++) {
@@ -769,9 +813,11 @@ class World {
     }
 
     // --- damage (only once per pair per cooldown) ---
+    // weapon identity: fast daggers shorten it, heavy hammers lengthen it
+    const cdMul = Math.min(TRAIT[a.kind] && TRAIT[a.kind].cd || 1, TRAIT[b.kind] && TRAIT[b.kind].cd || 1);
     const key = a.idx < b.idx ? a.idx + "," + b.idx : b.idx + "," + a.idx;
     if (this.pairCd.has(key)) return;
-    this.pairCd.set(key, HIT_COOLDOWN);
+    this.pairCd.set(key, HIT_COOLDOWN * HIT_COOLDOWN_MULT * cdMul);
 
     // which shape of each was doing the striking? nearest zone point to
     // the contact point on the shared normal.
@@ -790,8 +836,11 @@ class World {
     // symmetric exchange scaled by crit / parry
     let mult = 1;
     let tag = "";
+    const parryChance = Math.max(PARRY_CHANCE,
+      PARRY_CHANCE + (TRAIT[a.kind] && TRAIT[a.kind].parry || 0) + (TRAIT[b.kind] && TRAIT[b.kind].parry || 0));
+    const critChance = CRIT_CHANCE + (TRAIT[a.kind] && TRAIT[a.kind].crit || 0) + (TRAIT[b.kind] && TRAIT[b.kind].crit || 0);
     if (sa.active && sb.active) { // clash
-      if (parryRng() < PARRY_CHANCE) {
+      if (parryRng() < parryChance) {
         // parry: no damage, hard shove apart
         const shove = 240 * PARRY_KNOCK_MULT;
         a.vx -= nx * shove / a.mass; a.vy -= ny * shove / a.mass;
@@ -806,7 +855,7 @@ class World {
         return;
       }
     }
-    if (critRng() < CRIT_CHANCE) { mult *= CRIT_MULT; tag = "CRITICAL!"; }
+    if (critRng() < critChance) { mult *= CRIT_MULT; tag = "CRITICAL!"; }
 
     // time-of-fight envelope: soft ramp-in so nobody dies during the
     // opening scramble, gentle ramp-up late so a stalemate resolves.
@@ -846,6 +895,16 @@ class World {
     }
     sfx.hit(a.material, b.material, clean);
     this._logSfx("hit", { m1: a.material, m2: b.material, active: clean, crit: !!tag });
+
+    // weapon identity — knockback (hammer family), reel-in (whip family),
+    // grind DoT (chainsaw). Applied from the striker onto the victim.
+    const idTrait = (att, vic, atkStrike) => {
+      const T = TRAIT[att.kind]; if (!T || !atkStrike.active) return;
+      if (T.knock) { vic.vx += nx * (att === a ? 1 : -1) * 260 * T.knock; vic.vy += ny * (att === a ? 1 : -1) * 260 * T.knock; vic.spin += rnd(-6, 6); }
+      if (T.pull)  { const [px, py] = norm(att.x - vic.x, att.y - vic.y); vic.vx += px * T.pull; vic.vy += py * T.pull; }
+      if (T.dot)   { vic._dot = { by: att, dps: T.dot, t: 0.55 }; }
+    };
+    idTrait(a, b, sa); idTrait(b, a, sb);
 
     // BOMB pickup — the holder's first real strike detonates
     if (clean && a.buff && a.buff.id === "bomb") { a.buff = null; this._explode(contact.x, contact.y, a); }
@@ -908,6 +967,65 @@ class World {
     else if (id === "rage")    { f.buff = { id, name: T.name, t: 4.5 }; }
     else if (id === "berserk") { f.buff = { id, name: T.name, t: 4.5 }; }
     else if (id === "bomb")    { f.buff = { id, name: T.name, t: 10 }; }
+  }
+
+  _stepWeapons(dt) {
+    const L = this.living();
+    // fire
+    for (const f of L) {
+      const T = TRAIT[f.kind]; if (!T || !T.proj) continue;
+      f._projCd -= dt;
+      if (f._projCd <= 0) {
+        let tgt = null, best = 1e9;
+        for (const o of L) { if (o === f) continue; const d = len(o.x - f.x, o.y - f.y); if (d < best) { best = d; tgt = o; } }
+        if (tgt) {
+          const [dx, dy] = norm(tgt.x - f.x, tgt.y - f.y);
+          this.projectiles.push({
+            x: f.x + dx * f._baseR, y: f.y + dy * f._baseR,
+            vx: dx * T.proj.speed, vy: dy * T.proj.speed,
+            dmg: T.proj.dmg, col: T.proj.col, spin: T.proj.spin || 0, rot: 0,
+            owner: f, returns: !!T.proj.returns, life: 0, back: false, kind: f.kind,
+          });
+          this._spark(f.x + dx * f._baseR, f.y + dy * f._baseR, T.proj.col, 6);
+          sfx.pew(); this._logSfx("pew", {});
+          f._projCd = T.proj.cd;
+        } else { f._projCd = 0.4; }
+      }
+    }
+    // move + hit + expire
+    for (let i = this.projectiles.length - 1; i >= 0; i--) {
+      const p = this.projectiles[i];
+      p.life += dt; p.rot += (p.spin + 12) * dt;
+      if (p.returns && !p.back && (p.life > 0.55 || len(p.x - this.cx, p.y - this.cy) > this.arenaR * 0.9)) p.back = true;
+      if (p.back && p.owner.alive) {
+        const [hx, hy] = norm(p.owner.x - p.x, p.owner.y - p.y);
+        const sp = len(p.vx, p.vy) || 700;
+        p.vx += hx * sp * 4 * dt; p.vy += hy * sp * 4 * dt;
+        const s2 = len(p.vx, p.vy); if (s2 > sp * 1.3) { p.vx *= sp * 1.3 / s2; p.vy *= sp * 1.3 / s2; }
+        if (len(p.x - p.owner.x, p.y - p.owner.y) < p.owner._baseR + 14) { this.projectiles.splice(i, 1); continue; }
+      }
+      p.x += p.vx * dt; p.y += p.vy * dt;
+      let hit = false;
+      for (const g of L) {
+        if (g === p.owner && !p.back) continue;
+        if (g === p.owner) continue;
+        if (len(g.x - p.x, g.y - p.y) < g._baseR + 12) {
+          const scaled = p.dmg * Math.min(1.4, 0.6 + 0.5 * this.t / DMG_RAMP_IN);
+          if (g.shield > 0) { g.shield--; g._tag = { txt: "BLOCKED", t: 0.7 }; }
+          else { g.hp -= scaled; g.eDmg = Math.round(scaled); g.dmgPopT = 0.7; g.hitFlash = 1; g.scale = 1.14; }
+          const [kx, ky] = norm(p.vx, p.vy);
+          g.vx += kx * 220; g.vy += ky * 220;
+          this._spark(p.x, p.y, p.col, 12);
+          this.rings.push({ x: p.x, y: p.y, rr: 5, spd: 420, life: 0.24, c: p.col });
+          this.shakes = Math.max(this.shakes, 6);
+          sfx.hit("metal", "metal", true); this._logSfx("hit", { m1: "metal", m2: "metal", active: true });
+          if (g.hp <= 0) this._kill(g, p.owner);
+          hit = true; break;
+        }
+      }
+      const off = len(p.x - this.cx, p.y - this.cy) > this.arenaR0 + 120;
+      if (hit || p.life > 3.2 || (off && !p.returns)) this.projectiles.splice(i, 1);
+    }
   }
 
   _sawPos() {
@@ -1018,6 +1136,7 @@ const sfx = (() => {
     },
     parry() { blip(1800, 0.05, "square", 0.16, 0.5); setTimeout(() => blip(2400, 0.05, "square", 0.12, 0.6), 30); },
     ko() { blip(70, 0.35, "sawtooth", 0.22, 0.4); },
+    pew() { blip(1200, 0.06, "sawtooth", 0.10, 0.35); },
     pickup() { blip(520, 0.10, "triangle", 0.14, 2.2); setTimeout(() => blip(880, 0.12, "triangle", 0.12, 1.8), 60); },
     count(n) { blip(n === 0 ? 700 : 420, n === 0 ? 0.25 : 0.1, "square", 0.16); },
     win() { [523, 659, 784, 1047].forEach((f, i) => setTimeout(() => blip(f, 0.18, "square", 0.15), i * 110)); },
@@ -1323,6 +1442,26 @@ function render(world) {
     ctx.fillStyle = p.c; ctx.beginPath(); ctx.arc(p.x, p.y, 4, 0, Math.PI * 2); ctx.fill();
   }
   ctx.globalAlpha = 1;
+
+  // thrown weapons
+  for (const p of world.projectiles) {
+    ctx.save();
+    ctx.translate(p.x, p.y); ctx.rotate(p.rot);
+    ctx.fillStyle = p.col; ctx.strokeStyle = "rgba(255,255,255,.6)"; ctx.lineWidth = 2;
+    if (p.kind === "pistol") {
+      ctx.beginPath(); ctx.ellipse(0, 0, 11, 5, 0, 0, Math.PI * 2); ctx.fill();
+    } else if (p.kind === "boomerang") {
+      ctx.beginPath(); ctx.moveTo(-12, 6); ctx.lineTo(2, -12); ctx.lineTo(12, 6); ctx.lineTo(2, 0); ctx.closePath(); ctx.fill(); ctx.stroke();
+    } else { // shuriken
+      ctx.beginPath();
+      for (let i = 0; i < 4; i++) { ctx.rotate(Math.PI / 2); ctx.moveTo(0, 0); ctx.lineTo(3, -14); ctx.lineTo(-3, -14); }
+      ctx.closePath(); ctx.fill();
+    }
+    ctx.restore();
+    ctx.globalAlpha = 0.5; ctx.strokeStyle = p.col; ctx.lineWidth = 3;
+    ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(p.x - p.vx * 0.02, p.y - p.vy * 0.02); ctx.stroke();
+    ctx.globalAlpha = 1;
+  }
 
   // KO shards (weapon debris)
   for (const s of world.shards) {

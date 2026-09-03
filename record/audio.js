@@ -115,6 +115,9 @@ function renderEvent(L, R, sr, ev, sfxGain) {
     case "spawn":
       voice(L, R, sr, t, { freq: 300, dur: 0.14, type: "sine", gain: 0.08 * sfxGain, sweep: 2.4 });
       break;
+    case "pew":
+      voice(L, R, sr, t, { freq: 1200, dur: 0.06, type: "sawtooth", gain: 0.09 * sfxGain, sweep: 0.35 });
+      break;
     case "explode":
       voice(L, R, sr, t, { freq: 60,  dur: 0.5,  type: "sawtooth", gain: 0.3 * sfxGain, sweep: 0.35 });
       voice(L, R, sr, t, { freq: 180, dur: 0.18, type: "square",   gain: 0.16 * sfxGain, noise: 0.9 });
