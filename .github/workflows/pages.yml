@@ -1,15 +1,14 @@
 name: Deploy playable site to Pages
 
+# NOTE: GitHub Pages needs either a public repo or a paid plan. This repo
+# is private on the free plan, so Pages is off and this workflow is
+# manual-only for now. Once the repo is public (or Pages is otherwise
+# available), restore the `push:` trigger below.
 on:
-  push:
-    branches: [master]
-    paths:
-      - index.html
-      - thumb.html
-      - branding.html
-      - README.md
-      - .github/workflows/pages.yml
   workflow_dispatch:
+  # push:
+  #   branches: [master]
+  #   paths: [index.html, thumb.html, branding.html, README.md, .github/workflows/pages.yml]
 
 permissions:
   contents: read
