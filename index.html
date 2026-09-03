@@ -229,6 +229,22 @@ const MUT = (Q.get("mut") != null)
 if (MUT) MUT.apply();
 
 // ---------------------------------------------------------------------
+// PICKUPS — a glowing orb drops into the arena mid-fight; first ball to
+// touch it gets a short buff. The single biggest "comeback moment" and
+// comment generator. Spawn times / places / types are seed-driven.
+// ---------------------------------------------------------------------
+const PICKUP = {
+  rage:    { name: "RAGE",    color: "#ff4655", glyph: "R", desc: "2× damage" },
+  shield:  { name: "SHIELD",  color: "#5aa0ff", glyph: "S", desc: "blocks 3 hits" },
+  heal:    { name: "HEAL",    color: "#2effa0", glyph: "+", desc: "+35 HP" },
+  berserk: { name: "BERSERK", color: "#ffcf4a", glyph: "B", desc: "1.7× speed" },
+  bomb:    { name: "BOMB",    color: "#ff7a2f", glyph: "X", desc: "next hit explodes" },
+};
+const PICKUP_IDS = Object.keys(PICKUP);
+const PICKUPS_ON = Q.get("pickups") !== "0";
+const pickRng = mulberry32(hashStr(SEED + "pickup"));
+
+// ---------------------------------------------------------------------
 // small vec + color helpers
 // ---------------------------------------------------------------------
 const len = (x, y) => Math.hypot(x, y);
@@ -370,6 +386,20 @@ class World {
     this.hits = 0;
     this.mutator = MUT;
 
+    // ---- pickup schedule (seed-driven) ----
+    this.pickups = [];            // live orbs in the arena
+    this.pickupLog = [];          // [{by, buff}] for meta / description
+    this.pendingPickups = [];
+    if (PICKUPS_ON && this.n <= 3) {
+      const nP = pickRng() < 0.22 ? 0 : (pickRng() < 0.72 ? 1 : 2);
+      for (let i = 0; i < nP; i++) {
+        const at = 3.2 + i * 5.5 + pickRng() * 3.0;                    // seconds into the fight
+        const ang = pickRng() * Math.PI * 2, rad = this.arenaR0 * (0.12 + pickRng() * 0.42);
+        const id = PICKUP_IDS[Math.floor(pickRng() * PICKUP_IDS.length)];
+        this.pendingPickups.push({ at, x: this.cx + Math.cos(ang) * rad, y: this.cy + Math.sin(ang) * rad, id });
+      }
+    }
+
     // let a mutator reshape the fighters now that they exist
     if (MUT && MUT.world) MUT.world(this);
   }
@@ -462,6 +492,9 @@ class World {
       const nv = v - dt;
       if (nv <= 0) this.pairCd.delete(key); else this.pairCd.set(key, nv);
     }
+
+    // ---- pickups ----
+    this._stepPickups(dt);
 
     // ---- storm (outside-arena chip damage) ----
     for (const f of this.living()) {
@@ -573,18 +606,19 @@ class World {
       if (d < best) { best = d; tgt = o; }
     }
     if (!tgt) return;
+    const zeal = (f.buff && f.buff.id === "berserk") ? 1.7 : 1;   // BERSERK pickup
     const [dx, dy] = norm(tgt.x - f.x, tgt.y - f.y);
     // steer velocity toward target, face tip at it
-    const steer = 900;
+    const steer = 900 * zeal;
     f.vx += dx * steer * dt; f.vy += dy * steer * dt;
     f.angle = Math.atan2(dy, dx) + Math.PI / 2;
     // periodic lunge impulse (ported concept)
     if (f.lungeCd <= 0) {
       const victim = pick(this.living().filter(o => o !== f)) || tgt;
       const [lx, ly] = norm(victim.x - f.x, victim.y - f.y);
-      const imp = rnd(360, 620);
+      const imp = rnd(360, 620) * zeal;
       f.vx += lx * imp; f.vy += ly * imp; f.spin += rnd(-5, 5);
-      f.lungeCd = rnd(0.9, 1.9);
+      f.lungeCd = rnd(0.9, 1.9) / zeal;
     }
     // pull back toward center if near the closing wall
     const dc = len(f.x - this.cx, f.y - this.cy);
@@ -592,7 +626,7 @@ class World {
       const [cx, cy] = norm(this.cx - f.x, this.cy - f.y);
       f.vx += cx * 1400 * dt; f.vy += cy * 1400 * dt;
     }
-    const smax = 1000; const sp = len(f.vx, f.vy);
+    const smax = 1000 * zeal; const sp = len(f.vx, f.vy);
     if (sp > smax) { f.vx *= smax / sp; f.vy *= smax / sp; }
   }
 
@@ -693,10 +727,14 @@ class World {
       if (attStrike.active && !vicStrike.active) base *= CLEAN_HIT_BONUS;
       // impact speed scaling (capped tighter so a fast graze isn't a near-KO)
       base *= 0.7 + Math.min(0.8, Math.abs(vn) / 900);
+      if (att.buff && att.buff.id === "rage") base *= 2;          // RAGE pickup
       return base;
     };
-    const dA = dmgTo(a, b, sa, sb);   // damage a deals to b
-    const dB = dmgTo(b, a, sb, sa);   // damage b deals to a
+    let dA = dmgTo(a, b, sa, sb);   // damage a deals to b
+    let dB = dmgTo(b, a, sb, sa);   // damage b deals to a
+    // SHIELD pickup — eat the hit, spend a charge
+    if (dA > 0 && b.shield > 0) { b.shield--; dA = 0; b._tag = { txt: "BLOCKED", t: 0.7 }; this._spark(contact.x, contact.y, "#5aa0ff", 16); }
+    if (dB > 0 && a.shield > 0) { a.shield--; dB = 0; a._tag = { txt: "BLOCKED", t: 0.7 }; this._spark(contact.x, contact.y, "#5aa0ff", 16); }
     b.hp -= dA; a.hp -= dB;
     b.eDmg = Math.round(dA); a.eDmg = Math.round(dB);
     b.dmgPopT = a.dmgPopT = 0.7;
@@ -714,6 +752,10 @@ class World {
     sfx.hit(a.material, b.material, clean);
     this._logSfx("hit", { m1: a.material, m2: b.material, active: clean, crit: !!tag });
 
+    // BOMB pickup — the holder's first real strike detonates
+    if (clean && a.buff && a.buff.id === "bomb") { a.buff = null; this._explode(contact.x, contact.y, a); }
+    else if (clean && b.buff && b.buff.id === "bomb") { b.buff = null; this._explode(contact.x, contact.y, b); }
+
     if (b.hp <= 0) this._kill(b, a);
     if (a.hp <= 0) this._kill(a, b);
   }
@@ -725,6 +767,75 @@ class World {
     }
   }
   _popBoth(a, b, txt) { a._tag = b._tag = { txt, t: 0.8 }; }
+
+  // ---- pickups ----
+  _stepPickups(dt) {
+    // release pending orbs once their fight-time arrives
+    for (let i = this.pendingPickups.length - 1; i >= 0; i--) {
+      if (this.t >= this.pendingPickups[i].at) {
+        const q = this.pendingPickups.splice(i, 1)[0];
+        // armT: a telegraph window — visible + counting down, not yet grabbable
+        this.pickups.push({ x: q.x, y: q.y, id: q.id, r: 30, born: 0, armT: 1.2, bob: rng() * 6.28 });
+        this._logSfx("spawn", {});
+      }
+    }
+    for (let i = this.pickups.length - 1; i >= 0; i--) {
+      const p = this.pickups[i];
+      p.born += dt;
+      if (p.armT > 0) { p.armT -= dt; if (p.armT <= 0) { this._spark(p.x, p.y, PICKUP[p.id].color, 14); this._logSfx("spawn", {}); } continue; }
+      // pull a stray orb back inside the closing wall so it stays reachable
+      const dc = len(p.x - this.cx, p.y - this.cy);
+      if (dc > this.arenaR - 50) {
+        const [nx, ny] = norm(this.cx - p.x, this.cy - p.y);
+        p.x += nx * (dc - (this.arenaR - 50)); p.y += ny * (dc - (this.arenaR - 50));
+      }
+      // first living ball to touch it grabs it
+      for (const f of this.living()) {
+        if (len(f.x - p.x, f.y - p.y) < f._baseR + p.r * 0.8) {
+          this._grantPickup(f, p.id);
+          this.pickups.splice(i, 1);
+          break;
+        }
+      }
+    }
+  }
+
+  _grantPickup(f, id) {
+    const T = PICKUP[id];
+    this.pickupLog.push({ by: f.name, buff: T.name });
+    this.callout = { txt: f.name.toUpperCase() + " GRABBED " + T.name + "!", t: 1.6 };
+    this._spark(f.x, f.y, T.color, 24);
+    this.rings.push({ x: f.x, y: f.y, rr: f._baseR, spd: 720, life: 0.4, c: T.color });
+    this.flash = Math.max(this.flash, 0.35);
+    sfx.pickup(); this._logSfx("pickup", { id, by: f.name });
+    if (id === "heal") { f.hp = Math.min(f.maxHp, f.hp + 35); f.buff = { id, name: T.name, t: 2.5, rate: 6 }; }
+    else if (id === "shield")  { f.shield = 3; f.buff = { id, name: T.name, t: 10 }; }
+    else if (id === "rage")    { f.buff = { id, name: T.name, t: 4.5 }; }
+    else if (id === "berserk") { f.buff = { id, name: T.name, t: 4.5 }; }
+    else if (id === "bomb")    { f.buff = { id, name: T.name, t: 10 }; }
+  }
+
+  _explode(x, y, src) {
+    this.flash = Math.max(this.flash, 0.95); this.shakes = Math.max(this.shakes, 26);
+    this.hitstop = Math.max(this.hitstop, 0.06);
+    this.rings.push({ x, y, rr: 24, spd: 1500, life: 0.5, c: "#ffb057" });
+    this.rings.push({ x, y, rr: 12, spd: 900, life: 0.4, c: "#fff" });
+    this._spark(x, y, "#ff7a2f", 44);
+    this.callout = { txt: "💥 BOOM", t: 1.2 };
+    sfx.ko(); this._logSfx("explode", {});
+    const R = 360;
+    for (const g of this.living()) {
+      const d = len(g.x - x, g.y - y);
+      if (d < R) {
+        const f = 1 - d / R;
+        const dmg = 30 * f;
+        g.hp -= dmg; g.eDmg = Math.round(dmg); g.dmgPopT = 0.7; g.hitFlash = 1; g.scale = 1.2;
+        const [nx, ny] = norm((g.x - x) || 0.01, (g.y - y) || 0.01);
+        g.vx += nx * 1000 * f; g.vy += ny * 1000 * f; g.spin += rnd(-8, 8);
+        if (g.hp <= 0) this._kill(g, src);
+      }
+    }
+  }
 }
 
 // ---------------------------------------------------------------------
@@ -752,6 +863,7 @@ const sfx = (() => {
     },
     parry() { blip(1800, 0.05, "square", 0.16, 0.5); setTimeout(() => blip(2400, 0.05, "square", 0.12, 0.6), 30); },
     ko() { blip(70, 0.35, "sawtooth", 0.22, 0.4); },
+    pickup() { blip(520, 0.10, "triangle", 0.14, 2.2); setTimeout(() => blip(880, 0.12, "triangle", 0.12, 1.8), 60); },
     count(n) { blip(n === 0 ? 700 : 420, n === 0 ? 0.25 : 0.1, "square", 0.16); },
     win() { [523, 659, 784, 1047].forEach((f, i) => setTimeout(() => blip(f, 0.18, "square", 0.15), i * 110)); },
   };
@@ -799,6 +911,21 @@ function drawWeaponBall(f, world) {
   const reach = r * 1.15;
   drawBlade(f.kind, r, reach);
   ctx.restore();
+
+  // active pickup buff — a coloured pulsing ring around the holder
+  if (f.buff) {
+    const T = PICKUP[f.buff.id];
+    const pulse = 0.6 + 0.4 * Math.sin(world.t * 10);
+    ctx.save();
+    ctx.globalAlpha = pulse;
+    ctx.strokeStyle = T.color; ctx.lineWidth = 5;
+    ctx.beginPath(); ctx.arc(f.x, f.y, r + 12, 0, Math.PI * 2); ctx.stroke();
+    if (f.buff.id === "shield" && f.shield > 0) {
+      ctx.globalAlpha = 0.5; ctx.lineWidth = 3;
+      ctx.beginPath(); ctx.arc(f.x, f.y, r + 20, 0, Math.PI * 2); ctx.stroke();
+    }
+    ctx.restore();
+  }
 
   // player ring
   if (f.idx === world.playerIdx) {
@@ -937,6 +1064,37 @@ function render(world) {
   ctx.lineWidth = 14; ctx.globalAlpha = 0.12; ctx.stroke();
   ctx.globalAlpha = 1;
 
+  // pickup orbs
+  for (const p of world.pickups) {
+    const T = PICKUP[p.id];
+    const grow = Math.min(1, p.born * 4);
+    const pr = Math.max(2, p.r * grow), pulse = 0.5 + 0.5 * Math.sin(p.born * 6 + p.bob);
+    const arming = p.armT > 0;
+    ctx.save();
+    ctx.translate(p.x, p.y + Math.sin(p.born * 3 + p.bob) * 6);
+    // glow
+    const gg = ctx.createRadialGradient(0, 0, 0, 0, 0, pr * 2.4);
+    gg.addColorStop(0, T.color + (arming ? "66" : "aa")); gg.addColorStop(1, T.color + "00");
+    ctx.fillStyle = gg; ctx.beginPath(); ctx.arc(0, 0, pr * 2.4, 0, Math.PI * 2); ctx.fill();
+    // arming telegraph — a shrinking countdown ring
+    if (arming) {
+      const k = p.armT / 1.2;
+      ctx.strokeStyle = T.color; ctx.globalAlpha = 0.9; ctx.lineWidth = 4;
+      ctx.beginPath(); ctx.arc(0, 0, pr + 6 + k * 40, -Math.PI / 2, -Math.PI / 2 + (1 - k) * Math.PI * 2); ctx.stroke();
+      ctx.globalAlpha = 1;
+    }
+    // ring
+    ctx.strokeStyle = T.color; ctx.lineWidth = 4 + pulse * 3;
+    ctx.beginPath(); ctx.arc(0, 0, pr, 0, Math.PI * 2); ctx.stroke();
+    ctx.fillStyle = "rgba(10,12,20,.72)"; ctx.beginPath(); ctx.arc(0, 0, Math.max(1, pr - 3), 0, Math.PI * 2); ctx.fill();
+    // glyph
+    ctx.fillStyle = "#fff"; ctx.font = "800 30px Segoe UI, sans-serif";
+    ctx.textAlign = "center"; ctx.textBaseline = "middle";
+    ctx.fillText(T.glyph, 0, 1);
+    ctx.textBaseline = "alphabetic";
+    ctx.restore();
+  }
+
   // motion trails (under the balls)
   for (const f of world.fighters) if (f.alive) drawTrail(f);
 
@@ -1041,6 +1199,17 @@ function drawHud(world) {
     ctx.fillStyle = f.alive ? "#fff" : "rgba(255,255,255,.32)";
     const roleTag = f._role ? "  — " + f._role : "";
     ctx.fillText(f.name + (f.idx === world.playerIdx ? "  (YOU)" : "") + roleTag, x0, y - 8);
+    // active buff chip
+    if (f.buff && f.alive) {
+      const T = PICKUP[f.buff.id];
+      const nameW = ctx.measureText(f.name + roleTag).width;
+      const bt = " " + T.name + (f.buff.id === "shield" ? " ×" + f.shield : "") + " ";
+      ctx.font = "bold 18px Segoe UI, sans-serif";
+      const cw = ctx.measureText(bt).width;
+      ctx.fillStyle = T.color;
+      ctx.beginPath(); ctx.roundRect(x0 + nameW + 20, y - 26, cw, 24, 6); ctx.fill();
+      ctx.fillStyle = "#0a0c14"; ctx.fillText(bt, x0 + nameW + 20, y - 8);
+    }
     ctx.textAlign = "right"; ctx.font = "bold 22px Segoe UI, sans-serif";
     ctx.fillStyle = f.alive ? "rgba(255,255,255,.7)" : "#c9414f";
     ctx.fillText(f.alive ? Math.ceil(f.hp) + "" : "OUT", x0 + bw, y - 8);
@@ -1261,6 +1430,7 @@ window.__WBA_META__ = () => ({
   winnerKills: world.winner ? (world.winner.kills || 0) : null,
   mutator: MUT ? MUT.name : null,
   mutatorId: MUT ? MUT.id : null,
+  pickups: world.pickupLog || [],
   finishText: world.finishText, hits: world.hits, n: world.n,
 });
 // full synth-audio timeline for the Node-side mixer (record/audio.js)

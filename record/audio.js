@@ -108,6 +108,17 @@ function renderEvent(L, R, sr, ev, sfxGain) {
     case "callout":
       voice(L, R, sr, t, { freq: 520, dur: 0.18, type: "triangle", gain: 0.13 * sfxGain, sweep: 1.35 });
       break;
+    case "pickup":
+      voice(L, R, sr, t,        { freq: 520, dur: 0.10, type: "triangle", gain: 0.13 * sfxGain, sweep: 2.2 });
+      voice(L, R, sr, t + 0.06, { freq: 880, dur: 0.12, type: "triangle", gain: 0.12 * sfxGain, sweep: 1.8 });
+      break;
+    case "spawn":
+      voice(L, R, sr, t, { freq: 300, dur: 0.14, type: "sine", gain: 0.08 * sfxGain, sweep: 2.4 });
+      break;
+    case "explode":
+      voice(L, R, sr, t, { freq: 60,  dur: 0.5,  type: "sawtooth", gain: 0.3 * sfxGain, sweep: 0.35 });
+      voice(L, R, sr, t, { freq: 180, dur: 0.18, type: "square",   gain: 0.16 * sfxGain, noise: 0.9 });
+      break;
     case "win":
       [523, 659, 784, 1047].forEach((f, i) =>
         voice(L, R, sr, t + i * 0.11, { freq: f, dur: 0.20, type: "square", gain: 0.16 * sfxGain }));
