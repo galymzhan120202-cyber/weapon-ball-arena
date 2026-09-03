@@ -6,132 +6,368 @@
 <style>
   :root { color-scheme: dark; }
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  body { background: #0a0b10; color: #e8e8ef; font-family: "Segoe UI", system-ui, sans-serif; padding: 24px; }
-  h1 { font-size: 18px; font-weight: 800; letter-spacing: .5px; margin-bottom: 4px; }
-  p.note { opacity: .6; font-size: 13px; margin-bottom: 20px; }
-  .row { display: flex; flex-wrap: wrap; gap: 28px; align-items: flex-start; }
-  .card { background: #12141c; border: 1px solid #222634; border-radius: 12px; padding: 16px; }
-  .card h2 { font-size: 13px; font-weight: 700; opacity: .75; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px; }
-  canvas { display: block; background: #05060a; border-radius: 8px; max-width: 100%; height: auto; }
-  .btn { display: inline-block; margin-top: 12px; background: #2b7; color: #04120a; font-weight: 700;
-         padding: 8px 14px; border-radius: 8px; text-decoration: none; font-size: 13px; cursor: pointer; border: 0; }
-  .safe { outline: 2px dashed rgba(255,255,255,.25); outline-offset: -2px; }
+  body {
+    background: #0a0a0c; color: #f5f5f7;
+    font: 400 14px/1.5 -apple-system, "SF Pro Text", "Helvetica Neue", "Segoe UI", system-ui, sans-serif;
+    padding: 32px; -webkit-font-smoothing: antialiased;
+  }
+  h1 { font-weight: 600; font-size: 19px; letter-spacing: -0.02em; margin-bottom: 6px; }
+  p.note { color: #86868b; font-size: 13px; max-width: 720px; margin-bottom: 28px; }
+  p.note code { color: #a1a1a6; }
+  .row { display: flex; flex-wrap: wrap; gap: 32px; align-items: flex-start; }
+  .card {
+    background: #141416; border: 1px solid #232326; border-radius: 18px; padding: 18px;
+  }
+  .card h2 {
+    font-size: 12px; font-weight: 600; color: #86868b; margin-bottom: 12px;
+    text-transform: uppercase; letter-spacing: 0.08em;
+  }
+  canvas { display: block; background: #000; border-radius: 10px; max-width: 100%; height: auto; }
+  .btn {
+    display: inline-flex; align-items: center; gap: 6px; margin-top: 14px;
+    background: #0a84ff; color: #fff; font-weight: 590; font-size: 13px;
+    padding: 9px 16px; border-radius: 980px; border: 0; cursor: pointer;
+    letter-spacing: -0.01em;
+  }
+  .btn:hover { background: #0a78e6; }
+  .seedbar { margin-bottom: 22px; color: #86868b; font-size: 13px; }
+  .seedbar a { color: #0a84ff; text-decoration: none; }
 </style>
 </head>
 <body>
 <h1>Weapon Ball Arena — channel branding</h1>
 <p class="note">
-  Generated from the game's own visual language, no external assets.
-  <code>?seed=N</code> rerolls the layout. Buttons download PNGs at the exact
-  sizes YouTube wants (banner 2560×1440, avatar 800×800).
+  Rendered from the game's own visual language, no external assets. Buttons download
+  PNGs at the exact sizes YouTube wants (banner&nbsp;2560×1440, avatar&nbsp;800×800).
+  <code>?seed=N</code> rerolls the accent, <code>?theme=light</code> switches to the
+  light treatment. The headless renderer (<code>record/branding-shot.js</code>) writes
+  <code>branding_banner.png</code> / <code>branding_avatar.png</code>.
 </p>
 
 <div class="row">
   <div class="card">
-    <h2>Banner — 2560 × 1440 (safe area 1546 × 423)</h2>
-    <canvas id="banner" width="2560" height="1440" style="width:760px"></canvas>
-    <button class="btn" data-dl="banner" data-name="wba_banner.png">⬇ banner.png</button>
+    <h2>Banner — 2560 × 1440&nbsp;&nbsp;·&nbsp;&nbsp;safe area 1546 × 423</h2>
+    <canvas id="banner" width="2560" height="1440" style="width:820px"></canvas>
+    <button class="btn" data-dl="banner" data-name="branding_banner.png">↓ Banner</button>
   </div>
   <div class="card">
     <h2>Avatar — 800 × 800</h2>
-    <canvas id="avatar" width="800" height="800" style="width:260px"></canvas>
-    <button class="btn" data-dl="avatar" data-name="wba_avatar.png">⬇ avatar.png</button>
+    <canvas id="avatar" width="800" height="800" style="width:280px"></canvas>
+    <button class="btn" data-dl="avatar" data-name="branding_avatar.png">↓ Avatar</button>
   </div>
 </div>
 
 <script>
 "use strict";
-/* Standalone — small local copies of the palette, no shared code. */
+/* =====================================================================
+   Weapon Ball Arena — channel branding, Apple-style treatment
+   ---------------------------------------------------------------------
+   Design language: generous negative space, one hero object rendered
+   with real depth (specular + terminator + bounce light + contact
+   shadow), a tight-tracked display wordmark, a single quiet accent.
+   No outlines, no drop-shadowed game text, no clutter.
+   Zero dependencies; no shared code with the game.
+   ===================================================================== */
 const Q = new URLSearchParams(location.search);
 function mulberry32(a){return function(){a|=0;a=(a+0x6D2B79F5)|0;let t=Math.imul(a^(a>>>15),1|a);t=(t+Math.imul(t^(t>>>7),61|t))^t;return((t^(t>>>14))>>>0)/4294967296;};}
-const SEED = Q.get("seed") != null ? (parseInt(Q.get("seed"), 10) >>> 0) : 7;
+const HAS_SEED = Q.get("seed") != null;
+const SEED = HAS_SEED ? (parseInt(Q.get("seed"), 10) >>> 0) : 0;
 const rng = mulberry32(SEED);
+const LIGHT = Q.get("theme") === "light";
 
-const THEMES = [
-  ["#0b1020","#5aa0ff"],["#12071c","#ff3ec8"],["#1c0a05","#ff7a2f"],["#071620","#66e0ff"],
-  ["#04140f","#2effa0"],["#05060f","#9a7dff"],["#160608","#ff4655"],["#161006","#ffcf4a"],
-];
-const TH = THEMES[Math.floor(rng() * THEMES.length)];
+/* One quiet accent from Apple's system palette. Blue by default; a seed
+   rerolls it (index 0 stays blue so `?seed=0` == the default). */
+const ACCENTS = ["#0A84FF", "#0AC2FF", "#5E5CE6", "#30D158", "#FF9F0A", "#FF453A", "#BF5AF2"];
+const ACCENT = HAS_SEED ? ACCENTS[Math.floor(rng() * ACCENTS.length)] : ACCENTS[0];
 
-function shade(hex, amt) {
-  const c = hex.replace("#", "");
-  let r = parseInt(c.substr(0,2),16), g = parseInt(c.substr(2,2),16), b = parseInt(c.substr(4,2),16);
-  if (amt < 0) { r*=1+amt; g*=1+amt; b*=1+amt; } else { r+=(255-r)*amt; g+=(255-g)*amt; b+=(255-b)*amt; }
-  return `rgb(${r|0},${g|0},${b|0})`;
+const INK   = LIGHT ? "#1d1d1f" : "#f5f5f7";
+const SUBTLE = LIGHT ? "#6e6e73" : "#86868b";
+const FONT = '"SF Pro Display", -apple-system, "Helvetica Neue", "Segoe UI", system-ui, sans-serif';
+
+/* ---------- colour helpers ---------- */
+function hexToRgb(h){ h = h.replace("#",""); return [parseInt(h.substr(0,2),16), parseInt(h.substr(2,2),16), parseInt(h.substr(4,2),16)]; }
+function rgba(h, a){ const [r,g,b] = hexToRgb(h); return `rgba(${r},${g},${b},${a})`; }
+
+/* ---------- backdrop: near-black stage with a soft top spotlight ---------- */
+function backdrop(ctx, w, h) {
+  if (LIGHT) {
+    ctx.fillStyle = "#f5f5f7"; ctx.fillRect(0, 0, w, h);
+    const g = ctx.createRadialGradient(w/2, h*0.34, 0, w/2, h*0.34, Math.max(w, h)*0.75);
+    g.addColorStop(0, "#ffffff"); g.addColorStop(1, "#ececee");
+    ctx.fillStyle = g; ctx.fillRect(0, 0, w, h);
+  } else {
+    ctx.fillStyle = "#08080a"; ctx.fillRect(0, 0, w, h);
+    const g = ctx.createRadialGradient(w/2, h*0.30, 0, w/2, h*0.42, Math.max(w, h)*0.72);
+    g.addColorStop(0, "#1b1c20"); g.addColorStop(0.55, "#111114"); g.addColorStop(1, "#08080a");
+    ctx.fillStyle = g; ctx.fillRect(0, 0, w, h);
+  }
+  /* a whisper of the accent, high and wide, so the frame isn't neutral-dead */
+  const a = ctx.createRadialGradient(w/2, -h*0.15, 0, w/2, -h*0.15, w*0.55);
+  a.addColorStop(0, rgba(ACCENT, LIGHT ? 0.10 : 0.16));
+  a.addColorStop(1, rgba(ACCENT, 0));
+  ctx.fillStyle = a; ctx.fillRect(0, 0, w, h);
 }
-function ball(ctx, x, y, r, color) {
-  const g = ctx.createRadialGradient(x - r*0.32, y - r*0.32, r*0.2, x, y, r);
-  g.addColorStop(0, "#ffffff"); g.addColorStop(0.24, shade(color, 0.25)); g.addColorStop(1, shade(color, -0.55));
-  ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI*2); ctx.fillStyle = g; ctx.fill();
-  ctx.lineWidth = Math.max(3, r*0.05); ctx.strokeStyle = "rgba(0,0,0,.35)"; ctx.stroke();
-}
-function sword(ctx, x, y, r, color, ang) {
-  ctx.save(); ctx.translate(x, y); ctx.rotate(ang || 0);
-  ctx.strokeStyle = shade(color, 0.4); ctx.fillStyle = shade(color, 0.15); ctx.lineCap = "round";
-  ctx.lineWidth = r*0.16;
-  ctx.beginPath(); ctx.moveTo(0, r*0.45); ctx.lineTo(0, -r*1.32); ctx.stroke();
-  ctx.beginPath(); ctx.moveTo(-r*0.32, -r*0.12); ctx.lineTo(r*0.32, -r*0.12); ctx.lineWidth = r*0.16; ctx.stroke();
-  ctx.beginPath(); ctx.moveTo(0, -r*1.32); ctx.lineTo(-r*0.15, -r*1.1); ctx.lineTo(r*0.15, -r*1.1); ctx.closePath(); ctx.fill();
+
+/* ---------- the blade: a real sword run through the sphere ---------- */
+function blade(ctx, x, y, r, ang) {
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.rotate(ang);
+  ctx.lineJoin = "round"; ctx.lineCap = "round";
+
+  /* --- blade: parallel most of its run, then a real point --- */
+  const baseY = r*1.10;          // runs down behind the ball
+  const shoulderY = -r*1.62;     // where the point starts
+  const tipY = -r*2.18;
+  const half = r*0.19;
+
+  const steel = ctx.createLinearGradient(-half, 0, half, 0);
+  steel.addColorStop(0.00, "#6f757f");
+  steel.addColorStop(0.14, "#c7ccd5");
+  steel.addColorStop(0.32, "#f6f8fc");
+  steel.addColorStop(0.50, "#cfd4dc");
+  steel.addColorStop(0.68, "#f1f4f8");
+  steel.addColorStop(0.88, "#b6bcc6");
+  steel.addColorStop(1.00, "#686e78");
+  ctx.beginPath();
+  ctx.moveTo(-half, baseY);
+  ctx.lineTo(-half, shoulderY);
+  ctx.quadraticCurveTo(-half*0.5, shoulderY - r*0.12, 0, tipY);
+  ctx.quadraticCurveTo(half*0.5, shoulderY - r*0.12, half, shoulderY);
+  ctx.lineTo(half, baseY);
+  ctx.closePath();
+  ctx.fillStyle = steel; ctx.fill();
+
+  /* edge bevels — bright on the lit side, faint shade on the other */
+  ctx.beginPath(); ctx.moveTo(-half + 1, baseY); ctx.lineTo(-half + 1, shoulderY);
+  ctx.quadraticCurveTo(-half*0.5, shoulderY - r*0.12, 0, tipY);
+  ctx.strokeStyle = rgba("#ffffff", 0.6); ctx.lineWidth = Math.max(1, r*0.01); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(half - 1, baseY); ctx.lineTo(half - 1, shoulderY);
+  ctx.quadraticCurveTo(half*0.5, shoulderY - r*0.12, 0, tipY);
+  ctx.strokeStyle = rgba("#0b0d12", 0.32); ctx.lineWidth = Math.max(1.5, r*0.014); ctx.stroke();
+
+  /* fuller groove down the spine */
+  ctx.beginPath(); ctx.moveTo(-r*0.02, baseY); ctx.lineTo(-r*0.02, shoulderY - r*0.2);
+  ctx.strokeStyle = rgba("#0b0d12", 0.22); ctx.lineWidth = Math.max(2, r*0.03); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(-r*0.045, baseY); ctx.lineTo(-r*0.045, shoulderY - r*0.2);
+  ctx.strokeStyle = rgba("#ffffff", 0.5); ctx.lineWidth = Math.max(1, r*0.013); ctx.stroke();
+
+  /* --- grip + pommel, clearly below the ball --- */
+  const gripTop = r*1.04, gripBot = r*1.44, gripHalf = r*0.085;
+  const grip = ctx.createLinearGradient(-gripHalf, 0, gripHalf, 0);
+  grip.addColorStop(0, "#232529"); grip.addColorStop(0.5, "#52555d"); grip.addColorStop(1, "#232529");
+  ctx.fillStyle = grip;
+  roundRect(ctx, -gripHalf, gripTop, gripHalf*2, gripBot - gripTop, gripHalf*0.6); ctx.fill();
+  /* grip wraps */
+  ctx.strokeStyle = rgba("#0b0d12", 0.35); ctx.lineWidth = Math.max(1, r*0.02);
+  for (let i = 1; i <= 4; i++) {
+    const gy = gripTop + (gripBot - gripTop) * (i / 5);
+    ctx.beginPath(); ctx.moveTo(-gripHalf, gy); ctx.lineTo(gripHalf, gy - r*0.03); ctx.stroke();
+  }
+  const pom = ctx.createRadialGradient(-r*0.04, gripBot + r*0.02, r*0.02, 0, gripBot + r*0.08, r*0.18);
+  pom.addColorStop(0, "#e2e5ea"); pom.addColorStop(0.5, "#8b909a"); pom.addColorStop(1, "#3a3d44");
+  ctx.beginPath(); ctx.arc(0, gripBot + r*0.10, r*0.155, 0, Math.PI*2);
+  ctx.fillStyle = pom; ctx.fill();
+
+  /* --- crossguard, on top, right at the ball's lower edge --- */
+  const guardY = r*1.0, guardHalfW = r*0.56, guardH = r*0.17;
+  const guard = ctx.createLinearGradient(0, guardY - guardH/2, 0, guardY + guardH/2);
+  guard.addColorStop(0, "#eef1f6"); guard.addColorStop(0.5, "#aab0bb"); guard.addColorStop(1, "#585d67");
+  ctx.fillStyle = guard;
+  roundRect(ctx, -guardHalfW, guardY - guardH/2, guardHalfW*2, guardH, guardH*0.5); ctx.fill();
+  ctx.beginPath();
+  roundRect(ctx, -guardHalfW, guardY - guardH/2, guardHalfW*2, guardH*0.34, guardH*0.34);
+  ctx.fillStyle = rgba("#ffffff", 0.35); ctx.fill();
+
   ctx.restore();
 }
-function grid(ctx, w, h, color) {
-  ctx.strokeStyle = color; ctx.globalAlpha = 0.14; ctx.lineWidth = 2;
-  for (let x = 0; x <= w; x += 90) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, h); ctx.stroke(); }
-  for (let y = 0; y <= h; y += 90) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke(); }
-  ctx.globalAlpha = 1;
-}
-function bg(ctx, w, h) {
-  const g = ctx.createRadialGradient(w/2, h/2, 60, w/2, h/2, Math.max(w, h) * 0.7);
-  g.addColorStop(0, shade(TH[0], 0.18)); g.addColorStop(1, TH[0]);
-  ctx.fillStyle = g; ctx.fillRect(0, 0, w, h);
-  grid(ctx, w, h, TH[1]);
-}
-function vignette(ctx, w, h) {
-  const vg = ctx.createRadialGradient(w/2, h/2, h*0.28, w/2, h/2, h*0.8);
-  vg.addColorStop(0, "rgba(0,0,0,0)"); vg.addColorStop(1, "rgba(0,0,0,0.45)");
-  ctx.fillStyle = vg; ctx.fillRect(0, 0, w, h);
-}
-function outlined(ctx, text, x, y, font, fill, lw) {
-  ctx.font = font; ctx.textAlign = "center"; ctx.textBaseline = "middle";
-  ctx.lineJoin = "round"; ctx.lineWidth = lw; ctx.strokeStyle = "rgba(0,0,0,.55)";
-  ctx.strokeText(text, x, y); ctx.fillStyle = fill; ctx.fillText(text, x, y);
+
+/* ---------- the hero sphere: graphite chrome with real light model ---------- */
+function heroBall(ctx, x, y, r) {
+  /* soft ambient drop — the object floats (blade runs through it) */
+  ctx.save();
+  const cs = ctx.createRadialGradient(x + r*0.1, y + r*0.16, r*0.55, x + r*0.1, y + r*0.16, r*1.32);
+  cs.addColorStop(0, rgba("#000000", LIGHT ? 0.16 : 0.30));
+  cs.addColorStop(1, rgba("#000000", 0));
+  ctx.fillStyle = cs;
+  ctx.beginPath(); ctx.arc(x + r*0.1, y + r*0.16, r*1.32, 0, Math.PI*2); ctx.fill();
+  ctx.restore();
+
+  /* body */
+  const lx = x - r*0.36, ly = y - r*0.42;
+  const body = ctx.createRadialGradient(lx, ly, r*0.08, x, y, r*1.02);
+  body.addColorStop(0.00, "#ffffff");
+  body.addColorStop(0.07, "#e7ebf2");
+  body.addColorStop(0.22, "#b3bac6");
+  body.addColorStop(0.44, "#7c828f");
+  body.addColorStop(0.68, "#474b54");
+  body.addColorStop(0.88, "#26282e");
+  body.addColorStop(1.00, "#141519");
+  ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI*2);
+  ctx.fillStyle = body; ctx.fill();
+
+  /* rim lights: a soft one-sided crescent hugging the circumference. Built on
+     an offscreen canvas (disc minus a disc shoved toward the light) so the
+     punch-out can't erase the sphere, then screened back with a light blur. */
+  function limbRim(dx, dy, color, alpha) {
+    const R = r - 1, pad = Math.ceil(r * 0.14) + 4;
+    const s = document.createElement("canvas");
+    s.width = s.height = Math.ceil(r * 2) + pad * 2;
+    const o = s.getContext("2d");
+    const c0 = s.width / 2;
+    o.beginPath(); o.arc(c0, c0, R, 0, Math.PI*2);
+    o.fillStyle = rgba(color, alpha); o.fill();
+    o.globalCompositeOperation = "destination-out";
+    o.fillStyle = "#000";                       // opaque → fully punches out
+    o.beginPath(); o.arc(c0 + dx, c0 + dy, R, 0, Math.PI*2); o.fill();
+    ctx.save();
+    ctx.globalCompositeOperation = "screen";
+    ctx.filter = `blur(${(r * 0.028).toFixed(2)}px)`;
+    ctx.drawImage(s, x - c0, y - c0);
+    ctx.restore();
+  }
+  limbRim(-r * 0.22, -r * 0.19, ACCENT, 0.4);       // accent, lower-right limb
+  limbRim(r * 0.2, -r * 0.16, "#d2dcff", 0.14);     // cool fill, lower-left limb
+
+  /* faint horizon reflection band */
+  ctx.save();
+  ctx.beginPath(); ctx.arc(x, y, r*0.995, 0, Math.PI*2); ctx.clip();
+  const band = ctx.createLinearGradient(0, y - r*0.1, 0, y + r*0.12);
+  band.addColorStop(0, rgba("#ffffff", 0));
+  band.addColorStop(0.5, rgba("#ffffff", 0.04));
+  band.addColorStop(1, rgba("#ffffff", 0));
+  ctx.fillStyle = band; ctx.fillRect(x - r, y - r*0.1, r*2, r*0.22);
+  ctx.restore();
+
+  /* sharp primary specular */
+  const sx = x - r*0.4, sy = y - r*0.44;
+  const spec = ctx.createRadialGradient(sx, sy, 0, sx, sy, r*0.26);
+  spec.addColorStop(0, rgba("#ffffff", 0.95));
+  spec.addColorStop(0.5, rgba("#ffffff", 0.25));
+  spec.addColorStop(1, rgba("#ffffff", 0));
+  ctx.beginPath(); ctx.arc(sx, sy, r*0.26, 0, Math.PI*2);
+  ctx.fillStyle = spec; ctx.fill();
+
+  /* tiny hot pinpoint */
+  ctx.beginPath(); ctx.arc(sx - r*0.03, sy - r*0.03, r*0.05, 0, Math.PI*2);
+  ctx.fillStyle = rgba("#ffffff", 0.9); ctx.fill();
+
+  /* 1px terminator polish */
+  ctx.beginPath(); ctx.arc(x, y, r - 0.5, 0, Math.PI*2);
+  ctx.strokeStyle = rgba("#000000", 0.35); ctx.lineWidth = 1; ctx.stroke();
 }
 
-// ---- banner ----
+/* the full mark = blade behind + sphere in front */
+function mark(ctx, x, y, r) {
+  blade(ctx, x, y, r, -0.42);
+  heroBall(ctx, x, y, r);
+}
+
+/* ---------- fine grain, kills gradient banding at print size ---------- */
+function grain(ctx, w, h, alpha) {
+  const tile = 160;
+  const off = document.createElement("canvas"); off.width = tile; off.height = tile;
+  const octx = off.getContext("2d");
+  const img = octx.createImageData(tile, tile);
+  for (let i = 0; i < img.data.length; i += 4) {
+    const v = 128 + (Math.random() - 0.5) * 255;
+    img.data[i] = img.data[i+1] = img.data[i+2] = v; img.data[i+3] = 255;
+  }
+  octx.putImageData(img, 0, 0);
+  ctx.save();
+  ctx.globalAlpha = alpha;
+  ctx.globalCompositeOperation = LIGHT ? "multiply" : "overlay";
+  const pat = ctx.createPattern(off, "repeat");
+  ctx.fillStyle = pat; ctx.fillRect(0, 0, w, h);
+  ctx.restore();
+}
+
+function roundRect(ctx, x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.arcTo(x + w, y, x + w, y + h, r);
+  ctx.arcTo(x + w, y + h, x, y + h, r);
+  ctx.arcTo(x, y + h, x, y, r);
+  ctx.arcTo(x, y, x + w, y, r);
+  ctx.closePath();
+}
+
+/* ===================== BANNER ===================== */
 (function () {
   const c = document.getElementById("banner"), ctx = c.getContext("2d");
   const W = c.width, H = c.height, cx = W/2, cy = H/2;
-  bg(ctx, W, H);
+  backdrop(ctx, W, H);
 
-  // arena ring centred on the safe area
-  ctx.beginPath(); ctx.arc(cx, cy, 470, 0, Math.PI*2);
-  ctx.strokeStyle = TH[1]; ctx.lineWidth = 8; ctx.globalAlpha = 0.9; ctx.stroke();
-  ctx.lineWidth = 26; ctx.globalAlpha = 0.10; ctx.stroke(); ctx.globalAlpha = 1;
+  /* horizontal lockup, sized to sit inside the 1546-wide safe box */
+  const r = 110;
+  const gap = 74;
+  const wordSize = 130;
 
-  // two weapon-balls flanking the wordmark, tilted toward each other
-  ball(ctx, cx - 470, cy + 60, 130, "#e1e1e8"); sword(ctx, cx - 470, cy + 60, 130, "#e1e1e8", 0.6);
-  ball(ctx, cx + 470, cy + 60, 130, TH[1]);     sword(ctx, cx + 470, cy + 60, 130, TH[1], -0.6);
+  ctx.font = `600 ${wordSize}px ${FONT}`;
+  const word = "Weapon Ball Arena";
+  const trackedWidth = measureTracked(ctx, word, -0.02 * wordSize);
+  const lockupW = r * 2 + gap + trackedWidth;
 
-  outlined(ctx, "WEAPON BALL ARENA", cx, cy - 190, "900 156px Segoe UI, sans-serif", "#fff", 22);
-  outlined(ctx, "physics duels · a new fight every day", cx, cy + 250, "600 58px Segoe UI, sans-serif", TH[1], 12);
+  const markX = cx - lockupW / 2 + r;
+  const textX = markX + r + gap;
 
-  vignette(ctx, W, H);
+  mark(ctx, markX, cy - 6, r);
+
+  /* wordmark — tight tracking, quiet weight, no outline */
+  ctx.textBaseline = "alphabetic";
+  ctx.fillStyle = INK;
+  fillTracked(ctx, word, textX, cy + wordSize * 0.14, -0.02 * wordSize);
+
+  /* supporting line, Apple-caption weight + colour */
+  const subSize = 40;
+  const baseY = cy + wordSize * 0.14;
+  ctx.font = `400 ${subSize}px ${FONT}`;
+  ctx.fillStyle = SUBTLE;
+  const sub = "A new physics duel every day";
+  ctx.fillText(sub, textX, baseY + subSize + 34);
+
+  /* one short accent rule under the mark — the single spot of colour */
+  ctx.fillStyle = ACCENT;
+  roundRect(ctx, textX, baseY + subSize + 34 + 30, 96, 5, 2.5);
+  ctx.fill();
+
+  grain(ctx, W, H, LIGHT ? 0.03 : 0.05);
 })();
 
-// ---- avatar ----
+/* ===================== AVATAR ===================== */
 (function () {
   const c = document.getElementById("avatar"), ctx = c.getContext("2d");
   const W = c.width, H = c.height, cx = W/2, cy = H/2;
-  bg(ctx, W, H);
-  ctx.beginPath(); ctx.arc(cx, cy, 300, 0, Math.PI*2);
-  ctx.strokeStyle = TH[1]; ctx.lineWidth = 10; ctx.globalAlpha = 0.85; ctx.stroke(); ctx.globalAlpha = 1;
-  ball(ctx, cx, cy - 20, 175, TH[1]);
-  sword(ctx, cx, cy - 20, 175, TH[1], 0);
-  outlined(ctx, "WBA", cx, cy + 250, "900 128px Segoe UI, sans-serif", "#fff", 16);
-  vignette(ctx, W, H);
+
+  /* same stage as the banner so the two read as one system */
+  backdrop(ctx, W, H);
+
+  /* a touch more accent bloom, centred, so the icon keeps brand colour small */
+  const g = ctx.createRadialGradient(cx, cy - 40, 0, cx, cy, W*0.6);
+  g.addColorStop(0, rgba(ACCENT, LIGHT ? 0.10 : 0.16));
+  g.addColorStop(1, rgba(ACCENT, 0));
+  ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+
+  mark(ctx, cx, cy - 6, 140);
+
+  grain(ctx, W, H, LIGHT ? 0.03 : 0.045);
 })();
 
-// ---- downloads ----
+/* ---------- letter-spacing helpers (canvas has none natively) ---------- */
+function measureTracked(ctx, str, track) {
+  let w = 0;
+  for (const ch of str) w += ctx.measureText(ch).width + track;
+  return w - track;
+}
+function fillTracked(ctx, str, x, y, track) {
+  let cursor = x;
+  for (const ch of str) {
+    ctx.fillText(ch, cursor, y);
+    cursor += ctx.measureText(ch).width + track;
+  }
+}
+
+/* ---------- downloads ---------- */
 for (const btn of document.querySelectorAll("[data-dl]")) {
   btn.addEventListener("click", () => {
     const c = document.getElementById(btn.dataset.dl);
@@ -141,6 +377,7 @@ for (const btn of document.querySelectorAll("[data-dl]")) {
     a.click();
   });
 }
+
 window.__WBA_BRANDING_READY__ = true;
 </script>
 </body>
