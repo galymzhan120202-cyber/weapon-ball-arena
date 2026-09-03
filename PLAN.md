@@ -264,27 +264,19 @@ D:\weapon-ball-arena\
   `WBA_TELEGRAM_NOTIFY_TOKEN`, `WBA_TELEGRAM_NOTIFY_CHAT_ID` — бәрі орнатылды.
 - **`director.yml`** dry-run бір рет сәтті өтті (seed 12345, артефакт шықты).
 - **Cron** белсенді: `17 8 * * *` және `43 16 * * *` UTC + `workflow_dispatch`.
+- **Хостинг** ✅ — репо **public**, GitHub Pages қосулы (`build_type: workflow`),
+  сайт тірі: `https://galymzhan120202-cyber.github.io/weapon-ball-arena/` (HTTP 200).
+  `pages.yml`-дің `push:` триггері қайтарылды; `upload/meta.js` `playUrl` default
+  дәл осы URL — өзгертпейміз.
+- **Арна сілтемелері** ✅ — "Play in your browser" → Pages URL, "Source code" →
+  GitHub репо. Жарияланды.
+- Watermark / псевдоним / страна проживания — пайдаланушы: керек емес деп шешті.
 
 ### Қалды
-1. **Ойнатылатын нұсқаны хостинг** (басты бөгет). Репо private + free →
-   GitHub Pages өшірулі (`pages.yml`-дегі `push:` комментте, API 404).
-   Таңдау:
-   - (а) репоны **public** жасау → `pages.yml`-дегі `push:` триггерін қайтару →
-     Pages өзі қосылады → play URL = `https://galymzhan120202-cyber.github.io/weapon-ball-arena/`
-     (бұл `upload/meta.js`-тегі default — өзгертпейсің).
-   - (ә) private қалдырып itch.io / Netlify / Cloudflare Pages-ке салу →
-     `upload/meta.js`-тегі `playUrl` + арна сілтемесін жаңарту.
-   Шешілмейінше әр видео сипаттамасындағы "▶ Play it yourself" сілтемесі өлі.
-2. **Бірінші нақты жүктеу тесті**. Actions → "Director" → Run workflow,
+1. **Бірінші нақты жүктеу тесті**. Actions → "Director" → Run workflow,
    `dry_run: false`, `privacy: unlisted` → арнада шыққанын (thumbnail, мета,
    Telegram) тексер → көр → өшір/қалдыр. Содан кейін ғана cron-ға сен.
-3. **Арна сілтемелері** (косметика) — хостинг болғанда қосу: Play → URL;
-   Source → GitHub (репо public болса ғана); Telegram (қаласаң).
-4. **Video watermark (Логотип канала)** — міндетті емес; ≤1 МБ, 150×150 PNG
-   керек (`branding.html` мark-інен бөлек `branding_watermark.png` рендерлеуге болады).
-5. **Псевдоним** `@WeaponBallArenaa` (қос "a") — косметика; `@WeaponBallArena`
-   бос болса 14 күнде ауыстыруға болады.
-6. **Страна проживания** YT Studio-да орнатылмаған — қаласаң қой.
+   (Бұдан кейін launch аяқталды — cron өзі жүреді.)
 
 ### v1.0 / жалғасатын
 - Рекордер ~9 fps, ұзын клипте баяу — керек болса баптау.
