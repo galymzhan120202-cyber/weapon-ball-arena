@@ -208,8 +208,8 @@ Toxic Lab, Blood Moon) → 16-ға дейін кеңейеді. Әрқайсыс
 
 ## 7. Ашық сұрақтар
 
-- Арна атауы: bot `@WeaponBallFightArena_bot`. YouTube арнасын да
-  "Weapon Ball Fight Arena" деп атаймыз ба, әлде "Weapon Ball Arena"?
+- ✅ Арна атауы шешілді: YouTube арнасы **"Weapon Ball Arena"** (2026-09-04 құрылды).
+  Telegram bot `@WeaponBallFightArena_bot` күйінде қалды.
 - Director видео форматы: тек Shorts (1080×1920) — landscape "tournament"
   кейінге қалды.
 - ✅ Жазу жолы шешілді: Node + puppeteer, WebCodecs H.264 (screenshot fallback).
