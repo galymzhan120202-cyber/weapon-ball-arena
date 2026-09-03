@@ -156,69 +156,133 @@ Toxic Lab, Blood Moon) → 16-ға дейін кеңейеді. Әрқайсыс
 
 ## 6. Кезеңдер
 
-### v0.1 — БҮГІН ІСТЕЛДІ ✅
+### v0.1 — ІСТЕЛДІ ✅
 - [x] Жоба `D:\weapon-ball-arena\` бөлек құрылды, git init.
 - [x] Бір файлды `index.html` прототипі: seeded детерминистік сим,
       20 қару, 8 арена, тарылатын шторм, өз физика-solver, HP/урон/crit/parry,
       3-2-1-FIGHT, жеңіс экраны, синт-дыбыс, MediaRecorder ілмегі.
 - [x] Ойнатылатын режим (тінтуір/thrust/WASD) + director режимі (`?auto=1`).
-- [x] Браузерде рендер тексерілді (Blood Moon, Sword vs Warhammer).
 - [x] `game-research/` ішіне 7 пайдалы репо клондалды, зерттелді.
 
-### v0.2 — келесі
-- [ ] rAF throttle мәселесін шешу: director режимінде тіркелген кадр-санағыш.
-- [ ] Node + Playwright рекордер → `.mp4` (canvas-record немесе screenshot).
-- [ ] Hit-event log → ffmpeg аудио микс (синт SFX + Openverse музыка).
-- [ ] `thumb.html` thumbnail генераторы.
-- [ ] Қару санын 26-ға, арена 16-ға толтыру + иконка сапасын көтеру.
-- [ ] Меню экраны (қару таңдау, қарсылас саны).
+### v0.2 — ІСТЕЛДІ ✅
+- [x] rAF throttle шешілді: director режимінде тіркелген кадр-санағыш
+      (`__WBA_TICK__` / `__WBA_STATE__` / `__WBA_META__`, `?drive=ext`).
+- [x] Қару 26-ға, арена 16-ға толтырылды, урон қайта бапталды.
 
-### v0.3 — арна іске қосу
-- [ ] Жаңа YouTube арна + Brand Account (пайдаланушы).
-- [ ] Жаңа OAuth Client ID + `youtube_token.json` (жаңа арна).
-- [ ] `upload/` Node скрипті + жергілікті бір рет қолмен жүктеу тесті.
-- [ ] GitHub repo (жаңа, бөлек) + Actions secrets.
-- [ ] GitHub Pages-ке ойнатылатын нұсқа.
-- [ ] `workflow_dispatch` арқылы бір видео қолмен → тексеру → cron.
+### v0.3 — ІСТЕЛДІ ✅
+- [x] Juice + UX пасс (hitstop, screenshake, callout, HP bar trail, MENU).
+- [x] `record/record.js` — Node + puppeteer headless рекордер → `.mp4`.
+
+### v0.4 — ІСТЕЛДІ ✅
+- [x] In-page WebCodecs H.264 encode жолы (screenshot fallback қалды).
+- [x] Синт-аудио: `__WBA_AUDIO_LOG__` + `record/audio.js` (SFX + музыка бед)
+      → ffmpeg AAC микс.
+- [x] `thumb.html` — 1280×720 thumbnail генераторы, рекордер оны да түсіреді.
+- [x] `branding.html` — арна баннер (2560×1440) + аватар (800×800) генераторы.
+- [x] `upload/` — `meta.js` (title/desc/tags), `login.js` (бір реттік OAuth),
+      `upload.js` (videos.insert + thumbnail + Telegram), `lib.js` (creds + .env).
+- [x] `.github/workflows/` — `pages.yml` (GitHub Pages) + `director.yml`
+      (күнде 2× cron: жаса → артефакт → жүкте, немесе dry_run).
+- [x] Private GitHub репо: `galymzhan120202-cyber/weapon-ball-arena`.
+- [x] Telegram хабарландыру: `@WeaponBallFightArena_bot`, repo secrets
+      `WBA_TELEGRAM_NOTIFY_TOKEN` / `WBA_TELEGRAM_NOTIFY_CHAT_ID` орнатылды.
+
+### v0.5 — АРНАНЫ ІСКЕ ҚОСУ (екеуіміз бірге — §9 қараңыз)
+- [ ] Жаңа YouTube арна + Brand Account (пайдаланушы қолмен).
+- [ ] Ортақ GCP жобада жаңа OAuth Client ID (Desktop) → `client_secrets.json`.
+- [ ] `cd upload && npm install && node login.js` — `youtube_token.json` мint,
+      арна дұрыс екенін тексеру.
+- [ ] `client_secrets.json` + `youtube_token.json` → repo secrets
+      `WBA_CLIENT_SECRETS_JSON` / `WBA_YOUTUBE_TOKEN_JSON`.
+- [ ] GitHub Pages-ті қосу (Settings → Pages → GitHub Actions).
+- [ ] `director.yml` → Run workflow (dry_run: true) — рендер тексеру.
+- [ ] Бір видеоны `--privacy=unlisted`-пен қолмен жүктеп көру.
+- [ ] Cron-ды қосу (қазір жоспарланған, secrets жоқта өзі skip етеді).
 
 ### v1.0 — тұрақты
-- [ ] Күнде 2–3 Shorts автоматты.
-- [ ] Ойнатылатын нұсқаға сілтеме видео сипаттамасында (трафик ойынға).
+- [ ] Күнде 2 Shorts автоматты, тұрақты.
+- [ ] Рекордер өнімділігі (~9 fps, ұзын клипте баяулайды) — керек болса баптау.
 - [ ] Retention өлшеу, механика баптау (weapon-ball-bot тәрізді rebalance циклі).
 
 ---
 
 ## 7. Ашық сұрақтар
 
-- Арна атауы түпкілікті ме? ("Weapon Ball Arena" әзірге жұмыс атауы.)
-- Director видео форматы: тек Shorts (1080×1920) ме, әлде кейде landscape
-  "tournament" де ме (marble-race-bot сияқты)?
+- Арна атауы: bot `@WeaponBallFightArena_bot`. YouTube арнасын да
+  "Weapon Ball Fight Arena" деп атаймыз ба, әлде "Weapon Ball Arena"?
+- Director видео форматы: тек Shorts (1080×1920) — landscape "tournament"
+  кейінге қалды.
+- ✅ Жазу жолы шешілді: Node + puppeteer, WebCodecs H.264 (screenshot fallback).
+- Музыка: қазір процедуралық синт-бед (`record/audio.js`). Кейін Openverse
+  CC0 тректерін қосу керек пе? Әзірге `music/` папкасы жоқ, керегі жоқ.
 - Мобиль ойын (Godot/Unity порт) — кейінгі мақсат, әзірге web жеткілікті.
-- Жазу жолы: браузер-`MediaRecorder`+ffmpeg (қарапайым) vs Node-Playwright
-  (CI-ге таза) — v0.2-де екеуін де сынап, біреуін таңдаймыз.
 
 ---
 
-## 8. Файл құрылымы (жоспарланған)
+## 8. Файл құрылымы (нақты)
 
 ```
 D:\weapon-ball-arena\
-  index.html              # ойын (playable + director) — БАР
-  serve.js                # жергілікті дев-сервер — БАР
-  PLAN.md                 # осы файл — БАР
-  README.md               # қысқа сипаттама — келесі
-  .gitignore              # secrets, node_modules, *.mp4 — келесі
-  branding.html           # арна баннер/аватар генераторы
-  thumb.html              # thumbnail генераторы
+  index.html              # ойын (playable + director + рекордер ілмектері)
+  serve.js                # жергілікті дев-сервер (http://localhost:8778)
+  thumb.html              # 1280×720 thumbnail генераторы (standalone)
+  branding.html           # баннер 2560×1440 + аватар 800×800 генераторы
+  PLAN.md  README.md  .gitignore
   record/
-    record.js             # Node + Playwright → mp4
-    audio.js              # hit-log → ffmpeg SFX/музыка микс
+    record.js             # Node + puppeteer → mp4 (WebCodecs / screenshot)
+    audio.js              # audio-log → WAV (синт SFX + процедуралық музыка)
+    package.json  package-lock.json
   upload/
-    login.js              # бір реттік OAuth
-    upload.js             # youtube.videos.insert + Telegram
-    meta.js               # тақырып/сипаттама/тег шаблондары
+    lib.js                # creds жүктеу (.env / WBA_*_JSON) + Telegram
+    login.js              # бір реттік loopback OAuth → youtube_token.json
+    upload.js             # videos.insert + thumbnails.set + Telegram
+    meta.js               # seed-детерминистік title / description / tags
+    package.json  package-lock.json
   .github/workflows/
-    pages.yml             # GitHub Pages деплой
-    director.yml          # cron: видео жаса + жүкте
-  music/                  # Openverse fallback тректер + attribution
+    pages.yml             # index/thumb/branding → GitHub Pages
+    director.yml          # cron 2×/күн: жаса → артефакт → жүкте (немесе dry_run)
+  out/                    # рендер шығысы (gitignore)
+  .env                    # жергілікті creds (gitignore)
+  client_secrets.json     # (жоқ әзірге — §9) OAuth Desktop client, gitignore
+  youtube_token.json      # (жоқ әзірге — §9) login.js жазады, gitignore
 ```
+
+---
+
+## 9. Екеуіміз бірге істейтін қалған жұмыс (v0.5 — арна іске қосу)
+
+Код түгел дайын. Қалғаны — қолмен жасалатын, аккаунтқа кіруді қажет ететін
+қадамдар. Реті бойынша:
+
+### 9.1 Жаңа YouTube арна (пайдаланушы)
+1. Google аккаунтта жаңа **Brand Account** құру → атауы "Weapon Ball Fight
+   Arena" (bot атауымен сәйкес) немесе "Weapon Ball Arena".
+2. `node serve.js` → `http://localhost:8778/branding.html?seed=7` (seed-ті
+   ұнағанша ауыстыр) → **banner.png** + **avatar.png** жүктеп, арнаға қою.
+3. Арна "About": EN + RU сипаттама, keywords (weapon ball, physics battle,
+   who wins, satisfying, simulation, 1v1 fight, arena, marble battle).
+
+### 9.2 OAuth (пайдаланушы + мен)
+4. Ортақ `youtube-automation-489306` GCP жобасында **жаңа OAuth Client ID
+   (Desktop app)**, атауы "Weapon Ball Arena Uploader". JSON жүктеп →
+   `D:\weapon-ball-arena\client_secrets.json`.
+5. `cd upload && npm install` → `node login.js`. Жаңа арнаға кіріп рұқсат бер.
+   Скрипт `../youtube_token.json` жазады және **қай арна** екенін басып
+   шығарады — жаңа арна екенін тексер (weapon-ball-bot емес!).
+
+### 9.3 CI-ге қосу (мен, creds болғанда)
+6. Repo secrets қосу:
+   - `WBA_CLIENT_SECRETS_JSON` = `client_secrets.json` мазмұны
+   - `WBA_YOUTUBE_TOKEN_JSON` = `youtube_token.json` мазмұны
+   (`WBA_TELEGRAM_NOTIFY_*` — ✅ орнатылған.)
+7. GitHub → Settings → Pages → Source: **GitHub Actions**. `pages.yml` іске
+   қосылады, ойнатылатын нұсқа
+   `https://galymzhan120202-cyber.github.io/weapon-ball-arena/` болады.
+
+### 9.4 Тексеру
+8. Actions → "Director" → Run workflow, **dry_run: true** — рендер+артефакт
+   тексеру (жүктемейді).
+9. Жергілікті: `node record/record.js --seed=42 --max-seconds=40` →
+   `node upload/upload.js --video=out/wba_42.mp4 --privacy=unlisted` — бір
+   видеоны қолмен жүктеп, арнада көру.
+10. Бәрі дұрыс болса — cron өзінен-өзі жүреді (`17:08` және `16:43` UTC).
