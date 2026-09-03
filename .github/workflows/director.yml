@@ -3,7 +3,8 @@ name: Director — record & upload a fight
 on:
   schedule:
     # offset onto odd minutes so it doesn't collide with the other bots'
-    # cron jobs. Two fights a day (UTC).
+    # cron jobs. Three fights a day, ~8h apart (UTC).
+    - cron: "31 0 * * *"
     - cron: "17 8 * * *"
     - cron: "43 16 * * *"
   workflow_dispatch:
