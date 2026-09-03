@@ -54,6 +54,7 @@ const SEED      = (Q.get("seed") != null) ? (parseInt(Q.get("seed"), 10) >>> 0)
 const FORCE_N   = Q.get("n") ? Math.max(2, Math.min(8, parseInt(Q.get("n"), 10))) : null;
 const PICK_LIST = Q.get("weapons") ? Q.get("weapons").split(",").map(s => s.trim().toLowerCase()) : null;
 const MUTED     = AUTO ? (Q.get("sound") !== "1") : (Q.get("mute") === "1");
+const DEBUG     = Q.get("debug") === "1";   // show seed / dev details on screen
 
 const W = 1080, H = 1920;
 const DT = 1 / 120;                 // fixed physics step (determinism)
@@ -242,6 +243,8 @@ class Fighter {
 class World {
   constructor() {
     this.t = 0;
+    this.clock = 0;                  // monotonic output-time clock (never reset) — audio-log timestamps
+    this.audioLog = [];             // [{t, type, ...}] for the Node-side sfx/music mix
     this.state = "intro";            // intro -> fight -> over
     this.theme = pick(THEMES);
     this.winner = null;
@@ -319,9 +322,15 @@ class World {
     }
   }
 
+  _logSfx(type, data) {
+    if (this.audioLog.length < 6000)
+      this.audioLog.push(Object.assign({ t: +this.clock.toFixed(3), type }, data));
+  }
+
   step(dt, input) {
     this._stepAmbient(dt);
     if (this.state === "menu") return;
+    this.clock += dt;
     if (this.state === "intro") {
       this.t += dt;
       if (this.t >= INTRO_SECONDS) { this.state = "fight"; this.t = 0; }
@@ -447,6 +456,8 @@ class World {
     else if (survivors === 1 && this.n >= 3) this.callout = { txt: "LAST ONE STANDING", t: 1.6 };
     this.killCount++; this.lastKillT = this.t;
     sfx.ko();
+    this._logSfx("ko", {});
+    if (this.callout) this._logSfx("callout", { txt: this.callout.txt });
   }
 
   _confine(f, dt, soft) {
@@ -593,6 +604,7 @@ class World {
         this.shakes = Math.max(this.shakes, 8);
         this.hitstop = Math.max(this.hitstop, 0.04);
         sfx.parry();
+        this._logSfx("parry", {});
         return;
       }
     }
@@ -631,6 +643,7 @@ class World {
       this.shakes = Math.max(this.shakes, 13);
     }
     sfx.hit(a.material, b.material, clean);
+    this._logSfx("hit", { m1: a.material, m2: b.material, active: clean, crit: !!tag });
 
     if (b.hp <= 0) this._kill(b);
     if (a.hp <= 0) this._kill(a);
@@ -1138,16 +1151,24 @@ window.__WBA_META__ = () => ({
   winnerKind: world.winner && world.winner.kind,
   finishText: world.finishText, hits: world.hits, n: world.n,
 });
+// full synth-audio timeline for the Node-side mixer (record/audio.js)
+window.__WBA_AUDIO_LOG__ = () => ({ fps: FPS, clock: +world.clock.toFixed(3), events: world.audioLog });
 
 function beepCountdown() {
   const lbl = countdownLabel(world.t);
-  if (lbl !== lastBeep) { lastBeep = lbl; sfx.count(lbl === "FIGHT!" ? 0 : 1); }
+  if (lbl !== lastBeep) {
+    lastBeep = lbl;
+    const big = lbl === "FIGHT!";
+    sfx.count(big ? 0 : 1);
+    world._logSfx("count", { big });
+  }
 }
 
 // advance EXACTLY one output frame of the simulation, then draw it.
 function tick() {
   if (world.hitstop > 0) {
     world.hitstop -= 1 / FPS;                 // freeze the sim, keep drawing (juice)
+    world.clock += 1 / FPS;                   // ...but output time still advances (keeps audio log in sync)
   } else {
     for (let s = 0; s < STEPS_PER_FRAME; s++) {
       world.step(DT, input);
@@ -1155,7 +1176,10 @@ function tick() {
       if (world.hitstop > 0) break;
     }
   }
-  if (world.state !== prevState) { if (world.state === "over") sfx.win(); prevState = world.state; }
+  if (world.state !== prevState) {
+    if (world.state === "over") { sfx.win(); world._logSfx("win", {}); }
+    prevState = world.state;
+  }
   render(world);
   if (WC_MODE) wcEncodeFrame();
   outFrame++;
