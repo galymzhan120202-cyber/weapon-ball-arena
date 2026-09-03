@@ -1,0 +1,14 @@
+{
+  "name": "weapon-ball-arena-recorder",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Headless recorder — renders a director-mode Weapon Ball Arena match to an mp4.",
+  "type": "commonjs",
+  "bin": { "wba-record": "./record.js" },
+  "scripts": {
+    "record": "node record.js"
+  },
+  "dependencies": {
+    "puppeteer": "^23.11.1"
+  }
+}
