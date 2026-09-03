@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+<title>Weapon Ball Arena</title>
+<style>
+  :root { color-scheme: dark; }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body {
+    width: 100%; height: 100%; background: #05060a; overflow: hidden;
+    font-family: "Segoe UI", system-ui, sans-serif; color: #e8e8ef;
+    touch-action: none; -webkit-user-select: none; user-select: none;
+  }
+  #wrap { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; }
+  canvas { display: block; background: #0a0c14; box-shadow: 0 0 60px rgba(0,0,0,.6); }
+  #hint {
+    position: fixed; left: 50%; bottom: 12px; transform: translateX(-50%);
+    font-size: 12px; letter-spacing: .5px; opacity: .5; white-space: nowrap;
+    pointer-events: none;
+  }
+  #dl {
+    position: fixed; right: 12px; top: 12px; z-index: 10;
+    background: #2b7; color: #04120a; font-weight: 700; padding: 8px 14px;
+    border-radius: 8px; text-decoration: none; font-size: 13px; display: none;
+  }
+</style>
+</head>
+<body>
+<div id="wrap"><canvas id="c" width="1080" height="1920"></canvas></div>
+<div id="hint">TAP / HOLD to thrust &nbsp;·&nbsp; aim with pointer &nbsp;·&nbsp; R restart &nbsp;·&nbsp; ?auto=1 for director mode</div>
+<a id="dl" download="weapon-ball-arena.webm">⬇ Download clip</a>
+<script>
+"use strict";
+/* =====================================================================
+   Weapon Ball Arena — single-file HTML5 canvas game (hybrid)
+   - Playable: steer one weapon-ball, outlast AI opponents in a
+     shrinking arena. Last one alive wins.
+   - Director mode (?auto=1&seed=123): all-AI, fully deterministic from
+     the seed, optional MediaRecorder capture for YouTube Shorts.
+   Mechanics (weapon roster, damage formula, arena themes, "lunge" AI)
+   are ported from weapon-ball-bot / battle_sim.py so the tuning work
+   already done there carries straight over.
+   ===================================================================== */
+
+// ---------------------------------------------------------------------
+// URL params / run config
+// ---------------------------------------------------------------------
+const Q = new URLSearchParams(location.search);
+const AUTO      = Q.get("auto") === "1";
+const RECORD    = Q.get("record") === "1";
+const SEED      = (Q.get("seed") != null) ? (parseInt(Q.get("seed"), 10) >>> 0)
+                                          : (Math.random() * 2 ** 31) >>> 0;
+const FORCE_N   = Q.get("n") ? Math.max(2, Math.min(8, parseInt(Q.get("n"), 10))) : null;
+const PICK_LIST = Q.get("weapons") ? Q.get("weapons").split(",").map(s => s.trim().toLowerCase()) : null;
+const MUTED     = AUTO ? (Q.get("sound") !== "1") : (Q.get("mute") === "1");
+
+const W = 1080, H = 1920;
+const DT = 1 / 120;                 // fixed physics step (determinism)
+const FPS = 60;                     // render / capture frame rate
+const START_HP = 100;
+const INTRO_SECONDS = 2.0;          // 3-2-1-FIGHT countdown
+const COLD_OPEN = 0;                // reserved (battle_sim has a 0.9s hook)
+const BATTLE_MAX_SECONDS = 34;
+const BATTLE_MIN_SECONDS = 12;
+
+// ---------------------------------------------------------------------
+// Seeded RNG (mulberry32) — every random draw in the sim goes through
+// one of these so a seed fully reproduces a match.
+// ---------------------------------------------------------------------
+function mulberry32(a) {
+  return function () {
+    a |= 0; a = (a + 0x6D2B79F5) | 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+function hashStr(s) { let h = 2166136261 >>> 0; for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; }
+const rng      = mulberry32(SEED);
+const critRng  = mulberry32(hashStr(SEED + "crit"));
+const parryRng = mulberry32(hashStr(SEED + "parry"));
+const rnd  = (a, b) => a + (b - a) * rng();
+const rndi = (a, b) => Math.floor(rnd(a, b + 1));
+function pick(arr) { return arr[Math.floor(rng() * arr.length)]; }
+function sample(arr, k) { const p = arr.slice(); for (let i = p.length - 1; i > 0; i--) { const j = Math.floor(rng() * (i + 1)); [p[i], p[j]] = [p[j], p[i]]; } return p.slice(0, k); }
+function weightedPick(entries) { // [[val,w],...]
+  let tot = 0; for (const e of entries) tot += e[1];
+  let r = rng() * tot;
+  for (const e of entries) { if ((r -= e[1]) <= 0) return e[0]; }
+  return entries[entries.length - 1][0];
+}
+
+// ---------------------------------------------------------------------
+// Weapon roster (ported subset of battle_sim.WEAPON_POOL)
+//   power    -> damage ratio driver (compressed by POWER_DMG_EXPONENT)
+//   material -> collision feel (elasticity / friction)
+//   reach    -> effective body radius multiplier
+//   zone     -> active damage point(s), local offset (x,y) + radius,
+//               in units of the fighter's own collision radius.
+//               y<0 points toward the drawn tip. null => whole body active.
+// ---------------------------------------------------------------------
+const MAT = {
+  metal:      { elasticity: 1.00, friction: 0.20 },
+  mechanical: { elasticity: 0.92, friction: 0.34 },
+  blunt:      { elasticity: 0.78, friction: 0.38 },
+  wood:       { elasticity: 0.90, friction: 0.30 },
+  whip:       { elasticity: 0.70, friction: 0.44 },
+};
+const ZONE_SCALE = 1.22;
+const ROSTER = [
+  { name: "Sword",       kind: "sword",    color: "#e1e1e8", power: 1.00, material: "metal",      reach: 1.00, zone: [[0, -0.72, 0.50]] },
+  { name: "Katana",      kind: "katana",   color: "#f0f0f8", power: 1.02, material: "metal",      reach: 1.05, zone: [[0, -0.72, 0.50]] },
+  { name: "Axe",         kind: "axe",      color: "#d65c44", power: 1.15, material: "metal",      reach: 0.95, zone: [[0.28, -0.59, 0.52]] },
+  { name: "Hammer",      kind: "hammer",   color: "#9696a0", power: 1.28, material: "blunt",      reach: 0.85, zone: [[0, -0.58, 0.52]] },
+  { name: "Warhammer",   kind: "warhammer",color: "#788296", power: 1.38, material: "blunt",      reach: 1.05, zone: [[0, -0.56, 0.54]] },
+  { name: "Spear",       kind: "spear",    color: "#60ce94", power: 0.92, material: "metal",      reach: 1.25, zone: [[0, -0.82, 0.50]] },
+  { name: "Trident",     kind: "trident",  color: "#46bed2", power: 0.98, material: "metal",      reach: 1.22, zone: [[0, -0.82, 0.50]] },
+  { name: "Dagger",      kind: "dagger",   color: "#eccd46", power: 0.78, material: "metal",      reach: 0.72, zone: [[0, -0.72, 0.50]] },
+  { name: "Mace",        kind: "mace",     color: "#b064d6", power: 1.22, material: "blunt",      reach: 0.85, zone: [[0, -0.58, 0.52]] },
+  { name: "Flail",       kind: "flail",    color: "#d28c3c", power: 1.30, material: "blunt",      reach: 0.95, zone: [[0, -0.86, 0.46]] },
+  { name: "Whip",        kind: "whip",     color: "#b43c3c", power: 0.85, material: "whip",       reach: 0.95, zone: [[0, -0.92, 0.42]] },
+  { name: "Scythe",      kind: "scythe",   color: "#48bee2", power: 1.08, material: "metal",      reach: 1.15, zone: [[0.22, -0.62, 0.54]] },
+  { name: "Chainsaw",    kind: "chainsaw", color: "#e6be28", power: 1.35, material: "mechanical", reach: 1.00, zone: [[0, -0.44, 0.56]] },
+  { name: "Staff",       kind: "staff",    color: "#aa82dc", power: 0.80, material: "wood",       reach: 1.20, zone: [[0, -0.82, 0.50]] },
+  { name: "Shuriken",    kind: "shuriken", color: "#d23c5a", power: 0.75, material: "metal",      reach: 0.65, zone: null },
+  { name: "Rapier",      kind: "rapier",   color: "#ebebf0", power: 0.85, material: "metal",      reach: 1.15, zone: [[0, -0.88, 0.46]] },
+  { name: "Halberd",     kind: "halberd",  color: "#c8643c", power: 1.20, material: "metal",      reach: 1.25, zone: [[0, -0.80, 0.40], [0.26, -0.56, 0.44]] },
+  { name: "Cleaver",     kind: "cleaver",  color: "#d25a5a", power: 1.10, material: "metal",      reach: 0.85, zone: [[0, -0.62, 0.52]] },
+  { name: "Boomerang",   kind: "boomerang",color: "#be8c4b", power: 0.82, material: "wood",       reach: 0.90, zone: null },
+  { name: "War Axe",     kind: "war_axe",  color: "#b04230", power: 1.11, material: "metal",      reach: 1.05, zone: [[-0.31, -0.58, 0.38], [0.31, -0.58, 0.38]] },
+];
+
+// damage-model constants (ported)
+const POWER_DMG_EXPONENT = 0.38;
+const ACTIVE_DAMAGE_MULT  = 1.15;
+const GUARD_DAMAGE_MULT    = 0.28;
+const CLEAN_HIT_BONUS      = 1.15;
+const WHOLE_BODY_DISCOUNT  = 0.42;
+const CRIT_CHANCE = 0.10, CRIT_MULT = 2.0;
+const PARRY_CHANCE = 0.40, PARRY_KNOCK_MULT = 1.9;
+const BASE_DMG = 7.2;          // per clean exchange before ratios
+const HIT_COOLDOWN = 0.16;     // s between damage events for a pair
+
+// ---------------------------------------------------------------------
+// Arena themes (ported subset)
+// ---------------------------------------------------------------------
+const THEMES = [
+  { name: "Midnight Arena",   bg: "#0b1020", grid: "#1b2748", accent: "#5aa0ff", particle: "#6f8fff" },
+  { name: "Neon City",        bg: "#12071c", grid: "#3a1550", accent: "#ff3ec8", particle: "#ff7ae0" },
+  { name: "Lava Pit",         bg: "#1c0a05", grid: "#4a1608", accent: "#ff7a2f", particle: "#ffb057" },
+  { name: "Ice Cave",         bg: "#071620", grid: "#12455a", accent: "#66e0ff", particle: "#a8f0ff" },
+  { name: "Cyber Grid",       bg: "#04140f", grid: "#0c4030", accent: "#2effa0", particle: "#7affce" },
+  { name: "Deep Space",       bg: "#05060f", grid: "#191b3a", accent: "#9a7dff", particle: "#c0b0ff" },
+  { name: "Toxic Lab",        bg: "#0c1405", grid: "#2c4a0c", accent: "#b6ff2f", particle: "#d7ff7a" },
+  { name: "Blood Moon",       bg: "#160608", grid: "#4a1016", accent: "#ff4655", particle: "#ff8a94" },
+];
+
+// ---------------------------------------------------------------------
+// small vec helpers
+// ---------------------------------------------------------------------
+const len = (x, y) => Math.hypot(x, y);
+function norm(x, y) { const l = Math.hypot(x, y) || 1; return [x / l, y / l]; }
+
+// ---------------------------------------------------------------------
+// World / simulation
+// ---------------------------------------------------------------------
+class Fighter {
+  constructor(def, x, y) {
+    Object.assign(this, def);
+    this.x = x; this.y = y; this.vx = 0; this.vy = 0;
+    this.angle = rnd(0, Math.PI * 2);
+    this.spin = rnd(-6, 6);
+    this.hp = START_HP; this.alive = true;
+    this.mass = 0.80 + (this.power - 0.80) * 0.55;   // compressed (ported)
+    this.hitFlash = 0; this.scale = 1;
+    this.lungeCd = rnd(0.6, 1.6);
+    this.eDmg = 0;      // accumulated damage popup
+    this.dmgPopT = 0;
+  }
+  get baseR() { return this._baseR; }
+}
+
+class World {
+  constructor() {
+    this.t = 0;
+    this.state = "intro";            // intro -> fight -> over
+    this.theme = pick(THEMES);
+    this.winner = null;
+    this.finishText = "";
+    this.pairCd = new Map();         // "i,j" -> cooldown
+    this.sparks = [];
+    this.shakes = 0;
+    this.flash = 0;
+
+    // roster selection
+    let pool = ROSTER;
+    if (PICK_LIST) {
+      const chosen = PICK_LIST.map(k => ROSTER.find(w => w.kind === k || w.name.toLowerCase() === k)).filter(Boolean);
+      if (chosen.length >= 2) pool = null, this.defs = chosen.slice(0, 8);
+    }
+    if (!this.defs) {
+      const n = FORCE_N || weightedPick([[2, 55], [3, 28], [4, 17]]);
+      this.defs = sample(ROSTER, n);
+    }
+    const n = this.defs.length;
+    this.n = n;
+
+    // arena box
+    this.cx = W / 2; this.cy = H * 0.56;
+    this.arenaR0 = Math.min(W, H) * 0.44;
+    this.arenaR = this.arenaR0;
+    this.arenaRmin = this.arenaR0 * 0.42;
+
+    // sizing by fighter count (ported spirit of RADIUS_BY_N)
+    const baseR = ({ 2: 62, 3: 54, 4: 47, 5: 42, 6: 38, 7: 35, 8: 33 })[n] || 40;
+
+    this.fighters = this.defs.map((def, i) => {
+      const ang = (i / n) * Math.PI * 2 + rnd(0, Math.PI * 2);
+      const spawnR = this.arenaR0 * 0.62;
+      const f = new Fighter(def, this.cx + Math.cos(ang) * spawnR, this.cy + Math.sin(ang) * spawnR);
+      f._baseR = baseR * def.reach;
+      const speed0 = Math.min(W, H) * 0.16;
+      const [ax, ay] = norm(this.cx - f.x, this.cy - f.y);
+      f.vx = ax * speed0; f.vy = ay * speed0;
+      f.idx = i;
+      return f;
+    });
+
+    // player is fighter 0 unless AUTO
+    this.playerIdx = AUTO ? -1 : 0;
+    this.hits = 0;
+  }
+
+  living() { return this.fighters.filter(f => f.alive); }
+
+  step(dt, input) {
+    if (this.state === "intro") {
+      this.t += dt;
+      if (this.t >= INTRO_SECONDS) { this.state = "fight"; this.t = 0; }
+      // let them drift gently during countdown
+      for (const f of this.fighters) { f.x += f.vx * dt * 0.25; f.y += f.vy * dt * 0.25; this._confine(f, dt, true); }
+      return;
+    }
+    if (this.state === "over") { this.t += dt; return; }
+
+    this.t += dt;
+
+    // shrink arena from min->max seconds
+    const s0 = BATTLE_MIN_SECONDS * 0.5, s1 = BATTLE_MAX_SECONDS;
+    const k = Math.max(0, Math.min(1, (this.t - s0) / (s1 - s0)));
+    this.arenaR = this.arenaR0 + (this.arenaRmin - this.arenaR0) * k;
+
+    // ---- AI + player control ----
+    for (const f of this.fighters) {
+      if (!f.alive) continue;
+      if (f.idx === this.playerIdx) this._controlPlayer(f, dt, input);
+      else this._controlAI(f, dt);
+      f.lungeCd -= dt;
+    }
+
+    // ---- integrate ----
+    for (const f of this.fighters) {
+      if (!f.alive) continue;
+      f.x += f.vx * dt; f.y += f.vy * dt;
+      f.angle += f.spin * dt;
+      f.spin *= (1 - 0.35 * dt);
+      // mild drag so fights don't runaway-accelerate
+      f.vx *= (1 - 0.18 * dt); f.vy *= (1 - 0.18 * dt);
+      f.hitFlash = Math.max(0, f.hitFlash - dt * 4);
+      f.scale += (1 - f.scale) * Math.min(1, dt * 12);
+      if (f.dmgPopT > 0) f.dmgPopT -= dt;
+      this._confine(f, dt, false);
+    }
+
+    // ---- collisions (pairwise) ----
+    const L = this.living();
+    for (let a = 0; a < L.length; a++) {
+      for (let b = a + 1; b < L.length; b++) this._collide(L[a], L[b], dt);
+    }
+    // decay pair cooldowns
+    for (const [key, v] of this.pairCd) {
+      const nv = v - dt;
+      if (nv <= 0) this.pairCd.delete(key); else this.pairCd.set(key, nv);
+    }
+
+    // ---- storm (outside-arena chip damage) ----
+    for (const f of this.living()) {
+      const d = len(f.x - this.cx, f.y - this.cy);
+      if (d > this.arenaR - f._baseR * 0.4) {
+        f.hp -= 9 * dt;
+        f.hitFlash = Math.max(f.hitFlash, 0.35);
+        if (f.hp <= 0) this._kill(f);
+      }
+    }
+
+    // ---- sparks / fx ----
+    for (const p of this.sparks) { p.x += p.vx * dt; p.y += p.vy * dt; p.vx *= (1 - 2 * dt); p.vy *= (1 - 2 * dt); p.life -= dt; }
+    this.sparks = this.sparks.filter(p => p.life > 0);
+    this.shakes *= (1 - 6 * dt);
+    this.flash = Math.max(0, this.flash - dt * 3);
+
+    // ---- win / timeout ----
+    const alive = this.living();
+    if (alive.length <= 1 && this.t > BATTLE_MIN_SECONDS * 0.4) {
+      this._finish(alive[0] || this._topHp(), alive.length === 1);
+    } else if (this.t >= BATTLE_MAX_SECONDS) {
+      this._finish(this._topHp(), false);
+    }
+  }
+
+  _topHp() { return this.fighters.slice().sort((p, q) => q.hp - p.hp)[0]; }
+
+  _finish(f, byKo) {
+    this.state = "over"; this.t = 0; this.winner = f; this.flash = 1; this.shakes = 22;
+    const clean = ["FLAWLESS!", "DOMINATION!", "UNTOUCHED!"];
+    const comeback = ["COMEBACK WIN!", "CLUTCH!", "AGAINST ALL ODDS!"];
+    if (byKo && f && f.hp > START_HP * 0.7) this.finishText = pick(clean);
+    else if (byKo && f && f.hp < START_HP * 0.25) this.finishText = pick(comeback);
+    else this.finishText = byKo ? "WINNER!" : "TIME'S UP — TOP HP WINS";
+  }
+
+  _kill(f) {
+    if (!f.alive) return;
+    f.alive = false; f.hp = 0;
+    this.flash = Math.max(this.flash, 0.8); this.shakes = Math.max(this.shakes, 16);
+    for (let i = 0; i < 26; i++) {
+      const a = rnd(0, Math.PI * 2), sp = rnd(60, 620);
+      this.sparks.push({ x: f.x, y: f.y, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp, life: rnd(0.3, 0.8), c: f.color });
+    }
+    sfx.ko();
+  }
+
+  _confine(f, dt, soft) {
+    // circular arena wall bounce
+    const dx = f.x - this.cx, dy = f.y - this.cy;
+    const d = len(dx, dy);
+    const lim = (soft ? this.arenaR0 : this.arenaR) - f._baseR;
+    if (d > lim) {
+      const [nx, ny] = norm(dx, dy);
+      f.x = this.cx + nx * lim; f.y = this.cy + ny * lim;
+      const vn = f.vx * nx + f.vy * ny;
+      if (vn > 0) { const e = MAT[f.material].elasticity; f.vx -= (1 + e) * vn * nx; f.vy -= (1 + e) * vn * ny; f.spin += rnd(-3, 3); }
+    }
+  }
+
+  _controlPlayer(f, dt, input) {
+    // aim toward pointer, thrust while held
+    if (input.aimX != null) {
+      const [ax, ay] = norm(input.aimX - f.x, input.aimY - f.y);
+      f.angle = Math.atan2(ay, ax) + Math.PI / 2;   // tip (local -y) faces pointer
+      if (input.thrust) {
+        const push = 2600;
+        f.vx += ax * push * dt; f.vy += ay * push * dt;
+      }
+    }
+    // keyboard fallback
+    let kx = 0, ky = 0;
+    if (input.keys.has("a") || input.keys.has("arrowleft")) kx -= 1;
+    if (input.keys.has("d") || input.keys.has("arrowright")) kx += 1;
+    if (input.keys.has("w") || input.keys.has("arrowup")) ky -= 1;
+    if (input.keys.has("s") || input.keys.has("arrowdown")) ky += 1;
+    if (kx || ky) { const [nx, ny] = norm(kx, ky); f.vx += nx * 2200 * dt; f.vy += ny * 2200 * dt; f.angle = Math.atan2(ny, nx) + Math.PI / 2; }
+    // clamp speed
+    const smax = 1050; const sp = len(f.vx, f.vy);
+    if (sp > smax) { f.vx *= smax / sp; f.vy *= smax / sp; }
+  }
+
+  _controlAI(f, dt) {
+    // seek nearest living enemy
+    let tgt = null, best = 1e9;
+    for (const o of this.living()) {
+      if (o === f) continue;
+      const d = len(o.x - f.x, o.y - f.y);
+      if (d < best) { best = d; tgt = o; }
+    }
+    if (!tgt) return;
+    const [dx, dy] = norm(tgt.x - f.x, tgt.y - f.y);
+    // steer velocity toward target, face tip at it
+    const steer = 900;
+    f.vx += dx * steer * dt; f.vy += dy * steer * dt;
+    f.angle = Math.atan2(dy, dx) + Math.PI / 2;
+    // periodic lunge impulse (ported concept)
+    if (f.lungeCd <= 0) {
+      const victim = pick(this.living().filter(o => o !== f)) || tgt;
+      const [lx, ly] = norm(victim.x - f.x, victim.y - f.y);
+      const imp = rnd(360, 620);
+      f.vx += lx * imp; f.vy += ly * imp; f.spin += rnd(-5, 5);
+      f.lungeCd = rnd(0.9, 1.9);
+    }
+    // pull back toward center if near the closing wall
+    const dc = len(f.x - this.cx, f.y - this.cy);
+    if (dc > this.arenaR * 0.86) {
+      const [cx, cy] = norm(this.cx - f.x, this.cy - f.y);
+      f.vx += cx * 1400 * dt; f.vy += cy * 1400 * dt;
+    }
+    const smax = 1000; const sp = len(f.vx, f.vy);
+    if (sp > smax) { f.vx *= smax / sp; f.vy *= smax / sp; }
+  }
+
+  // world-space position of a fighter's active zone entry (or body center if none)
+  _zonePoints(f) {
+    const pts = [];
+    const r = f._baseR;
+    if (!f.zone) { pts.push({ x: f.x, y: f.y, rr: r, active: true, whole: true }); return pts; }
+    const ca = Math.cos(f.angle), sa = Math.sin(f.angle);
+    for (const [ox, oy, rf] of f.zone) {
+      // local (ox,oy) with -y = tip; rotate by angle
+      const lx = ox * r, ly = oy * r;
+      const wx = f.x + (lx * ca - ly * sa);
+      const wy = f.y + (lx * sa + ly * ca);
+      pts.push({ x: wx, y: wy, rr: rf * r * ZONE_SCALE, active: true, whole: false });
+    }
+    return pts;
+  }
+
+  _collide(a, b, dt) {
+    const dx = b.x - a.x, dy = b.y - a.y;
+    const d = len(dx, dy) || 0.001;
+    const rr = a._baseR + b._baseR;
+    if (d >= rr) return;
+
+    // --- resolve overlap + elastic impulse (circle bodies) ---
+    const [nx, ny] = [dx / d, dy / d];
+    const overlap = rr - d;
+    const totM = a.mass + b.mass;
+    a.x -= nx * overlap * (b.mass / totM); a.y -= ny * overlap * (b.mass / totM);
+    b.x += nx * overlap * (a.mass / totM); b.y += ny * overlap * (a.mass / totM);
+
+    const rvx = b.vx - a.vx, rvy = b.vy - a.vy;
+    const vn = rvx * nx + rvy * ny;
+    if (vn < 0) {
+      const e = Math.min(MAT[a.material].elasticity, MAT[b.material].elasticity);
+      let j = -(1 + e) * vn / (1 / a.mass + 1 / b.mass);
+      const ix = j * nx, iy = j * ny;
+      a.vx -= ix / a.mass; a.vy -= iy / a.mass;
+      b.vx += ix / b.mass; b.vy += iy / b.mass;
+      // friction -> spin transfer
+      const fr = (MAT[a.material].friction + MAT[b.material].friction) * 0.5;
+      a.spin += (-rvy * nx + rvx * ny) * fr * 0.02;
+      b.spin -= (-rvy * nx + rvx * ny) * fr * 0.02;
+    }
+
+    // --- damage (only once per pair per cooldown) ---
+    const key = a.idx < b.idx ? a.idx + "," + b.idx : b.idx + "," + a.idx;
+    if (this.pairCd.has(key)) return;
+    this.pairCd.set(key, HIT_COOLDOWN);
+
+    // which shape of each was doing the striking? nearest zone point to
+    // the contact point on the shared normal.
+    const contact = { x: a.x + nx * a._baseR, y: a.y + ny * a._baseR };
+    const strike = (f) => {
+      let bestActive = false, bestWhole = false, bestD = 1e9;
+      for (const p of this._zonePoints(f)) {
+        const dd = len(p.x - contact.x, p.y - contact.y) - p.rr;
+        if (dd < bestD) { bestD = dd; bestActive = p.active && dd < f._baseR * 0.9; bestWhole = !!p.whole; }
+      }
+      // body/guard always available as a fallback striker
+      return { active: bestActive, whole: bestWhole };
+    };
+    const sa = strike(a), sb = strike(b);
+
+    // symmetric exchange scaled by crit / parry
+    let mult = 1;
+    let tag = "";
+    if (sa.active && sb.active) { // clash
+      if (parryRng() < PARRY_CHANCE) {
+        // parry: no damage, hard shove apart
+        const shove = 240 * PARRY_KNOCK_MULT;
+        a.vx -= nx * shove / a.mass; a.vy -= ny * shove / a.mass;
+        b.vx += nx * shove / b.mass; b.vy += ny * shove / b.mass;
+        this._spark(contact.x, contact.y, "#ffffff", 16);
+        this._popBoth(a, b, "PARRY!");
+        this.shakes = Math.max(this.shakes, 7);
+        sfx.parry();
+        return;
+      }
+    }
+    if (critRng() < CRIT_CHANCE) { mult *= CRIT_MULT; tag = "CRITICAL!"; }
+
+    const dmgTo = (att, vic, attStrike, vicStrike) => {
+      let base = BASE_DMG * mult;
+      base *= Math.pow(att.power / vic.power, POWER_DMG_EXPONENT);
+      if (attStrike.whole) base *= WHOLE_BODY_DISCOUNT;
+      base *= attStrike.active ? ACTIVE_DAMAGE_MULT : GUARD_DAMAGE_MULT;
+      if (attStrike.active && !vicStrike.active) base *= CLEAN_HIT_BONUS;
+      // impact speed scaling
+      base *= 0.6 + Math.min(1.4, Math.abs(vn) / 520);
+      return base;
+    };
+    const dA = dmgTo(a, b, sa, sb);   // damage a deals to b
+    const dB = dmgTo(b, a, sb, sa);   // damage b deals to a
+    b.hp -= dA; a.hp -= dB;
+    b.eDmg = Math.round(dA); a.eDmg = Math.round(dB);
+    b.dmgPopT = a.dmgPopT = 0.7;
+    a.hitFlash = b.hitFlash = 1; a.scale = b.scale = 1.16;
+    this._spark(contact.x, contact.y, sa.active || sb.active ? "#ffd27a" : "#9fb4d6", sa.active || sb.active ? 14 : 7);
+    this.shakes = Math.max(this.shakes, sa.active || sb.active ? 9 : 4);
+    this.hits++;
+    if (tag) { this._popBoth(a, b, tag); this.flash = Math.max(this.flash, 0.4); }
+    sfx.hit(a.material, b.material, sa.active || sb.active);
+
+    if (b.hp <= 0) this._kill(b);
+    if (a.hp <= 0) this._kill(a);
+  }
+
+  _spark(x, y, c, n) {
+    for (let i = 0; i < n; i++) {
+      const ang = rnd(0, Math.PI * 2), sp = rnd(40, 360);
+      this.sparks.push({ x, y, vx: Math.cos(ang) * sp, vy: Math.sin(ang) * sp, life: rnd(0.2, 0.5), c });
+    }
+  }
+  _popBoth(a, b, txt) { a._tag = b._tag = { txt, t: 0.8 }; }
+}
+
+// ---------------------------------------------------------------------
+// Synthesized SFX (Web Audio, no assets) — ported spirit of battle_sim
+// ---------------------------------------------------------------------
+const sfx = (() => {
+  let ac = null;
+  function ctx() { if (!ac && !MUTED) { try { ac = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) {} } return ac; }
+  function blip(freq, dur, type, gain, sweep) {
+    const a = ctx(); if (!a) return;
+    const o = a.createOscillator(), g = a.createGain();
+    o.type = type || "square"; o.frequency.setValueAtTime(freq, a.currentTime);
+    if (sweep) o.frequency.exponentialRampToValueAtTime(Math.max(40, freq * sweep), a.currentTime + dur);
+    g.gain.setValueAtTime(gain || 0.14, a.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001, a.currentTime + dur);
+    o.connect(g); g.connect(a.destination); o.start(); o.stop(a.currentTime + dur + 0.02);
+  }
+  return {
+    hit(m1, m2, active) {
+      if (m1 === "blunt" || m2 === "blunt") blip(150, 0.12, "sine", 0.16, 0.4);
+      else if (m1 === "wood" || m2 === "wood") blip(320, 0.07, "triangle", 0.12, 0.6);
+      else if (m1 === "whip" || m2 === "whip") blip(900, 0.05, "sawtooth", 0.10, 0.3);
+      else if (m1 === "mechanical" || m2 === "mechanical") blip(90, 0.14, "sawtooth", 0.12);
+      else blip(active ? 1400 : 800, 0.06, "square", active ? 0.16 : 0.10, 0.35);
+    },
+    parry() { blip(1800, 0.05, "square", 0.16, 0.5); setTimeout(() => blip(2400, 0.05, "square", 0.12, 0.6), 30); },
+    ko() { blip(70, 0.35, "sawtooth", 0.22, 0.4); },
+    count(n) { blip(n === 0 ? 700 : 420, n === 0 ? 0.25 : 0.1, "square", 0.16); },
+    win() { [523, 659, 784, 1047].forEach((f, i) => setTimeout(() => blip(f, 0.18, "square", 0.15), i * 110)); },
+  };
+})();
+
+// ---------------------------------------------------------------------
+// Rendering
+// ---------------------------------------------------------------------
+const cv = document.getElementById("c");
+const ctx = cv.getContext("2d");
+
+function fitCanvas() {
+  const s = Math.min(innerWidth / W, innerHeight / H);
+  cv.style.width = (W * s) + "px";
+  cv.style.height = (H * s) + "px";
+}
+addEventListener("resize", fitCanvas); fitCanvas();
+
+function drawWeaponBall(f, world) {
+  const r = f._baseR * f.scale;
+  ctx.save();
+  ctx.translate(f.x, f.y);
+  // body
+  const g = ctx.createRadialGradient(-r * 0.3, -r * 0.3, r * 0.2, 0, 0, r);
+  g.addColorStop(0, "#ffffff"); g.addColorStop(0.25, f.color); g.addColorStop(1, shade(f.color, -0.55));
+  ctx.beginPath(); ctx.arc(0, 0, r, 0, Math.PI * 2);
+  ctx.fillStyle = g; ctx.fill();
+  ctx.lineWidth = 3; ctx.strokeStyle = f.hitFlash > 0 ? `rgba(255,255,255,${f.hitFlash})` : "rgba(0,0,0,.35)"; ctx.stroke();
+
+  // weapon shape toward tip (local -y)
+  ctx.rotate(f.angle);
+  ctx.strokeStyle = shade(f.color, 0.25); ctx.fillStyle = f.color; ctx.lineCap = "round";
+  const reach = r * 1.15;
+  drawBlade(f.kind, r, reach);
+
+  // active-zone hint (subtle)
+  ctx.restore();
+
+  // player ring
+  if (f.idx === world.playerIdx) {
+    ctx.beginPath(); ctx.arc(f.x, f.y, r + 8, 0, Math.PI * 2);
+    ctx.strokeStyle = "rgba(90,200,120,.9)"; ctx.lineWidth = 4; ctx.stroke();
+  }
+  // damage popup
+  if (f.dmgPopT > 0 && f.eDmg > 0) {
+    ctx.save();
+    ctx.globalAlpha = Math.min(1, f.dmgPopT * 2);
+    ctx.fillStyle = "#ffd27a"; ctx.font = "bold 40px Segoe UI";
+    ctx.textAlign = "center";
+    ctx.fillText("-" + f.eDmg, f.x, f.y - r - 18 - (0.7 - f.dmgPopT) * 60);
+    ctx.restore();
+  }
+  if (f._tag && f._tag.t > 0) {
+    ctx.save(); ctx.globalAlpha = Math.min(1, f._tag.t * 1.5);
+    ctx.fillStyle = "#fff"; ctx.font = "bold 34px Segoe UI"; ctx.textAlign = "center";
+    ctx.fillText(f._tag.txt, f.x, f.y - r - 60);
+    ctx.restore();
+    f._tag.t -= 1 / FPS;
+  }
+}
+
+function drawBlade(kind, r, reach) {
+  ctx.lineWidth = Math.max(6, r * 0.16);
+  switch (kind) {
+    case "spear": case "staff": case "trident": case "rapier": case "halberd":
+      ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(0, -reach * 1.35); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(0, -reach * 1.35); ctx.lineTo(-r * 0.22, -reach * 1.05); ctx.lineTo(r * 0.22, -reach * 1.05); ctx.closePath(); ctx.fill();
+      break;
+    case "hammer": case "warhammer": case "mace":
+      ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(0, -reach); ctx.stroke();
+      ctx.beginPath(); ctx.arc(0, -reach, r * 0.5, 0, Math.PI * 2); ctx.fill();
+      break;
+    case "axe": case "war_axe": case "tomahawk": case "cleaver": case "scythe":
+      ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(0, -reach); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(0, -reach); ctx.quadraticCurveTo(r * 0.9, -reach * 0.7, r * 0.5, -reach * 0.35);
+      ctx.quadraticCurveTo(r * 0.2, -reach * 0.6, 0, -reach * 0.9); ctx.closePath(); ctx.fill();
+      break;
+    case "chainsaw":
+      ctx.beginPath(); ctx.rect(-r * 0.28, -reach, r * 0.56, reach); ctx.fill();
+      break;
+    case "shuriken":
+      ctx.beginPath();
+      for (let i = 0; i < 4; i++) { const a = i * Math.PI / 2; ctx.moveTo(0, 0); ctx.lineTo(Math.cos(a) * reach, Math.sin(a) * reach); }
+      ctx.lineWidth = r * 0.3; ctx.stroke();
+      break;
+    case "boomerang":
+      ctx.beginPath(); ctx.moveTo(-reach * 0.7, 0); ctx.quadraticCurveTo(0, -reach * 0.8, reach * 0.7, 0);
+      ctx.lineWidth = r * 0.28; ctx.stroke();
+      break;
+    case "whip": case "flail":
+      ctx.beginPath(); ctx.moveTo(0, 0); ctx.quadraticCurveTo(r * 0.5, -reach * 0.6, 0, -reach * 1.2); ctx.stroke();
+      ctx.beginPath(); ctx.arc(0, -reach * 1.2, r * 0.22, 0, Math.PI * 2); ctx.fill();
+      break;
+    default: // sword-like
+      ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(0, -reach * 1.25); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(-r * 0.3, -r * 0.25); ctx.lineTo(r * 0.3, -r * 0.25); ctx.lineWidth = r * 0.14; ctx.stroke();
+  }
+}
+
+function shade(hex, amt) {
+  const c = hex.replace("#", "");
+  let r = parseInt(c.substr(0, 2), 16), g = parseInt(c.substr(2, 2), 16), b = parseInt(c.substr(4, 2), 16);
+  if (amt < 0) { r *= (1 + amt); g *= (1 + amt); b *= (1 + amt); }
+  else { r += (255 - r) * amt; g += (255 - g) * amt; b += (255 - b) * amt; }
+  return `rgb(${r | 0},${g | 0},${b | 0})`;
+}
+
+function render(world) {
+  const th = world.theme;
+  ctx.save();
+  // shake
+  if (world.shakes > 0.4) ctx.translate(rnd(-1, 1) * world.shakes, rnd(-1, 1) * world.shakes);
+
+  // background
+  const bg = ctx.createRadialGradient(world.cx, world.cy, 60, world.cx, world.cy, Math.max(W, H) * 0.8);
+  bg.addColorStop(0, shade(th.bg, 0.12)); bg.addColorStop(1, th.bg);
+  ctx.fillStyle = bg; ctx.fillRect(0, 0, W, H);
+
+  // grid
+  ctx.strokeStyle = th.grid; ctx.lineWidth = 2; ctx.globalAlpha = 0.5;
+  for (let x = 0; x <= W; x += 90) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke(); }
+  for (let y = 0; y <= H; y += 90) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke(); }
+  ctx.globalAlpha = 1;
+
+  // arena ring + storm
+  ctx.save();
+  ctx.beginPath(); ctx.arc(world.cx, world.cy, world.arenaR0, 0, Math.PI * 2);
+  ctx.arc(world.cx, world.cy, world.arenaR, 0, Math.PI * 2, true);
+  ctx.fillStyle = "rgba(180,30,50,0.14)"; ctx.fill("evenodd");
+  ctx.restore();
+  ctx.beginPath(); ctx.arc(world.cx, world.cy, world.arenaR, 0, Math.PI * 2);
+  ctx.strokeStyle = th.accent; ctx.lineWidth = 5; ctx.globalAlpha = 0.9; ctx.stroke(); ctx.globalAlpha = 1;
+
+  // sparks
+  for (const p of world.sparks) {
+    ctx.globalAlpha = Math.max(0, p.life * 2);
+    ctx.fillStyle = p.c; ctx.beginPath(); ctx.arc(p.x, p.y, 4, 0, Math.PI * 2); ctx.fill();
+  }
+  ctx.globalAlpha = 1;
+
+  // fighters
+  for (const f of world.fighters) if (f.alive) drawWeaponBall(f, world);
+
+  // flash
+  if (world.flash > 0.02) { ctx.fillStyle = `rgba(255,255,255,${world.flash * 0.5})`; ctx.fillRect(0, 0, W, H); }
+
+  ctx.restore();
+
+  // ---------- HUD ----------
+  drawHud(world);
+}
+
+function drawHud(world) {
+  // title
+  ctx.fillStyle = "#fff"; ctx.font = "bold 42px Segoe UI"; ctx.textAlign = "center";
+  ctx.globalAlpha = 0.9;
+  ctx.fillText("WEAPON BALL ARENA", W / 2, 70);
+  ctx.globalAlpha = 1;
+  ctx.font = "22px Segoe UI"; ctx.fillStyle = world.theme.accent;
+  ctx.fillText(world.theme.name + "   ·   seed " + SEED, W / 2, 104);
+
+  // HP bars
+  const bars = world.fighters;
+  const bw = W - 160, x0 = 80;
+  let y = 150;
+  for (const f of bars) {
+    ctx.textAlign = "left";
+    ctx.font = "bold 26px Segoe UI";
+    ctx.fillStyle = f.alive ? "#fff" : "rgba(255,255,255,.35)";
+    ctx.fillText(f.name + (f.idx === world.playerIdx ? "  (YOU)" : ""), x0, y - 8);
+    ctx.fillStyle = "rgba(255,255,255,.12)";
+    ctx.fillRect(x0, y, bw, 16);
+    const frac = Math.max(0, f.hp / START_HP);
+    ctx.fillStyle = f.alive ? f.color : "#555";
+    ctx.fillRect(x0, y, bw * frac, 16);
+    if (!f.alive) { ctx.fillStyle = "#c33"; ctx.font = "bold 20px Segoe UI"; ctx.fillText("OUT", x0 + bw + 8, y + 15); }
+    y += 46;
+  }
+
+  // countdown
+  if (world.state === "intro") {
+    const left = INTRO_SECONDS - world.t;
+    const label = left > 1 ? String(Math.ceil(left)) : "FIGHT!";
+    ctx.textAlign = "center";
+    ctx.font = "bold 200px Segoe UI";
+    ctx.fillStyle = "rgba(255,255,255,.92)";
+    ctx.fillText(label, W / 2, world.cy + 40);
+  }
+
+  // clock
+  if (world.state === "fight") {
+    ctx.textAlign = "center"; ctx.font = "bold 30px Segoe UI"; ctx.fillStyle = "rgba(255,255,255,.7)";
+    ctx.fillText(Math.max(0, BATTLE_MAX_SECONDS - world.t).toFixed(1), W / 2, H - 70);
+  }
+
+  // winner
+  if (world.state === "over" && world.winner) {
+    ctx.fillStyle = "rgba(0,0,0,.45)"; ctx.fillRect(0, world.cy - 220, W, 440);
+    ctx.textAlign = "center";
+    ctx.font = "bold 54px Segoe UI"; ctx.fillStyle = world.theme.accent;
+    ctx.fillText(world.finishText, W / 2, world.cy - 70);
+    ctx.font = "bold 96px Segoe UI"; ctx.fillStyle = "#fff";
+    ctx.fillText(world.winner.name, W / 2, world.cy + 30);
+    ctx.font = "bold 40px Segoe UI"; ctx.fillStyle = "#ffd27a";
+    ctx.fillText("WINNER", W / 2, world.cy + 100);
+    if (AUTO) {
+      ctx.font = "bold 44px Segoe UI"; ctx.fillStyle = "#fff";
+      ctx.fillText("▶ SUBSCRIBE for a new fight every day", W / 2, world.cy + 190);
+    } else {
+      ctx.font = "26px Segoe UI"; ctx.fillStyle = "rgba(255,255,255,.7)";
+      ctx.fillText("press R to fight again", W / 2, world.cy + 175);
+    }
+  }
+}
+
+// ---------------------------------------------------------------------
+// Input
+// ---------------------------------------------------------------------
+const input = { aimX: null, aimY: null, thrust: false, keys: new Set() };
+function pointerPos(e) {
+  const r = cv.getBoundingClientRect();
+  const px = (e.touches ? e.touches[0].clientX : e.clientX) - r.left;
+  const py = (e.touches ? e.touches[0].clientY : e.clientY) - r.top;
+  input.aimX = px / r.width * W;
+  input.aimY = py / r.height * H;
+}
+cv.addEventListener("pointerdown", e => { pointerPos(e); input.thrust = true; if (sfx) {} });
+cv.addEventListener("pointermove", e => { if (input.aimX != null || input.thrust) pointerPos(e); else pointerPos(e); });
+addEventListener("pointerup", () => { input.thrust = false; });
+addEventListener("keydown", e => {
+  const k = e.key.toLowerCase();
+  input.keys.add(k);
+  if (k === " ") input.thrust = true;
+  if (k === "r") restart();
+  if (k === "m") location.href = toggleParam("mute");
+});
+addEventListener("keyup", e => { const k = e.key.toLowerCase(); input.keys.delete(k); if (k === " ") input.thrust = false; });
+addEventListener("blur", () => { input.keys.clear(); input.thrust = false; });
+function toggleParam(p) { const u = new URL(location.href); u.searchParams.set(p, u.searchParams.get(p) === "1" ? "0" : "1"); return u.toString(); }
+
+// ---------------------------------------------------------------------
+// Recording (MediaRecorder -> webm). mp4 conversion is a later step.
+// ---------------------------------------------------------------------
+let recorder = null, recChunks = [];
+function startRecording() {
+  try {
+    const stream = cv.captureStream(FPS);
+    const mime = MediaRecorder.isTypeSupported("video/webm;codecs=vp9") ? "video/webm;codecs=vp9" : "video/webm";
+    recorder = new MediaRecorder(stream, { mimeType: mime, videoBitsPerSecond: 12_000_000 });
+    recorder.ondataavailable = e => { if (e.data.size) recChunks.push(e.data); };
+    recorder.onstop = () => {
+      const blob = new Blob(recChunks, { type: "video/webm" });
+      const url = URL.createObjectURL(blob);
+      const a = document.getElementById("dl");
+      a.href = url; a.style.display = "inline-block";
+      window.__WBA_CLIP__ = blob;     // node/puppeteer hook
+      window.__WBA_DONE__ = true;
+    };
+    recorder.start();
+  } catch (e) { console.warn("recording unavailable", e); }
+}
+function stopRecording() { if (recorder && recorder.state !== "inactive") recorder.stop(); }
+
+// ---------------------------------------------------------------------
+// Game loop  (fixed-step sim, capped catch-up)
+// ---------------------------------------------------------------------
+let world = new World();
+let acc = 0, last = performance.now(), overHold = 0, prevState = "intro";
+window.__WBA_STATE__ = () => ({ state: world.state, t: world.t, winner: world.winner && world.winner.name, seed: SEED });
+
+if (AUTO && RECORD) startRecording();
+
+function restart() {
+  const u = new URL(location.href);
+  u.searchParams.set("seed", (Math.random() * 2 ** 31) >>> 0);
+  location.href = u.toString();
+}
+
+function frame(now) {
+  let dtReal = (now - last) / 1000; last = now;
+  if (dtReal > 0.25) dtReal = 0.25;               // tab-away guard
+  acc += dtReal;
+  let steps = 0;
+  while (acc >= DT && steps < 20) {
+    world.step(DT, input);
+    acc -= DT; steps++;
+    // countdown beeps
+    if (world.state === "intro") {
+      const n = Math.ceil(INTRO_SECONDS - world.t);
+      if (n !== frame._lastBeep) { frame._lastBeep = n; sfx.count(Math.max(0, n - 1)); }
+    }
+  }
+  if (world.state !== prevState) {
+    if (world.state === "over") sfx.win();
+    prevState = world.state;
+  }
+  render(world);
+
+  // auto mode: hold on the winner screen a beat, then stop recording / signal done
+  if (world.state === "over") {
+    overHold += dtReal;
+    if (AUTO && overHold > 2.6 && !window.__WBA_DONE__) {
+      stopRecording();
+      window.__WBA_DONE__ = true;
+    }
+  }
+  requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+</script>
+</body>
+</html>

@@ -1,0 +1,22 @@
+# secrets — new channel's own credentials, never commit
+client_secrets.json
+youtube_token.json
+.env
+*.token.json
+
+# node
+node_modules/
+package-lock.json
+
+# generated media
+*.mp4
+*.webm
+*.jpg
+*.png
+!branding_*.png
+music/_openverse_temp.mp3
+
+# logs / os
+*.log
+.DS_Store
+Thumbs.db
