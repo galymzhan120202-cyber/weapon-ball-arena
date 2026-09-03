@@ -326,9 +326,12 @@ class World {
     this.pairCd = new Map();         // "i,j" -> cooldown
     this.sparks = [];
     this.rings = [];                 // expanding impact rings
+    this.shards = [];               // weapon-piece debris from a KO
+    this.confetti = [];            // winner-card confetti
     this.shakes = 0;
     this.flash = 0;
     this.hitstop = 0;               // brief freeze on big hits (juice)
+    this.slowmo = 0;               // seconds of slow-motion left (final-KO beat)
     this.zoom = 1;                  // render-side camera punch on finish
     this.callout = null;            // {txt, t} big screen callout
     this.killCount = 0; this.lastKillT = -9;
@@ -443,6 +446,10 @@ class World {
       this.sparks = this.sparks.filter(p => p.life > 0);
       for (const r of this.rings) { r.rr += r.spd * dt; r.life -= dt; }
       this.rings = this.rings.filter(r => r.life > 0);
+      for (const s of this.shards) { s.x += s.vx * dt; s.y += s.vy * dt; s.vy += 900 * dt; s.vx *= (1 - 0.6 * dt); s.rot += s.spin * dt; s.life -= dt; }
+      this.shards = this.shards.filter(s => s.life > 0);
+      for (const c of this.confetti) { c.x += c.vx * dt; c.y += c.vy * dt; c.vy += 120 * dt; c.rot += c.spin * dt; }
+      this.confetti = this.confetti.filter(c => c.y < H + 40);
       return;
     }
 
@@ -515,9 +522,17 @@ class World {
     this.flash = Math.max(0, this.flash - dt * 3);
     if (this.callout) { this.callout.t -= dt; if (this.callout.t <= 0) this.callout = null; }
 
-    // ---- win / timeout ----
+    // shards (KO debris)
+    for (const s of this.shards) {
+      s.x += s.vx * dt; s.y += s.vy * dt; s.vy += 900 * dt;
+      s.vx *= (1 - 0.6 * dt); s.rot += s.spin * dt; s.life -= dt;
+    }
+    this.shards = this.shards.filter(s => s.life > 0);
+
+    // ---- win / timeout ----  (hold off while the final-KO slow-mo plays;
+    // world.slowmo is counted down in real frame-time by tick())
     const alive = this.living();
-    if (alive.length <= 1 && this.t > BATTLE_MIN_SECONDS * 0.4) {
+    if (alive.length <= 1 && this.t > BATTLE_MIN_SECONDS * 0.4 && this.slowmo <= 0) {
       if (alive.length === 0) { this._finish(this._topHp(), true); this.finishText = "DOUBLE KO!"; }
       else this._finish(alive[0], true);
     } else if (this.t >= BATTLE_MAX_SECONDS) {
@@ -525,14 +540,36 @@ class World {
     }
   }
 
+  _shatter(f) {
+    const n = 11;
+    for (let i = 0; i < n; i++) {
+      const a = (i / n) * Math.PI * 2 + rnd(-0.4, 0.4), sp = rnd(120, 560);
+      this.shards.push({
+        x: f.x, y: f.y, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp - rnd(40, 200),
+        len: rnd(10, 26), rot: rnd(0, 6.28), spin: rnd(-14, 14),
+        life: rnd(0.7, 1.25), c: i % 4 ? f.tint : "#ffffff",
+      });
+    }
+  }
+
   _topHp() { return this.fighters.slice().sort((p, q) => q.hp - p.hp)[0]; }
 
   _finish(f, byKo) {
     this.state = "over"; this.t = 0; this.winner = f; this.flash = 1; this.shakes = 24;
-    this.callout = null;
+    this.callout = null; this.slowmo = 0;
     // clear any in-flight damage / tag popups so they don't freeze on the winner card
     for (const g of this.fighters) { g.dmgPopT = 0; g.eDmg = 0; g._tag = null; }
     this.zoom = 1.18;               // render-side punch-in on the winner, eases back
+    // confetti burst for the winner card
+    const cols = [this.theme.accent, "#ffd27a", "#ffffff", f ? f.tint : "#fff", "#5affa0"];
+    for (let i = 0; i < 46; i++) {
+      this.confetti.push({
+        x: rnd(0, W), y: rnd(-120, this.cy - 200),
+        vx: rnd(-60, 60), vy: rnd(40, 200),
+        w: rnd(6, 14), h: rnd(8, 20), rot: rnd(0, 6.28), spin: rnd(-8, 8),
+        c: cols[Math.floor(rng() * cols.length)],
+      });
+    }
     const clean = ["FLAWLESS!", "DOMINATION!", "UNTOUCHED!"];
     const comeback = ["COMEBACK WIN!", "CLUTCH!", "AGAINST ALL ODDS!"];
     if (byKo && f && f.hp > START_HP * 0.7) this.finishText = pick(clean);
@@ -544,8 +581,11 @@ class World {
     if (!f.alive) return;
     f.alive = false; f.hp = 0; f.chipHp = 0;
     if (killer && killer !== f && killer.alive) killer.kills++;
+    this._shatter(f);
     this.flash = Math.max(this.flash, 0.85); this.shakes = Math.max(this.shakes, 17);
     this.hitstop = Math.max(this.hitstop, 0.07);
+    // the deciding KO gets a real slow-motion beat before the winner card
+    if (this.living().length <= 1) { this.slowmo = 0.85; this._slowFocus = { x: f.x, y: f.y }; }
     this.rings.push({ x: f.x, y: f.y, rr: f._baseR, spd: 900, life: 0.5, c: "#fff" });
     for (let i = 0; i < 30; i++) {
       const a = rnd(0, Math.PI * 2), sp = rnd(60, 640);
@@ -1035,6 +1075,11 @@ function render(world) {
   if (world.zoom > 1.001 && world.winner) {
     const wx = world.winner.x, wy = world.winner.y;
     ctx.translate(wx, wy); ctx.scale(world.zoom, world.zoom); ctx.translate(-wx, -wy);
+  } else if (world.slowmo > 0 && world._slowFocus) {
+    // gentle push-in on the killing blow during the slow-mo beat
+    const k = 1 + 0.16 * Math.min(1, (0.85 - world.slowmo) * 3);
+    const fx = world._slowFocus.x, fy = world._slowFocus.y;
+    ctx.translate(fx, fy); ctx.scale(k, k); ctx.translate(-fx, -fy);
   }
   if (world.shakes > 0.4) ctx.translate(rnd(-1, 1) * world.shakes, rnd(-1, 1) * world.shakes);
 
@@ -1113,6 +1158,17 @@ function render(world) {
   }
   ctx.globalAlpha = 1;
 
+  // KO shards (weapon debris)
+  for (const s of world.shards) {
+    ctx.save();
+    ctx.globalAlpha = Math.max(0, Math.min(1, s.life * 1.6));
+    ctx.translate(s.x, s.y); ctx.rotate(s.rot);
+    ctx.strokeStyle = s.c; ctx.lineWidth = 4; ctx.lineCap = "round";
+    ctx.beginPath(); ctx.moveTo(-s.len / 2, 0); ctx.lineTo(s.len / 2, 0); ctx.stroke();
+    ctx.restore();
+  }
+  ctx.globalAlpha = 1;
+
   // fighters
   for (const f of world.fighters) if (f.alive) drawWeaponBall(f, world);
 
@@ -1120,6 +1176,14 @@ function render(world) {
   if (world.flash > 0.02) { ctx.fillStyle = `rgba(255,255,255,${Math.min(0.6, world.flash * 0.5)})`; ctx.fillRect(-W, -H, W * 3, H * 3); }
 
   ctx.restore();
+
+  // confetti (winner card) — above the camera transform so it fills the frame
+  for (const c of world.confetti) {
+    ctx.save();
+    ctx.translate(c.x, c.y); ctx.rotate(c.rot);
+    ctx.fillStyle = c.c; ctx.fillRect(-c.w / 2, -c.h / 2, c.w, c.h);
+    ctx.restore();
+  }
 
   // vignette (cinematic edge darkening, above the camera transform)
   const vg = ctx.createRadialGradient(W / 2, world.cy, H * 0.30, W / 2, world.cy, H * 0.74);
@@ -1271,25 +1335,33 @@ function drawHud(world) {
 
   // winner card
   if (world.state === "over" && world.winner) {
+    const wn = world.winner;
     const inT = Math.min(1, world.t * 2.2);
     ctx.save(); ctx.globalAlpha = inT;
-    ctx.fillStyle = "rgba(0,0,0,.5)"; ctx.fillRect(0, world.cy - 250, W, 520);
+    ctx.fillStyle = "rgba(0,0,0,.5)"; ctx.fillRect(0, world.cy - 250, W, 540);
     ctx.textAlign = "center";
     fitFont(world.finishText, "800", 58, W - 120); ctx.fillStyle = th.accent;
-    ctx.fillText(world.finishText, W / 2, world.cy - 80);
-    fitFont(world.winner.name.toUpperCase(), "800", 104, W - 110); ctx.fillStyle = "#fff";
-    ctx.fillText(world.winner.name.toUpperCase(), W / 2, world.cy + 32);
-    ctx.font = "bold 40px Segoe UI, sans-serif"; ctx.fillStyle = "#ffd27a";
-    ctx.fillText("WINNER", W / 2, world.cy + 100);
+    ctx.fillText(world.finishText, W / 2, world.cy - 90);
+    fitFont(wn.name.toUpperCase(), "800", 104, W - 110); ctx.fillStyle = "#fff";
+    ctx.fillText(wn.name.toUpperCase(), W / 2, world.cy + 22);
+    ctx.font = "bold 38px Segoe UI, sans-serif"; ctx.fillStyle = "#ffd27a";
+    ctx.fillText("WINNER", W / 2, world.cy + 84);
+    // stat line — kills · HP left · (mutator)
+    const bits = [];
+    if (wn.kills > 0) bits.push(wn.kills + (wn.kills === 1 ? " KO" : " KOs"));
+    bits.push(Math.max(0, Math.ceil(wn.hp)) + " / " + Math.round(wn.maxHp) + " HP");
+    if (world.mutator) bits.push(world.mutator.name);
+    ctx.font = "600 30px Segoe UI, sans-serif"; ctx.fillStyle = "rgba(255,255,255,.82)";
+    ctx.fillText(bits.join("   ·   "), W / 2, world.cy + 138);
     ctx.restore();
     if (AUTO) {
       ctx.globalAlpha = Math.max(0, Math.min(1, (world.t - 0.6) * 2));
       ctx.textAlign = "center"; ctx.font = "800 44px Segoe UI, sans-serif"; ctx.fillStyle = "#fff";
-      ctx.fillText("▶ SUBSCRIBE — new fight every day", W / 2, world.cy + 210);
+      ctx.fillText("▶ SUBSCRIBE — new fight every day", W / 2, world.cy + 216);
       ctx.globalAlpha = 1;
     } else {
       ctx.textAlign = "center"; ctx.font = "26px Segoe UI, sans-serif"; ctx.fillStyle = "rgba(255,255,255,.7)";
-      ctx.fillText("press R  ·  tap to fight again", W / 2, world.cy + 180);
+      ctx.fillText("press R  ·  tap to fight again", W / 2, world.cy + 190);
     }
   }
 }
@@ -1451,6 +1523,11 @@ function tick() {
   if (world.hitstop > 0) {
     world.hitstop -= 1 / FPS;                 // freeze the sim, keep drawing (juice)
     world.clock += 1 / FPS;                   // ...but output time still advances (keeps audio log in sync)
+  } else if (world.slowmo > 0) {
+    // final-KO slow motion — one small sim step per frame (~3.5x slower)
+    world.slowmo -= 1 / FPS;                  // count down in REAL time
+    world.step(DT * (2 / 7), input);
+    world.clock += 1 / FPS - DT * (2 / 7);    // top clock back up so audio stays aligned
   } else {
     for (let s = 0; s < STEPS_PER_FRAME; s++) {
       world.step(DT, input);
@@ -1498,6 +1575,9 @@ function framePlay(now) {        // playable: wall-clock accumulator
   if (world.state === "menu") { world._stepAmbient(dtReal); render(world); return requestAnimationFrame(framePlay); }
   if (world.hitstop > 0) {
     world.hitstop -= dtReal; acc = 0;
+  } else if (world.slowmo > 0) {
+    world.slowmo -= dtReal; acc = 0;
+    world.step(dtReal * (2 / 7), input);
   } else {
     acc += dtReal;
     let steps = 0;
