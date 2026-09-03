@@ -37,6 +37,8 @@ jobs:
           touch _site/.nojekyll
 
       - uses: actions/configure-pages@v5
+        with:
+          enablement: true          # turn Pages on the first time this runs
       - uses: actions/upload-pages-artifact@v3
         with:
           path: _site
