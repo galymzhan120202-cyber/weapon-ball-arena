@@ -275,9 +275,14 @@ D:\weapon-ball-arena\
    - `WBA_CLIENT_SECRETS_JSON` = `client_secrets.json` мазмұны
    - `WBA_YOUTUBE_TOKEN_JSON` = `youtube_token.json` мазмұны
    (`WBA_TELEGRAM_NOTIFY_*` — ✅ орнатылған.)
-7. GitHub → Settings → Pages → Source: **GitHub Actions**. `pages.yml` іске
-   қосылады, ойнатылатын нұсқа
-   `https://galymzhan120202-cyber.github.io/weapon-ball-arena/` болады.
+7. **Ойнатылатын нұсқаны хостинг.** GitHub Pages тек public репо немесе
+   ақылы жоспарда жұмыс істейді — қазіргі private + free-те өшірулі.
+   Таңдау:
+   (а) репоны **public** жасау (sibling боттар да public) → Settings → Pages
+       → Source: GitHub Actions → `pages.yml`-дегі `push:` триггерін қайтару.
+   (ә) private қалдырып, **itch.io / Netlify / Cloudflare Pages**-ке салу
+       (үшеуі де тегін, `index.html` + `thumb.html` + `branding.html`).
+   URL шешілген соң `upload/meta.js`-тегі `playUrl` default-ын жаңарту.
 
 ### 9.4 Тексеру
 8. Actions → "Director" → Run workflow, **dry_run: true** — рендер+артефакт
