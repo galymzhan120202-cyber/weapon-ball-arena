@@ -163,6 +163,7 @@ let   FRICTION_MULT = 1;       // mutator: scales material friction
 let   REGEN_PER_SEC = 0;       // mutator: HP regenerated per second while alive
 let   HIT_COOLDOWN_MULT = 1;   // weapon identity: faster/slower re-hit
 let   KNOCKBACK_MULT = 1;      // weapon identity: heavier shove on hit
+let   DRAG = 0.18;             // per-second velocity damping (ICE hazard lowers it)
 
 // ---------------------------------------------------------------------
 // Arena themes (ported subset)
@@ -247,6 +248,21 @@ const PICKUP = {
 const PICKUP_IDS = Object.keys(PICKUP);
 const PICKUPS_ON = Q.get("pickups") !== "0";
 const pickRng = mulberry32(hashStr(SEED + "pickup"));
+
+// ---------------------------------------------------------------------
+// ARENA HAZARDS — one per theme (rolled ~58%). Visual variety + swing
+// moments so 90 fights a month don't blur together. Seed-driven.
+// ---------------------------------------------------------------------
+const THEME_HAZARD = {
+  "Lava Pit": "pit", "Volcanic Forge": "pit", "Radioactive Waste": "pit",
+  "Cyber Grid": "pegs", "Neon City": "pegs", "Midnight Arena": "pegs",
+  "Toxic Lab": "saw", "Deep Space": "saw", "Golden Temple": "saw",
+  "Storm Clouds": "wind", "Desert Dunes": "wind", "Sunset Coliseum": "wind",
+  "Ice Cave": "ice", "Frozen Peak": "ice",
+};
+const HAZARD_NAME = { pit: "LAVA PIT", pegs: "BUMPERS", saw: "SAW BLADE", wind: "CROSSWIND", ice: "ICE FLOOR" };
+const HAZARDS_ON = Q.get("hz") !== "0";
+const hazRng = mulberry32(hashStr(SEED + "hazard"));
 
 // ---------------------------------------------------------------------
 // small vec + color helpers
@@ -409,6 +425,38 @@ class World {
 
     // let a mutator reshape the fighters now that they exist
     if (MUT && MUT.world) MUT.world(this);
+
+    // ---- arena hazard ----
+    this.hazard = null;
+    if (HAZARDS_ON) {
+      const forced = Q.get("hz");
+      if (forced != null) this.hazard = forced === "0" ? null : forced;
+      else if (hazRng() < 0.58) this.hazard = THEME_HAZARD[this.theme.name] || null;
+    }
+    this._initHazard();
+  }
+
+  _initHazard() {
+    this.haz = {};
+    const R0 = this.arenaR0;
+    if (this.hazard === "pit") {
+      this.haz.pitR = R0 * 0.24;
+    } else if (this.hazard === "pegs") {
+      this.haz.pegs = [];
+      const n = 7;
+      for (let i = 0; i < n; i++) {
+        const ang = (i / n) * Math.PI * 2 + hazRng() * 1.2;
+        const rad = R0 * (0.28 + hazRng() * 0.36);
+        this.haz.pegs.push({ x: this.cx + Math.cos(ang) * rad, y: this.cy + Math.sin(ang) * rad, r: 22 });
+      }
+    } else if (this.hazard === "saw") {
+      this.haz.saw = { a: hazRng() * Math.PI, phase: hazRng() * 6.28, speed: 1.5 + hazRng() * 0.7, span: R0 * 0.86, r: 34, rot: 0 };
+    } else if (this.hazard === "wind") {
+      this.haz.wind = { a: hazRng() * Math.PI * 2, turn: (hazRng() - 0.5) * 0.5, force: 520, streaks: [] };
+      for (let i = 0; i < 26; i++) this.haz.wind.streaks.push({ x: rng() * W, y: rng() * H, len: rnd(18, 44) });
+    } else if (this.hazard === "ice") {
+      DRAG = 0.055; FRICTION_MULT *= 0.4;
+    }
   }
 
   living() { return this.fighters.filter(f => f.alive); }
@@ -479,7 +527,7 @@ class World {
       f.angle += f.spin * dt;
       f.spin *= (1 - 0.35 * dt);
       // mild drag so fights don't runaway-accelerate
-      f.vx *= (1 - 0.18 * dt); f.vy *= (1 - 0.18 * dt);
+      f.vx *= (1 - DRAG * dt); f.vy *= (1 - DRAG * dt);
       f.hitFlash = Math.max(0, f.hitFlash - dt * 4);
       f.scale += (1 - f.scale) * Math.min(1, dt * 12);
       if (f.dmgPopT > 0) f.dmgPopT -= dt;
@@ -506,6 +554,9 @@ class World {
 
     // ---- pickups ----
     this._stepPickups(dt);
+
+    // ---- arena hazard ----
+    if (this.hazard) this._stepHazard(dt);
 
     // ---- storm (outside-arena chip damage) ----
     for (const f of this.living()) {
@@ -859,6 +910,66 @@ class World {
     else if (id === "bomb")    { f.buff = { id, name: T.name, t: 10 }; }
   }
 
+  _sawPos() {
+    const s = this.haz.saw;
+    const off = Math.sin(s.phase) * s.span;
+    return { x: this.cx + Math.cos(s.a) * off, y: this.cy + Math.sin(s.a) * off };
+  }
+
+  _stepHazard(dt) {
+    const L = this.living();
+    if (this.hazard === "pit") {
+      const pr = this.haz.pitR;
+      for (const f of L) {
+        if (len(f.x - this.cx, f.y - this.cy) < pr + f._baseR * 0.3) {
+          f.hp -= 11 * dt; f.hitFlash = Math.max(f.hitFlash, 0.4);
+          const [ox, oy] = norm((f.x - this.cx) || 0.01, (f.y - this.cy) || 0.01);
+          f.vx += ox * 260 * dt; f.vy += oy * 260 * dt;
+          if (this.t % 0.2 < dt) this._spark(f.x, f.y, "#ff7a2f", 4);
+          if (f.hp <= 0) this._kill(f);
+        }
+      }
+    } else if (this.hazard === "pegs") {
+      for (const f of L) {
+        for (const p of this.haz.pegs) {
+          const dx = f.x - p.x, dy = f.y - p.y, d = len(dx, dy) || 0.01, rr = f._baseR + p.r;
+          if (d < rr) {
+            const [nx, ny] = [dx / d, dy / d];
+            f.x = p.x + nx * rr; f.y = p.y + ny * rr;
+            const vn = f.vx * nx + f.vy * ny;
+            if (vn < 0) { f.vx -= 1.85 * vn * nx; f.vy -= 1.85 * vn * ny; f.spin += rnd(-4, 4); }
+            this._spark(f.x, f.y, this.theme.accent, 5);
+          }
+        }
+      }
+    } else if (this.hazard === "saw") {
+      const s = this.haz.saw;
+      s.phase += s.speed * dt; s.rot += 18 * dt;
+      const sp = this._sawPos();
+      for (const f of L) {
+        const d = len(f.x - sp.x, f.y - sp.y);
+        if (d < f._baseR + s.r) {
+          f.hp -= 20 * dt; f.hitFlash = 1; f.scale = 1.15;
+          const [nx, ny] = norm((f.x - sp.x) || 0.01, (f.y - sp.y) || 0.01);
+          f.vx += nx * 1600 * dt; f.vy += ny * 1600 * dt; f.spin += rnd(-6, 6);
+          this._spark(f.x, f.y, "#ffd27a", 6);
+          this.shakes = Math.max(this.shakes, 6);
+          if (f.hp <= 0) this._kill(f);
+        }
+      }
+    } else if (this.hazard === "wind") {
+      const w = this.haz.wind;
+      w.a += w.turn * dt;
+      const fx = Math.cos(w.a), fy = Math.sin(w.a);
+      for (const f of L) { f.vx += fx * w.force * dt; f.vy += fy * w.force * dt; }
+      for (const st of w.streaks) {
+        st.x += fx * 260 * dt; st.y += fy * 260 * dt;
+        if (st.x < -50) st.x = W + 50; else if (st.x > W + 50) st.x = -50;
+        if (st.y < -50) st.y = H + 50; else if (st.y > H + 50) st.y = -50;
+      }
+    }
+  }
+
   _explode(x, y, src) {
     this.flash = Math.max(this.flash, 0.95); this.shakes = Math.max(this.shakes, 26);
     this.hitstop = Math.max(this.hitstop, 0.06);
@@ -1066,6 +1177,54 @@ function fitFont(text, weight, px, maxW) {
   return size;
 }
 
+function drawHazard(world) {
+  const th = world.theme, H4 = world.haz;
+  if (world.hazard === "pit") {
+    const pr = H4.pitR * (1 + 0.03 * Math.sin(world.t * 4));
+    const g = ctx.createRadialGradient(world.cx, world.cy, pr * 0.2, world.cx, world.cy, pr);
+    g.addColorStop(0, "rgba(255,150,60,0.85)"); g.addColorStop(0.6, "rgba(200,40,20,0.6)"); g.addColorStop(1, "rgba(120,10,10,0.05)");
+    ctx.fillStyle = g; ctx.beginPath(); ctx.arc(world.cx, world.cy, pr, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = "rgba(255,120,40,0.7)"; ctx.lineWidth = 4;
+    ctx.beginPath(); ctx.arc(world.cx, world.cy, pr, 0, Math.PI * 2); ctx.stroke();
+  } else if (world.hazard === "pegs") {
+    for (const p of H4.pegs) {
+      const gg = ctx.createRadialGradient(p.x - 6, p.y - 6, 2, p.x, p.y, p.r);
+      gg.addColorStop(0, "#ffffff"); gg.addColorStop(0.4, th.accent); gg.addColorStop(1, shade(th.accent, -0.5));
+      ctx.fillStyle = gg; ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2); ctx.fill();
+      ctx.strokeStyle = "rgba(255,255,255,.35)"; ctx.lineWidth = 2; ctx.stroke();
+    }
+  } else if (world.hazard === "saw") {
+    const s = H4.saw, sp = world._sawPos();
+    ctx.save(); ctx.translate(sp.x, sp.y); ctx.rotate(s.rot);
+    ctx.fillStyle = "#c9ccd4";
+    for (let i = 0; i < 10; i++) {
+      ctx.rotate(Math.PI / 5);
+      ctx.beginPath(); ctx.moveTo(s.r - 4, -6); ctx.lineTo(s.r + 10, 0); ctx.lineTo(s.r - 4, 6); ctx.closePath(); ctx.fill();
+    }
+    ctx.beginPath(); ctx.arc(0, 0, s.r, 0, Math.PI * 2);
+    ctx.fillStyle = "#8b9099"; ctx.fill();
+    ctx.beginPath(); ctx.arc(0, 0, s.r * 0.35, 0, Math.PI * 2);
+    ctx.fillStyle = "#3a3d44"; ctx.fill();
+    ctx.restore();
+    // track line
+    ctx.strokeStyle = "rgba(255,255,255,.12)"; ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(world.cx - Math.cos(s.a) * s.span, world.cy - Math.sin(s.a) * s.span);
+    ctx.lineTo(world.cx + Math.cos(s.a) * s.span, world.cy + Math.sin(s.a) * s.span);
+    ctx.stroke();
+  } else if (world.hazard === "wind") {
+    const w = H4.wind;
+    ctx.strokeStyle = "rgba(200,222,255,.26)"; ctx.lineWidth = 2.5; ctx.lineCap = "round";
+    for (const st of w.streaks) {
+      ctx.beginPath(); ctx.moveTo(st.x, st.y);
+      ctx.lineTo(st.x - Math.cos(w.a) * st.len * 1.6, st.y - Math.sin(w.a) * st.len * 1.6); ctx.stroke();
+    }
+  } else if (world.hazard === "ice") {
+    ctx.fillStyle = "rgba(150,220,255,0.05)";
+    ctx.beginPath(); ctx.arc(world.cx, world.cy, world.arenaR, 0, Math.PI * 2); ctx.fill();
+  }
+}
+
 function render(world) {
   const th = world.theme;
 
@@ -1112,6 +1271,9 @@ function render(world) {
   ctx.strokeStyle = th.accent; ctx.lineWidth = 5; ctx.globalAlpha = 0.9; ctx.stroke();
   ctx.lineWidth = 14; ctx.globalAlpha = 0.12; ctx.stroke();
   ctx.globalAlpha = 1;
+
+  // arena hazard
+  if (world.hazard) drawHazard(world);
 
   // pickup orbs
   for (const p of world.pickups) {
@@ -1215,21 +1377,24 @@ function drawHud(world) {
     ctx.fillText((AUTO && !DEBUG) ? th.name : th.name + "   ·   seed " + SEED, W / 2, 104);
   }
 
-  // mutator chip — always on while a mutator is live (under the theme name)
-  if (world.mutator && world.state !== "menu") {
-    const m = world.mutator;
-    ctx.textAlign = "center"; ctx.font = "800 26px Segoe UI, sans-serif";
-    const label = "⚡ " + m.name;
-    const w = ctx.measureText(label).width + 40;
-    ctx.fillStyle = m.tint; ctx.globalAlpha = 0.16;
-    ctx.beginPath(); ctx.roundRect(W / 2 - w / 2, 118, w, 40, 20); ctx.fill();
-    ctx.globalAlpha = 1; ctx.fillStyle = m.tint;
-    ctx.fillText(label, W / 2, 145);
-    // one-line blurb during the countdown so viewers know the rule
-    if (world.state === "intro" && world.t < 2.4) {
+  // rule chips — mutator and/or hazard, under the theme name
+  if (world.state !== "menu" && (world.mutator || world.hazard)) {
+    ctx.textAlign = "center";
+    const chip = (label, tint, cy) => {
+      ctx.font = "800 26px Segoe UI, sans-serif";
+      const w = ctx.measureText(label).width + 40;
+      ctx.fillStyle = tint; ctx.globalAlpha = 0.16;
+      ctx.beginPath(); ctx.roundRect(W / 2 - w / 2, cy - 27, w, 40, 20); ctx.fill();
+      ctx.globalAlpha = 1; ctx.fillStyle = tint;
+      ctx.fillText(label, W / 2, cy);
+    };
+    let cy = 145;
+    if (world.mutator) { chip("⚡ " + world.mutator.name, world.mutator.tint, cy); cy += 46; }
+    if (world.hazard)  { chip("⚠ " + HAZARD_NAME[world.hazard], world.theme.accent, cy); cy += 46; }
+    if (world.mutator && world.state === "intro" && world.t < 2.4) {
       ctx.globalAlpha = Math.min(1, (2.4 - world.t) * 1.5);
       ctx.font = "600 29px Segoe UI, sans-serif"; ctx.fillStyle = "#fff";
-      ctx.fillText(m.blurb, W / 2, 187);
+      ctx.fillText(world.mutator.blurb, W / 2, cy + 6);
       ctx.globalAlpha = 1;
     }
   }
@@ -1254,9 +1419,9 @@ function drawHud(world) {
     return;
   }
 
-  // HP bars (pushed down a little when the mutator chip is showing)
+  // HP bars (pushed down for each rule chip shown above them)
   const bw = W - 160, x0 = 80;
-  let y = world.mutator ? 236 : 148;
+  let y = 148 + (world.mutator ? 66 : 0) + (world.hazard ? 46 : 0);
   for (const f of world.fighters) {
     const frac = Math.max(0, Math.min(1, f.hp / f.maxHp));
     const chip = Math.max(0, Math.min(1, f.chipHp / f.maxHp));
@@ -1519,6 +1684,8 @@ window.__WBA_META__ = () => ({
   winnerKills: world.winner ? (world.winner.kills || 0) : null,
   mutator: MUT ? MUT.name : null,
   mutatorId: MUT ? MUT.id : null,
+  hazard: world.hazard ? HAZARD_NAME[world.hazard] : null,
+  hazardId: world.hazard || null,
   pickups: world.pickupLog || [],
   finishText: world.finishText, hits: world.hits, n: world.n,
 });
