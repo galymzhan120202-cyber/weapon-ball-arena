@@ -13,8 +13,10 @@ package-lock.json
 *.webm
 *.jpg
 *.png
+*.h264
 !branding_*.png
 music/_openverse_temp.mp3
+out/                      # headless recorder output
 
 # logs / os
 *.log
