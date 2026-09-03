@@ -28,7 +28,7 @@
 </head>
 <body>
 <div id="wrap"><canvas id="c" width="1080" height="1920"></canvas></div>
-<div id="hint">TAP / HOLD to thrust &nbsp;·&nbsp; aim with pointer &nbsp;·&nbsp; R restart &nbsp;·&nbsp; ?auto=1 for director mode</div>
+<div id="hint">TAP / HOLD to thrust &nbsp;·&nbsp; aim with the pointer &nbsp;·&nbsp; R to restart</div>
 <a id="dl" download="weapon-ball-arena.webm">⬇ Download clip</a>
 <script>
 "use strict";
@@ -431,6 +431,8 @@ class World {
   _finish(f, byKo) {
     this.state = "over"; this.t = 0; this.winner = f; this.flash = 1; this.shakes = 24;
     this.callout = null;
+    // clear any in-flight damage / tag popups so they don't freeze on the winner card
+    for (const g of this.fighters) { g.dmgPopT = 0; g.eDmg = 0; g._tag = null; }
     this.zoom = 1.18;               // render-side punch-in on the winner, eases back
     const clean = ["FLAWLESS!", "DOMINATION!", "UNTOUCHED!"];
     const comeback = ["COMEBACK WIN!", "CLUTCH!", "AGAINST ALL ODDS!"];
@@ -740,14 +742,14 @@ function drawWeaponBall(f, world) {
   if (f.dmgPopT > 0 && f.eDmg > 0) {
     ctx.save();
     ctx.globalAlpha = Math.min(1, f.dmgPopT * 2);
-    ctx.fillStyle = "#ffd27a"; ctx.font = "bold 40px Segoe UI";
+    ctx.fillStyle = "#ffd27a"; ctx.font = "bold 40px Segoe UI, sans-serif";
     ctx.textAlign = "center";
     ctx.fillText("-" + f.eDmg, f.x, f.y - r - 18 - (0.7 - f.dmgPopT) * 60);
     ctx.restore();
   }
   if (f._tag && f._tag.t > 0) {
     ctx.save(); ctx.globalAlpha = Math.min(1, f._tag.t * 1.5);
-    ctx.fillStyle = "#fff"; ctx.font = "bold 34px Segoe UI"; ctx.textAlign = "center";
+    ctx.fillStyle = "#fff"; ctx.font = "bold 34px Segoe UI, sans-serif"; ctx.textAlign = "center";
     ctx.fillText(f._tag.txt, f.x, f.y - r - 60);
     ctx.restore();
     f._tag.t -= 1 / FPS;
@@ -813,6 +815,17 @@ function shade(hex, amt) {
   if (amt < 0) { r *= (1 + amt); g *= (1 + amt); b *= (1 + amt); }
   else { r += (255 - r) * amt; g += (255 - g) * amt; b += (255 - b) * amt; }
   return `rgb(${r | 0},${g | 0},${b | 0})`;
+}
+
+// set ctx.font to the largest "<weight> <px>px" that fits `text` in `maxW`
+function fitFont(text, weight, px, maxW) {
+  let size = px;
+  do {
+    ctx.font = weight + " " + size + "px Segoe UI, sans-serif";
+    if (ctx.measureText(text).width <= maxW) break;
+    size -= 4;
+  } while (size > 16);
+  return size;
 }
 
 function render(world) {
@@ -899,12 +912,15 @@ function countdownLabel(t) {
 function drawHud(world) {
   const th = world.theme;
 
-  // title
-  ctx.textAlign = "center";
-  ctx.fillStyle = "rgba(255,255,255,.92)"; ctx.font = "800 44px Segoe UI, sans-serif";
-  ctx.fillText("WEAPON BALL ARENA", W / 2, 72);
-  ctx.font = "22px Segoe UI, sans-serif"; ctx.fillStyle = th.accent;
-  ctx.fillText(th.name + "   ·   seed " + SEED, W / 2, 104);
+  // title (the menu screen draws its own hero title, so skip it there)
+  if (world.state !== "menu") {
+    ctx.textAlign = "center";
+    ctx.fillStyle = "rgba(255,255,255,.92)"; ctx.font = "800 44px Segoe UI, sans-serif";
+    ctx.fillText("WEAPON BALL ARENA", W / 2, 72);
+    ctx.font = "22px Segoe UI, sans-serif"; ctx.fillStyle = th.accent;
+    // seed is a dev detail — keep it off the recorded frames unless ?debug=1
+    ctx.fillText((AUTO && !DEBUG) ? th.name : th.name + "   ·   seed " + SEED, W / 2, 104);
+  }
 
   // ---------- menu ----------
   if (world.state === "menu") {
@@ -1001,19 +1017,19 @@ function drawHud(world) {
   if (world.state === "over" && world.winner) {
     const inT = Math.min(1, world.t * 2.2);
     ctx.save(); ctx.globalAlpha = inT;
-    ctx.fillStyle = "rgba(0,0,0,.5)"; ctx.fillRect(0, world.cy - 250, W, 500);
+    ctx.fillStyle = "rgba(0,0,0,.5)"; ctx.fillRect(0, world.cy - 250, W, 520);
     ctx.textAlign = "center";
-    ctx.font = "800 58px Segoe UI, sans-serif"; ctx.fillStyle = th.accent;
+    fitFont(world.finishText, "800", 58, W - 120); ctx.fillStyle = th.accent;
     ctx.fillText(world.finishText, W / 2, world.cy - 80);
-    ctx.font = "800 104px Segoe UI, sans-serif"; ctx.fillStyle = "#fff";
+    fitFont(world.winner.name.toUpperCase(), "800", 104, W - 110); ctx.fillStyle = "#fff";
     ctx.fillText(world.winner.name.toUpperCase(), W / 2, world.cy + 32);
     ctx.font = "bold 40px Segoe UI, sans-serif"; ctx.fillStyle = "#ffd27a";
     ctx.fillText("WINNER", W / 2, world.cy + 100);
     ctx.restore();
     if (AUTO) {
       ctx.globalAlpha = Math.max(0, Math.min(1, (world.t - 0.6) * 2));
-      ctx.textAlign = "center"; ctx.font = "800 46px Segoe UI, sans-serif"; ctx.fillStyle = "#fff";
-      ctx.fillText("▶ SUBSCRIBE — new fight every day", W / 2, world.cy + 200);
+      ctx.textAlign = "center"; ctx.font = "800 44px Segoe UI, sans-serif"; ctx.fillStyle = "#fff";
+      ctx.fillText("▶ SUBSCRIBE — new fight every day", W / 2, world.cy + 210);
       ctx.globalAlpha = 1;
     } else {
       ctx.textAlign = "center"; ctx.font = "26px Segoe UI, sans-serif"; ctx.fillStyle = "rgba(255,255,255,.7)";
