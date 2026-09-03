@@ -5,12 +5,19 @@
    Renders one director-mode match to an mp4, deterministically from its
    seed. Drives the game's own window.__WBA_TICK__() hook one output
    frame at a time (so the browser's requestAnimationFrame throttling
-   cannot slow or desync the match), screenshots the canvas each frame,
-   and pipes the frames straight into ffmpeg.
+   cannot slow or desync the match). Two video encoders:
+     - default: the page runs its own WebCodecs H.264 encoder; we pull
+       the Annex-B stream and ffmpeg stream-copies it to mp4 (fast).
+     - --mode=screenshot: screenshot every frame, pipe JPEGs to ffmpeg
+       (fallback; also used automatically when WebCodecs is missing).
+   Then record/audio.js synthesizes a matching soundtrack from the
+   game's audio-event log and ffmpeg muxes it in.
 
    Usage:
      node record.js [--seed=N] [--out=path.mp4] [--fps=60]
-                    [--max-seconds=60] [--keep-json] [--verbose]
+                    [--max-seconds=60] [--mode=screenshot] [--batch=15]
+                    [--no-audio] [--no-music] [--keep-wav]
+                    [--keep-frames] [--keep-json] [--no-json] [--verbose]
 
    Env overrides:
      FFMPEG_PATH                  path to ffmpeg (default: "ffmpeg" on PATH)
@@ -18,7 +25,8 @@
                                   bundled Chromium
 
    Output:
-     <out>.mp4   H.264 / yuv420p, 1080x1920, <fps> fps, +faststart
+     <out>.mp4   H.264 / yuv420p, 1080x1920, <fps> fps, +faststart,
+                 AAC soundtrack unless --no-audio
      <out>.json  match metadata (winner, matchup, theme, hp, hits) for
                  the uploader — unless you skip it; --keep-json forces it
    ===================================================================== */
@@ -29,6 +37,7 @@ const os = require("os");
 const path = require("path");
 const http = require("http");
 const { spawn } = require("child_process");
+const { renderWav } = require("./audio");
 
 const GAME_DIR = path.resolve(__dirname, "..");
 const MIME = { ".html": "text/html", ".js": "text/javascript", ".css": "text/css", ".json": "application/json" };
@@ -49,6 +58,9 @@ function parseArgs(argv) {
     else if (k === "mode") a.mode = v;                 // "webcodecs" (default) | "screenshot"
     else if (k === "batch") a.batch = Math.max(1, parseInt(v, 10) || 15);
     else if (k === "keep-frames") a.keepFrames = true; // keep the intermediate .h264
+    else if (k === "no-audio") a.noAudio = true;       // render a silent mp4
+    else if (k === "no-music") a.noMusic = true;       // sfx only, no music bed
+    else if (k === "keep-wav") a.keepWav = true;       // keep the intermediate .wav
     else if (k === "verbose") a.verbose = true;
     else if (k === "help") a.help = true;
   }
@@ -61,8 +73,15 @@ const SEED = args.seed != null ? args.seed : (Math.random() * 2 ** 31) >>> 0;
 const FPS = args.fps;
 const MAX_FRAMES = Math.round(args.maxSeconds * FPS);
 const OUT = path.resolve(args.out || path.join(GAME_DIR, "out", `wba_${SEED}.mp4`));
-const JSON_OUT = OUT.replace(/\.mp4$/i, "") + ".json";
+const STEM = OUT.replace(/\.mp4$/i, "");
+const JSON_OUT = STEM + ".json";
+const WAV_OUT = STEM + ".wav";
+const SILENT_OUT = STEM + ".silent.mp4";
 const FFMPEG = process.env.FFMPEG_PATH || "ffmpeg";
+const WITH_AUDIO = !args.noAudio;
+// while a soundtrack is wanted, ffmpeg renders video to a temp file and a
+// second pass muxes in the WAV; the finished mp4 still lands exactly at OUT.
+const VID_OUT = WITH_AUDIO ? SILENT_OUT : OUT;
 
 const log = (...m) => console.log(...m);
 const vlog = (...m) => { if (args.verbose) console.log(...m); };
@@ -167,7 +186,7 @@ function checkFfmpeg() {
       // (~80ms) dwarfs a tick (sim+render+VideoFrame ~3ms), so 1 call/frame
       // was the real bottleneck. The encoder still captures every frame.
       const BATCH = args.batch || 15;
-      const h264Path = OUT.replace(/\.mp4$/i, "") + ".h264";
+      const h264Path = STEM + ".h264";
       const h264 = fs.createWriteStream(h264Path);
       const drain = async () => {
         for (;;) {
@@ -193,7 +212,7 @@ function checkFfmpeg() {
       ff = spawn(FFMPEG, [
         "-y", "-loglevel", args.verbose ? "info" : "error",
         "-fflags", "+genpts", "-r", String(FPS), "-f", "h264", "-i", h264Path,
-        "-c:v", "copy", "-movflags", "+faststart", OUT,
+        "-c:v", "copy", "-movflags", "+faststart", VID_OUT,
       ], { stdio: ["ignore", "inherit", "inherit"] });
       await ffmpegExit(ff);
       if (!args.keepFrames) fs.unlinkSync(h264Path);
@@ -205,7 +224,7 @@ function checkFfmpeg() {
         "-y", "-loglevel", args.verbose ? "info" : "error",
         "-f", "image2pipe", "-framerate", String(FPS), "-i", "pipe:0",
         "-c:v", "libx264", "-pix_fmt", "yuv420p", "-preset", "veryfast", "-crf", "20",
-        "-movflags", "+faststart", OUT,
+        "-movflags", "+faststart", VID_OUT,
       ], { stdio: ["pipe", "inherit", "inherit"] });
       ff.on("error", (e) => { throw e; });
       while (!done && frame < MAX_FRAMES) {
@@ -220,10 +239,36 @@ function checkFfmpeg() {
       await ffmpegExit(ff);
     }
 
+    // ---- soundtrack: synth sfx + music bed from the game's audio log ----
+    let hasAudio = false;
+    if (WITH_AUDIO) {
+      try {
+        const alog = await page.evaluate(() => window.__WBA_AUDIO_LOG__ && window.__WBA_AUDIO_LOG__());
+        const wav = renderWav({ log: alog, seed: SEED, music: !args.noMusic, duration: frame / FPS });
+        fs.writeFileSync(WAV_OUT, wav);
+        const mux = spawn(FFMPEG, [
+          "-y", "-loglevel", args.verbose ? "info" : "error",
+          "-i", VID_OUT, "-i", WAV_OUT,
+          "-c:v", "copy", "-c:a", "aac", "-b:a", "192k",
+          "-map", "0:v:0", "-map", "1:a:0", "-shortest",
+          "-movflags", "+faststart", OUT,
+        ], { stdio: ["ignore", "inherit", "inherit"] });
+        await ffmpegExit(mux);
+        hasAudio = true;
+        fs.unlinkSync(VID_OUT);
+        if (!args.keepWav) fs.unlinkSync(WAV_OUT);
+        log(`  audio: ${alog ? alog.events.length : 0} events${args.noMusic ? "" : " + music bed"} → AAC`);
+      } catch (e) {
+        console.error("  audio mix failed, keeping silent video:", e && e.message || e);
+        if (fs.existsSync(SILENT_OUT) && !fs.existsSync(OUT)) fs.renameSync(SILENT_OUT, OUT);
+      }
+    }
+
     const meta = await page.evaluate(() => window.__WBA_META__());
     meta.seed = SEED; meta.fps = FPS; meta.frames = frame; meta.durationSec = +(frame / FPS).toFixed(2);
     meta.truncated = !done;
     meta.encoder = useWC ? "webcodecs" : "screenshot";
+    meta.hasAudio = hasAudio;
     if (args.keepJson) fs.writeFileSync(JSON_OUT, JSON.stringify(meta, null, 2));
 
     const secs = ((Date.now() - t0) / 1000).toFixed(1);
@@ -234,6 +279,7 @@ function checkFfmpeg() {
   } catch (err) {
     console.error("✗ record failed:", err && err.message || err);
     try { if (ff && !ff.killed) { ff.stdin.end(); ff.kill("SIGKILL"); } } catch {}
+    for (const f of [SILENT_OUT, WAV_OUT, STEM + ".h264"]) { try { fs.unlinkSync(f); } catch {} }
     await browser.close().catch(() => {});
     srv.close();
     process.exit(1);
