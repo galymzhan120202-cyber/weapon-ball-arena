@@ -52,7 +52,11 @@ const RECORD    = Q.get("record") === "1";
 const SEED      = (Q.get("seed") != null) ? (parseInt(Q.get("seed"), 10) >>> 0)
                                           : (Math.random() * 2 ** 31) >>> 0;
 const FORCE_N   = Q.get("n") ? Math.max(2, Math.min(8, parseInt(Q.get("n"), 10))) : null;
-const PICK_LIST = Q.get("weapons") ? Q.get("weapons").split(",").map(s => s.trim().toLowerCase()) : null;
+// weapons: ?weapons=sword,axe  — or the thumbnail-style ?a=Sword&b=Axe
+//          (lets a pinned-comment vote pick the next matchup via the URL)
+const PICK_LIST = Q.get("weapons")
+  ? Q.get("weapons").split(",").map(s => s.trim().toLowerCase())
+  : (Q.get("a") && Q.get("b")) ? [Q.get("a").trim().toLowerCase(), Q.get("b").trim().toLowerCase()] : null;
 const MUTED     = AUTO ? (Q.get("sound") !== "1") : (Q.get("mute") === "1");
 const DEBUG     = Q.get("debug") === "1";   // show seed / dev details on screen
 
@@ -1311,6 +1315,19 @@ function drawHud(world) {
         ctx.fillText(f.name, f.x, f.y + f._baseR + 30);
       }
       ctx.globalAlpha = 1;
+    }
+
+    // "WHO WINS? — comment your pick" engagement beat (recorded runs only)
+    if (AUTO && world.t > 0.5 && world.t < INTRO_SECONDS) {
+      const a = Math.min(1, (world.t - 0.5) * 3) * Math.min(1, (INTRO_SECONDS - world.t) * 4);
+      ctx.save(); ctx.globalAlpha = a; ctx.textAlign = "center";
+      ctx.font = "800 56px Segoe UI, sans-serif"; ctx.fillStyle = th.accent;
+      ctx.fillText("WHO WINS?", W / 2, world.cy + 300);
+      ctx.font = "600 34px Segoe UI, sans-serif"; ctx.fillStyle = "rgba(255,255,255,.9)";
+      ctx.fillText(world.fighters.map(f => f.name).join("  vs  "), W / 2, world.cy + 350);
+      ctx.font = "700 30px Segoe UI, sans-serif"; ctx.fillStyle = "#ffd27a";
+      ctx.fillText("comment your pick ▼", W / 2, world.cy + 398);
+      ctx.restore();
     }
   }
 
