@@ -17,6 +17,7 @@
      node record.js [--seed=N] [--out=path.mp4] [--fps=60]
                     [--max-seconds=60] [--mode=screenshot] [--batch=15]
                     [--no-audio] [--no-music] [--keep-wav]
+                    [--no-thumb] [--thumb-reveal]
                     [--keep-frames] [--keep-json] [--no-json] [--verbose]
 
    Env overrides:
@@ -27,6 +28,7 @@
    Output:
      <out>.mp4   H.264 / yuv420p, 1080x1920, <fps> fps, +faststart,
                  AAC soundtrack unless --no-audio
+     <out>.jpg   1280x720 thumbnail (thumb.html) unless --no-thumb
      <out>.json  match metadata (winner, matchup, theme, hp, hits) for
                  the uploader — unless you skip it; --keep-json forces it
    ===================================================================== */
@@ -61,6 +63,8 @@ function parseArgs(argv) {
     else if (k === "no-audio") a.noAudio = true;       // render a silent mp4
     else if (k === "no-music") a.noMusic = true;       // sfx only, no music bed
     else if (k === "keep-wav") a.keepWav = true;       // keep the intermediate .wav
+    else if (k === "no-thumb") a.noThumb = true;       // skip the .jpg thumbnail
+    else if (k === "thumb-reveal") a.thumbReveal = true; // headline names the winner
     else if (k === "verbose") a.verbose = true;
     else if (k === "help") a.help = true;
   }
@@ -76,6 +80,7 @@ const OUT = path.resolve(args.out || path.join(GAME_DIR, "out", `wba_${SEED}.mp4
 const STEM = OUT.replace(/\.mp4$/i, "");
 const JSON_OUT = STEM + ".json";
 const WAV_OUT = STEM + ".wav";
+const JPG_OUT = STEM + ".jpg";
 const SILENT_OUT = STEM + ".silent.mp4";
 const FFMPEG = process.env.FFMPEG_PATH || "ffmpeg";
 const WITH_AUDIO = !args.noAudio;
@@ -185,7 +190,7 @@ function checkFfmpeg() {
       // Batch many ticks per page.evaluate call: the per-call CDP round-trip
       // (~80ms) dwarfs a tick (sim+render+VideoFrame ~3ms), so 1 call/frame
       // was the real bottleneck. The encoder still captures every frame.
-      const BATCH = args.batch || 15;
+      const BATCH = args.batch || 30;
       const h264Path = STEM + ".h264";
       const h264 = fs.createWriteStream(h264Path);
       const drain = async () => {
@@ -269,6 +274,29 @@ function checkFfmpeg() {
     meta.truncated = !done;
     meta.encoder = useWC ? "webcodecs" : "screenshot";
     meta.hasAudio = hasAudio;
+
+    // ---- thumbnail: open thumb.html with the real result, screenshot #c ----
+    if (!args.noThumb) {
+      try {
+        const f0 = meta.fighters[0], f1 = meta.fighters[1];
+        const win = meta.winner === (f0 && f0.name) ? "a" : meta.winner === (f1 && f1.name) ? "b" : "";
+        const tq = new URLSearchParams({ seed: String(SEED), a: f0.name, b: f1.name, theme: meta.theme });
+        if (win) tq.set("win", win);
+        if (win && args.thumbReveal) tq.set("reveal", "1");
+        const tp = await browser.newPage();
+        await tp.setViewport({ width: 1280, height: 720, deviceScaleFactor: 1 });
+        await tp.goto(`http://127.0.0.1:${port}/thumb.html?` + tq.toString(), { waitUntil: "load", timeout: 15000 });
+        await tp.waitForFunction("window.__WBA_THUMB_READY__ === true", { timeout: 8000 });
+        const el = await tp.$("#c");
+        await el.screenshot({ path: JPG_OUT, type: "jpeg", quality: 92 });
+        await tp.close();
+        meta.thumb = path.basename(JPG_OUT);
+        log(`  thumb: ${path.relative(process.cwd(), JPG_OUT)}`);
+      } catch (e) {
+        console.error("  thumbnail failed:", e && e.message || e);
+      }
+    }
+
     if (args.keepJson) fs.writeFileSync(JSON_OUT, JSON.stringify(meta, null, 2));
 
     const secs = ((Date.now() - t0) / 1000).toFixed(1);

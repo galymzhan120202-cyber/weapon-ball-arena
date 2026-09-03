@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Weapon Ball Arena — thumbnail</title>
+<style>
+  :root { color-scheme: dark; }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 100%; height: 100%; background: #05060a; overflow: hidden; }
+  #wrap { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; }
+  canvas { display: block; box-shadow: 0 0 60px rgba(0,0,0,.6); }
+</style>
+</head>
+<body>
+<div id="wrap"><canvas id="c" width="1280" height="720"></canvas></div>
+<script>
+"use strict";
+/* =====================================================================
+   Weapon Ball Arena — standalone thumbnail generator (1280x720)
+   ---------------------------------------------------------------------
+   Zero dependencies, no shared code with index.html (small copies of
+   the roster / theme tables live here so it renders on its own).
+
+   Params:
+     ?seed=N              pick the matchup + arena the same way a match would
+     ?a=Sword&b=Axe       force the two weapons by name or kind
+     ?theme=Blood Moon    force the arena theme by name
+     ?win=a | ?win=b      mark a winner (adds a gold ring; text stays "WHO WINS?")
+     ?reveal=1            replace "WHO WINS?" with the winner's name
+     ?tagline=...         override the bottom line
+
+   The headless recorder opens this with the real match result and
+   screenshots #c to <stem>.jpg.
+   ===================================================================== */
+const Q = new URLSearchParams(location.search);
+const W = 1280, H = 720;
+const cv = document.getElementById("c"), ctx = cv.getContext("2d");
+function fit() { const s = Math.min(innerWidth / W, innerHeight / H); cv.style.width = W * s + "px"; cv.style.height = H * s + "px"; }
+addEventListener("resize", fit); fit();
+
+// ---- seeded RNG (mulberry32) ----
+function mulberry32(a){return function(){a|=0;a=(a+0x6D2B79F5)|0;let t=Math.imul(a^(a>>>15),1|a);t=(t+Math.imul(t^(t>>>7),61|t))^t;return((t^(t>>>14))>>>0)/4294967296;};}
+const SEED = Q.get("seed") != null ? (parseInt(Q.get("seed"), 10) >>> 0) : (Math.random() * 2 ** 31) >>> 0;
+const rng = mulberry32(SEED);
+
+// ---- small copies of the game tables (name / kind / identity color) ----
+const ROSTER = [
+  ["Sword","sword","#e1e1e8"],["Katana","katana","#f0f0f8"],["Axe","axe","#d65c44"],
+  ["Hammer","hammer","#9696a0"],["Warhammer","warhammer","#788296"],["Spear","spear","#60ce94"],
+  ["Trident","trident","#46bed2"],["Dagger","dagger","#eccd46"],["Kunai","kunai","#c8c8d2"],
+  ["Mace","mace","#b064d6"],["Flail","flail","#d28c3c"],["Nunchaku","nunchaku","#8c5a32"],
+  ["Whip","whip","#b43c3c"],["Claws","claws","#e6e6eb"],["Scythe","scythe","#48bee2"],
+  ["Chainsaw","chainsaw","#e6be28"],["Staff","staff","#aa82dc"],["Shuriken","shuriken","#d23c5a"],
+  ["Rapier","rapier","#ebebf0"],["Halberd","halberd","#c8643c"],["Cleaver","cleaver","#d25a5a"],
+  ["Boomerang","boomerang","#be8c4b"],["War Axe","war_axe","#b04230"],["Tomahawk","tomahawk","#96b65c"],
+  ["Dual Daggers","dual_daggers","#ffa52d"],["Pistol","pistol","#46464e"],
+];
+const THEMES = [
+  ["Midnight Arena","#0b1020","#1b2748","#5aa0ff"],["Neon City","#12071c","#3a1550","#ff3ec8"],
+  ["Lava Pit","#1c0a05","#4a1608","#ff7a2f"],["Ice Cave","#071620","#12455a","#66e0ff"],
+  ["Cyber Grid","#04140f","#0c4030","#2effa0"],["Deep Space","#05060f","#191b3a","#9a7dff"],
+  ["Toxic Lab","#0c1405","#2c4a0c","#b6ff2f"],["Blood Moon","#160608","#4a1016","#ff4655"],
+  ["Sunset Coliseum","#1e0f04","#5a2c10","#ff9d3c"],["Volcanic Forge","#180804","#4a1c0a","#ff5a2f"],
+  ["Frozen Peak","#0a141c","#1e3a4a","#8fd8ff"],["Golden Temple","#161006","#4a3810","#ffcf4a"],
+  ["Storm Clouds","#0c0f14","#26303c","#9fb4d6"],["Coral Reef","#04141a","#0c4048","#2fe0d0"],
+  ["Desert Dunes","#1a1206","#4a3616","#e6b45a"],["Radioactive Waste","#0a1006","#2a4010","#8aff2f"],
+];
+
+function findWeapon(s) {
+  if (!s) return null;
+  const k = s.trim().toLowerCase();
+  return ROSTER.find(w => w[1] === k || w[0].toLowerCase() === k) || null;
+}
+function pickTwo() {
+  const p = ROSTER.slice();
+  for (let i = p.length - 1; i > 0; i--) { const j = Math.floor(rng() * (i + 1)); [p[i], p[j]] = [p[j], p[i]]; }
+  return [p[0], p[1]];
+}
+
+let [A, B] = pickTwo();
+A = findWeapon(Q.get("a")) || A;
+B = findWeapon(Q.get("b")) || B;
+let TH = THEMES[Math.floor(rng() * THEMES.length)];
+if (Q.get("theme")) TH = THEMES.find(t => t[0].toLowerCase() === Q.get("theme").trim().toLowerCase()) || TH;
+const WIN = Q.get("win");                        // "a" | "b" | null
+const REVEAL = Q.get("reveal") === "1";
+const TAGLINE = Q.get("tagline") || "new fight every day";
+
+// ---- colour helpers ----
+function shade(hex, amt) {
+  const c = hex.replace("#", "");
+  let r = parseInt(c.substr(0, 2), 16), g = parseInt(c.substr(2, 2), 16), b = parseInt(c.substr(4, 2), 16);
+  if (amt < 0) { r *= 1 + amt; g *= 1 + amt; b *= 1 + amt; } else { r += (255 - r) * amt; g += (255 - g) * amt; b += (255 - b) * amt; }
+  return `rgb(${r|0},${g|0},${b|0})`;
+}
+
+function ball(x, y, r, color, dim) {
+  ctx.save();
+  ctx.globalAlpha = dim ? 0.45 : 1;
+  const g = ctx.createRadialGradient(x - r * 0.32, y - r * 0.32, r * 0.2, x, y, r);
+  g.addColorStop(0, "#ffffff"); g.addColorStop(0.24, shade(color, 0.25)); g.addColorStop(1, shade(color, -0.55));
+  ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fillStyle = g; ctx.fill();
+  ctx.lineWidth = 5; ctx.strokeStyle = "rgba(0,0,0,.35)"; ctx.stroke();
+  ctx.restore();
+}
+
+// one compact weapon glyph, pointing up, sitting on the ball at (x,y)
+function glyph(kind, x, y, r, color) {
+  ctx.save();
+  ctx.translate(x, y + r * 0.15);
+  ctx.strokeStyle = shade(color, 0.4); ctx.fillStyle = shade(color, 0.15);
+  ctx.lineCap = "round"; ctx.lineWidth = Math.max(7, r * 0.16);
+  const reach = r * 1.08;
+  switch (kind) {
+    case "spear": case "staff": case "trident": case "rapier": case "halberd":
+      ctx.beginPath(); ctx.moveTo(0, r * 0.4); ctx.lineTo(0, -reach); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(0, -reach); ctx.lineTo(-r * 0.22, -reach * 0.78); ctx.lineTo(r * 0.22, -reach * 0.78); ctx.closePath(); ctx.fill();
+      break;
+    case "hammer": case "warhammer": case "mace":
+      ctx.beginPath(); ctx.moveTo(0, r * 0.4); ctx.lineTo(0, -reach * 0.72); ctx.stroke();
+      ctx.beginPath(); ctx.arc(0, -reach * 0.78, r * 0.34, 0, Math.PI * 2); ctx.fill();
+      break;
+    case "axe": case "war_axe": case "tomahawk": case "cleaver": case "scythe":
+      ctx.beginPath(); ctx.moveTo(0, r * 0.4); ctx.lineTo(0, -reach * 0.75); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(0, -reach * 0.75); ctx.quadraticCurveTo(r * 0.95, -reach * 0.5, r * 0.5, -reach * 0.2);
+      ctx.quadraticCurveTo(r * 0.2, -reach * 0.45, 0, -reach * 0.7); ctx.closePath(); ctx.fill();
+      break;
+    case "chainsaw":
+      ctx.beginPath(); ctx.rect(-r * 0.3, -reach * 0.75, r * 0.6, reach * 0.9); ctx.fill();
+      break;
+    case "shuriken":
+      ctx.lineWidth = r * 0.3;
+      for (let i = 0; i < 4; i++) { const a = i * Math.PI / 2; ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(Math.cos(a) * reach * 0.7, Math.sin(a) * reach * 0.7); ctx.stroke(); }
+      break;
+    case "boomerang":
+      ctx.lineWidth = r * 0.3;
+      ctx.beginPath(); ctx.moveTo(-reach * 0.6, r * 0.2); ctx.quadraticCurveTo(0, -reach * 0.7, reach * 0.6, r * 0.2); ctx.stroke();
+      break;
+    case "whip": case "flail": case "nunchaku":
+      ctx.beginPath(); ctx.moveTo(0, r * 0.4); ctx.quadraticCurveTo(r * 0.6, -reach * 0.4, 0, -reach); ctx.stroke();
+      ctx.beginPath(); ctx.arc(0, -reach, r * 0.22, 0, Math.PI * 2); ctx.fill();
+      break;
+    case "claws":
+      for (let i = -1; i <= 1; i++) { ctx.beginPath(); ctx.moveTo(i * r * 0.32, r * 0.1); ctx.quadraticCurveTo(i * r * 0.5, -reach * 0.7, i * r * 0.2, -reach * 0.85); ctx.stroke(); }
+      break;
+    case "pistol":
+      ctx.beginPath(); ctx.rect(-r * 0.16, -reach * 0.72, r * 0.32, reach * 0.5); ctx.fill();
+      ctx.beginPath(); ctx.rect(-r * 0.36, -reach * 0.2, r * 0.36, reach * 0.36); ctx.fill();
+      break;
+    case "dual_daggers":
+      for (const s of [-1, 1]) { ctx.beginPath(); ctx.moveTo(s * r * 0.42, r * 0.4); ctx.lineTo(s * r * 0.42, -reach * 0.8); ctx.stroke(); }
+      break;
+    default: // sword-like
+      ctx.beginPath(); ctx.moveTo(0, r * 0.5); ctx.lineTo(0, -reach); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(-r * 0.32, -r * 0.15); ctx.lineTo(r * 0.32, -r * 0.15); ctx.lineWidth = r * 0.16; ctx.stroke();
+  }
+  ctx.restore();
+}
+
+function outlined(text, x, y, font, fill, lw, align) {
+  ctx.font = font; ctx.textAlign = align || "center"; ctx.textBaseline = "alphabetic";
+  ctx.lineWidth = lw || 12; ctx.strokeStyle = "rgba(0,0,0,.55)"; ctx.lineJoin = "round";
+  ctx.strokeText(text, x, y); ctx.fillStyle = fill; ctx.fillText(text, x, y);
+}
+function fitFont(text, weight, px, maxW) {
+  let s = px;
+  do { ctx.font = weight + " " + s + "px Segoe UI, sans-serif"; if (ctx.measureText(text).width <= maxW) break; s -= 4; } while (s > 20);
+  return weight + " " + s + "px Segoe UI, sans-serif";
+}
+
+function draw() {
+  // background
+  const bg = ctx.createRadialGradient(W / 2, H * 0.52, 80, W / 2, H * 0.52, W * 0.7);
+  bg.addColorStop(0, shade(TH[1], 0.16)); bg.addColorStop(1, TH[1]);
+  ctx.fillStyle = bg; ctx.fillRect(0, 0, W, H);
+  ctx.strokeStyle = TH[2]; ctx.globalAlpha = 0.16; ctx.lineWidth = 2;
+  for (let x = 0; x <= W; x += 80) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke(); }
+  for (let y = 0; y <= H; y += 80) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke(); }
+  ctx.globalAlpha = 1;
+
+  // diagonal accent wedge behind the right fighter
+  ctx.save();
+  ctx.fillStyle = shade(TH[2], -0.3); ctx.globalAlpha = 0.18;
+  ctx.beginPath(); ctx.moveTo(W * 0.52, 0); ctx.lineTo(W, 0); ctx.lineTo(W, H); ctx.lineTo(W * 0.38, H); ctx.closePath(); ctx.fill();
+  ctx.restore();
+
+  // dark banner strip so the headline always reads over the art
+  ctx.fillStyle = "rgba(0,0,0,.45)"; ctx.fillRect(0, 0, W, 132);
+
+  const r = 156, ax = W * 0.25, bx = W * 0.75, y = H * 0.58;
+
+  // winner ring
+  const drawRing = (x) => {
+    ctx.save();
+    ctx.shadowColor = "#ffd24a"; ctx.shadowBlur = 40;
+    ctx.strokeStyle = "#ffd24a"; ctx.lineWidth = 10;
+    ctx.beginPath(); ctx.arc(x, y, r + 20, 0, Math.PI * 2); ctx.stroke();
+    ctx.restore();
+  };
+  if (WIN === "a") drawRing(ax);
+  if (WIN === "b") drawRing(bx);
+
+  ball(ax, y, r, A[2], WIN === "b");
+  glyph(A[1], ax, y, r, A[2]);
+  ball(bx, y, r, B[2], WIN === "a");
+  glyph(B[1], bx, y, r, B[2]);
+
+  // name plates
+  const plateY = y + r + 30;
+  const plate = (text, x, dim) => {
+    const up = text.toUpperCase();
+    ctx.font = fitFont(up, "800", 46, 470);
+    const w = ctx.measureText(up).width + 44;
+    ctx.globalAlpha = dim ? 0.5 : 1;
+    ctx.fillStyle = "rgba(0,0,0,.55)"; ctx.fillRect(x - w / 2, plateY, w, 62);
+    outlined(up, x, plateY + 42, ctx.font, "#fff", 8);
+    ctx.globalAlpha = 1;
+  };
+  plate(A[0], ax, WIN === "b");
+  plate(B[0], bx, WIN === "a");
+
+  // centre VS
+  ctx.save();
+  ctx.translate(W / 2, y);
+  ctx.rotate(-0.08);
+  outlined("VS", 0, 40, "900 150px Segoe UI, sans-serif", "#fff", 18);
+  ctx.restore();
+
+  // headline (inside the top banner strip)
+  const head = (REVEAL && WIN) ? (WIN === "a" ? A[0] : B[0]).toUpperCase() + " WINS" : "WHO WINS?";
+  outlined(head, W / 2, 78, fitFont(head, "900", 92, W - 140), "#fff", 16);
+
+  // theme label — bottom-left, clear of the plates
+  outlined(TH[0].toUpperCase(), 34, H - 34, "700 32px Segoe UI, sans-serif", TH[2], 8, "left");
+  // tagline — top-right of the banner
+  ctx.font = "600 26px Segoe UI, sans-serif"; ctx.fillStyle = "rgba(255,255,255,.8)"; ctx.textAlign = "right";
+  ctx.fillText(TAGLINE, W - 26, 118);
+
+  // vignette
+  const vg = ctx.createRadialGradient(W / 2, H / 2, H * 0.3, W / 2, H / 2, H * 0.8);
+  vg.addColorStop(0, "rgba(0,0,0,0)"); vg.addColorStop(1, "rgba(0,0,0,0.42)");
+  ctx.fillStyle = vg; ctx.fillRect(0, 0, W, H);
+}
+
+draw();
+window.__WBA_THUMB__ = { seed: SEED, a: A[0], b: B[0], theme: TH[0], win: WIN || null };
+window.__WBA_THUMB_READY__ = true;
+</script>
+</body>
+</html>

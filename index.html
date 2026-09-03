@@ -1114,7 +1114,11 @@ if (WC_MODE && typeof VideoEncoder !== "undefined") {
       width: W, height: H,
       bitrate: 5_500_000, framerate: FPS,
       avc: { format: "annexb" },
-      latencyMode: "quality",
+      // "realtime": emit each frame promptly with a shallow internal queue.
+      // "quality" lets the encoder buffer/look-ahead, which under the Node
+      // driver's batched pull loop snowballs into a multi-second-per-frame
+      // stall on longer clips. The bitrate ceiling keeps quality fine.
+      latencyMode: "realtime",
     });
     wc.ok = true;
   } catch (e) { wc.error = String(e); console.error("WebCodecs configure failed", e); }

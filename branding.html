@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Weapon Ball Arena — channel branding</title>
+<style>
+  :root { color-scheme: dark; }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #0a0b10; color: #e8e8ef; font-family: "Segoe UI", system-ui, sans-serif; padding: 24px; }
+  h1 { font-size: 18px; font-weight: 800; letter-spacing: .5px; margin-bottom: 4px; }
+  p.note { opacity: .6; font-size: 13px; margin-bottom: 20px; }
+  .row { display: flex; flex-wrap: wrap; gap: 28px; align-items: flex-start; }
+  .card { background: #12141c; border: 1px solid #222634; border-radius: 12px; padding: 16px; }
+  .card h2 { font-size: 13px; font-weight: 700; opacity: .75; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px; }
+  canvas { display: block; background: #05060a; border-radius: 8px; max-width: 100%; height: auto; }
+  .btn { display: inline-block; margin-top: 12px; background: #2b7; color: #04120a; font-weight: 700;
+         padding: 8px 14px; border-radius: 8px; text-decoration: none; font-size: 13px; cursor: pointer; border: 0; }
+  .safe { outline: 2px dashed rgba(255,255,255,.25); outline-offset: -2px; }
+</style>
+</head>
+<body>
+<h1>Weapon Ball Arena — channel branding</h1>
+<p class="note">
+  Generated from the game's own visual language, no external assets.
+  <code>?seed=N</code> rerolls the layout. Buttons download PNGs at the exact
+  sizes YouTube wants (banner 2560×1440, avatar 800×800).
+</p>
+
+<div class="row">
+  <div class="card">
+    <h2>Banner — 2560 × 1440 (safe area 1546 × 423)</h2>
+    <canvas id="banner" width="2560" height="1440" style="width:760px"></canvas>
+    <button class="btn" data-dl="banner" data-name="wba_banner.png">⬇ banner.png</button>
+  </div>
+  <div class="card">
+    <h2>Avatar — 800 × 800</h2>
+    <canvas id="avatar" width="800" height="800" style="width:260px"></canvas>
+    <button class="btn" data-dl="avatar" data-name="wba_avatar.png">⬇ avatar.png</button>
+  </div>
+</div>
+
+<script>
+"use strict";
+/* Standalone — small local copies of the palette, no shared code. */
+const Q = new URLSearchParams(location.search);
+function mulberry32(a){return function(){a|=0;a=(a+0x6D2B79F5)|0;let t=Math.imul(a^(a>>>15),1|a);t=(t+Math.imul(t^(t>>>7),61|t))^t;return((t^(t>>>14))>>>0)/4294967296;};}
+const SEED = Q.get("seed") != null ? (parseInt(Q.get("seed"), 10) >>> 0) : 7;
+const rng = mulberry32(SEED);
+
+const THEMES = [
+  ["#0b1020","#5aa0ff"],["#12071c","#ff3ec8"],["#1c0a05","#ff7a2f"],["#071620","#66e0ff"],
+  ["#04140f","#2effa0"],["#05060f","#9a7dff"],["#160608","#ff4655"],["#161006","#ffcf4a"],
+];
+const TH = THEMES[Math.floor(rng() * THEMES.length)];
+
+function shade(hex, amt) {
+  const c = hex.replace("#", "");
+  let r = parseInt(c.substr(0,2),16), g = parseInt(c.substr(2,2),16), b = parseInt(c.substr(4,2),16);
+  if (amt < 0) { r*=1+amt; g*=1+amt; b*=1+amt; } else { r+=(255-r)*amt; g+=(255-g)*amt; b+=(255-b)*amt; }
+  return `rgb(${r|0},${g|0},${b|0})`;
+}
+function ball(ctx, x, y, r, color) {
+  const g = ctx.createRadialGradient(x - r*0.32, y - r*0.32, r*0.2, x, y, r);
+  g.addColorStop(0, "#ffffff"); g.addColorStop(0.24, shade(color, 0.25)); g.addColorStop(1, shade(color, -0.55));
+  ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI*2); ctx.fillStyle = g; ctx.fill();
+  ctx.lineWidth = Math.max(3, r*0.05); ctx.strokeStyle = "rgba(0,0,0,.35)"; ctx.stroke();
+}
+function sword(ctx, x, y, r, color, ang) {
+  ctx.save(); ctx.translate(x, y); ctx.rotate(ang || 0);
+  ctx.strokeStyle = shade(color, 0.4); ctx.fillStyle = shade(color, 0.15); ctx.lineCap = "round";
+  ctx.lineWidth = r*0.16;
+  ctx.beginPath(); ctx.moveTo(0, r*0.45); ctx.lineTo(0, -r*1.32); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(-r*0.32, -r*0.12); ctx.lineTo(r*0.32, -r*0.12); ctx.lineWidth = r*0.16; ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(0, -r*1.32); ctx.lineTo(-r*0.15, -r*1.1); ctx.lineTo(r*0.15, -r*1.1); ctx.closePath(); ctx.fill();
+  ctx.restore();
+}
+function grid(ctx, w, h, color) {
+  ctx.strokeStyle = color; ctx.globalAlpha = 0.14; ctx.lineWidth = 2;
+  for (let x = 0; x <= w; x += 90) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, h); ctx.stroke(); }
+  for (let y = 0; y <= h; y += 90) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke(); }
+  ctx.globalAlpha = 1;
+}
+function bg(ctx, w, h) {
+  const g = ctx.createRadialGradient(w/2, h/2, 60, w/2, h/2, Math.max(w, h) * 0.7);
+  g.addColorStop(0, shade(TH[0], 0.18)); g.addColorStop(1, TH[0]);
+  ctx.fillStyle = g; ctx.fillRect(0, 0, w, h);
+  grid(ctx, w, h, TH[1]);
+}
+function vignette(ctx, w, h) {
+  const vg = ctx.createRadialGradient(w/2, h/2, h*0.28, w/2, h/2, h*0.8);
+  vg.addColorStop(0, "rgba(0,0,0,0)"); vg.addColorStop(1, "rgba(0,0,0,0.45)");
+  ctx.fillStyle = vg; ctx.fillRect(0, 0, w, h);
+}
+function outlined(ctx, text, x, y, font, fill, lw) {
+  ctx.font = font; ctx.textAlign = "center"; ctx.textBaseline = "middle";
+  ctx.lineJoin = "round"; ctx.lineWidth = lw; ctx.strokeStyle = "rgba(0,0,0,.55)";
+  ctx.strokeText(text, x, y); ctx.fillStyle = fill; ctx.fillText(text, x, y);
+}
+
+// ---- banner ----
+(function () {
+  const c = document.getElementById("banner"), ctx = c.getContext("2d");
+  const W = c.width, H = c.height, cx = W/2, cy = H/2;
+  bg(ctx, W, H);
+
+  // arena ring centred on the safe area
+  ctx.beginPath(); ctx.arc(cx, cy, 470, 0, Math.PI*2);
+  ctx.strokeStyle = TH[1]; ctx.lineWidth = 8; ctx.globalAlpha = 0.9; ctx.stroke();
+  ctx.lineWidth = 26; ctx.globalAlpha = 0.10; ctx.stroke(); ctx.globalAlpha = 1;
+
+  // two weapon-balls flanking the wordmark, tilted toward each other
+  ball(ctx, cx - 470, cy + 60, 130, "#e1e1e8"); sword(ctx, cx - 470, cy + 60, 130, "#e1e1e8", 0.6);
+  ball(ctx, cx + 470, cy + 60, 130, TH[1]);     sword(ctx, cx + 470, cy + 60, 130, TH[1], -0.6);
+
+  outlined(ctx, "WEAPON BALL ARENA", cx, cy - 190, "900 156px Segoe UI, sans-serif", "#fff", 22);
+  outlined(ctx, "physics duels · a new fight every day", cx, cy + 250, "600 58px Segoe UI, sans-serif", TH[1], 12);
+
+  vignette(ctx, W, H);
+})();
+
+// ---- avatar ----
+(function () {
+  const c = document.getElementById("avatar"), ctx = c.getContext("2d");
+  const W = c.width, H = c.height, cx = W/2, cy = H/2;
+  bg(ctx, W, H);
+  ctx.beginPath(); ctx.arc(cx, cy, 300, 0, Math.PI*2);
+  ctx.strokeStyle = TH[1]; ctx.lineWidth = 10; ctx.globalAlpha = 0.85; ctx.stroke(); ctx.globalAlpha = 1;
+  ball(ctx, cx, cy - 20, 175, TH[1]);
+  sword(ctx, cx, cy - 20, 175, TH[1], 0);
+  outlined(ctx, "WBA", cx, cy + 250, "900 128px Segoe UI, sans-serif", "#fff", 16);
+  vignette(ctx, W, H);
+})();
+
+// ---- downloads ----
+for (const btn of document.querySelectorAll("[data-dl]")) {
+  btn.addEventListener("click", () => {
+    const c = document.getElementById(btn.dataset.dl);
+    const a = document.createElement("a");
+    a.download = btn.dataset.name;
+    a.href = c.toDataURL("image/png");
+    a.click();
+  });
+}
+window.__WBA_BRANDING_READY__ = true;
+</script>
+</body>
+</html>
