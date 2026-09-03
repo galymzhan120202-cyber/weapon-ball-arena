@@ -273,10 +273,21 @@ D:\weapon-ball-arena\
 - Watermark / псевдоним / страна проживания — пайдаланушы: керек емес деп шешті.
 
 ### Қалды
-1. **Бірінші нақты жүктеу тесті**. Actions → "Director" → Run workflow,
-   `dry_run: false`, `privacy: unlisted` → арнада шыққанын (thumbnail, мета,
-   Telegram) тексер → көр → өшір/қалдыр. Содан кейін ғана cron-ға сен.
-   (Бұдан кейін launch аяқталды — cron өзі жүреді.)
+- **Бірінші нақты жүктеу тесті** ✅ (2026-09-04). Director → dry_run:false,
+  privacy:unlisted → **https://youtu.be/b_irZNMUW7M** "Shuriken vs Spear —
+  who wins?" (unlisted, 32с, 1080×1920 = Short, H.264+AAC, 19.5 МБ).
+  CI-де 44 fps-пен рендерленді. Мета (title/desc/tags) meta.js-тен қойылды.
+  → Launch аяқталды. Cron 2×/күн (public) өзі жүреді.
+
+### Кейінге — 2 ұсақ түзету
+1. **Custom thumbnail істемейді** — "authenticated user doesn't have
+   permissions to upload and set custom video thumbnails". Арнаны
+   **youtube.com/verify**-те телефонмен растау керек. Оған дейін видеолар
+   YouTube таңдаған кадрды thumbnail қылады (`thumb.html` суреті емес).
+   Shorts үшін онша маңызды емес.
+2. **GCP consent screen "In production"-ға шығару** (`youtube-automation-489306`).
+   "Testing" күйінде қалса refresh_token 7 күнде өледі → апта соңында
+   автожүктеу `invalid_grant`-пен тоқтайды.
 
 ### v1.0 / жалғасатын
 - Рекордер ~9 fps, ұзын клипте баяу — керек болса баптау.
