@@ -59,7 +59,7 @@ const DEBUG     = Q.get("debug") === "1";   // show seed / dev details on screen
 const W = 1080, H = 1920;
 const DT = 1 / 120;                 // fixed physics step (determinism)
 const FPS = 60;                     // render / capture frame rate
-const START_HP = 100;
+let   START_HP = 100;               // `let`: a MUTATOR may scale it before the World is built
 const INTRO_SECONDS = 3.0;          // 3 · 2 · 1 · FIGHT! countdown
 const COLD_OPEN = 0;                // reserved (battle_sim has a 0.9s hook)
 const BATTLE_MAX_SECONDS = 34;
@@ -139,18 +139,26 @@ const ROSTER = [
   { name: "Pistol",      kind: "pistol",   color: "#46464e", power: 0.74, material: "metal",      reach: 0.80, zone: [[0, -0.68, 0.46]] },
 ];
 
-// damage-model constants (ported)
+// damage-model constants (ported). A few are `let` because a per-match
+// MUTATOR (rolled from the seed, see below) can retune them before the
+// World is built — the roll happens up front so determinism is intact.
 const POWER_DMG_EXPONENT = 0.38;
 const ACTIVE_DAMAGE_MULT  = 1.15;
 const GUARD_DAMAGE_MULT    = 0.28;
 const CLEAN_HIT_BONUS      = 1.15;
 const WHOLE_BODY_DISCOUNT  = 0.42;
-const CRIT_CHANCE = 0.10, CRIT_MULT = 2.0;
-const PARRY_CHANCE = 0.40, PARRY_KNOCK_MULT = 1.9;
-const BASE_DMG = 3.8;          // per clean exchange before ratios (tuned for 12-28s fights)
+let   CRIT_CHANCE = 0.10, CRIT_MULT = 2.0;
+let   PARRY_CHANCE = 0.40; const PARRY_KNOCK_MULT = 1.9;
+let   BASE_DMG = 3.8;          // per clean exchange before ratios (tuned for 12-28s fights)
 const HIT_COOLDOWN = 0.22;     // s between damage events for a pair
-const DMG_RAMP_IN = 2.2;       // s of fight over which damage scales 0.5 -> 1.0
+let   DMG_RAMP_IN = 2.2;       // s of fight over which damage scales 0.5 -> 1.0
 const DMG_RAMP_LATE = 22;      // s after which damage scales up toward 1.6 (break stalemates)
+let   SHRINK_MULT   = 1;       // mutator: arena closes this much faster
+let   ELASTIC_BONUS = 0;       // mutator: added to collision elasticity (bouncier)
+let   FRICTION_MULT = 1;       // mutator: scales material friction
+let   REGEN_PER_SEC = 0;       // mutator: HP regenerated per second while alive
+let   HIT_COOLDOWN_MULT = 1;   // weapon identity: faster/slower re-hit
+let   KNOCKBACK_MULT = 1;      // weapon identity: heavier shove on hit
 
 // ---------------------------------------------------------------------
 // Arena themes (ported subset)
@@ -173,6 +181,52 @@ const THEMES = [
   { name: "Desert Dunes",     bg: "#1a1206", grid: "#4a3616", accent: "#e6b45a", particle: "#f4d79a" },
   { name: "Radioactive Waste",bg: "#0a1006", grid: "#2a4010", accent: "#8aff2f", particle: "#c0ff7a" },
 ];
+
+// ---------------------------------------------------------------------
+// MUTATORS — a per-match rule twist, rolled from the seed (~45% of
+// matches get one). Each `apply()` retunes the `let` knobs above; a few
+// also reshape the fighters once the World exists via `world(w)`.
+// Rolled here, up front, so "same seed => same fight" still holds.
+// ---------------------------------------------------------------------
+const MUTATORS = [
+  { id: "sudden_death", name: "SUDDEN DEATH", tint: "#ff4655",
+    blurb: "Half HP. No warm-up. Someone dies fast.",
+    apply() { START_HP *= 0.5; DMG_RAMP_IN = 0.35; BASE_DMG *= 1.05; } },
+  { id: "glass_cannon", name: "GLASS CANNON", tint: "#ffcf4a",
+    blurb: "Everyone hits like a truck and folds like paper.",
+    apply() { START_HP *= 0.62; BASE_DMG *= 1.42; } },
+  { id: "instakill", name: "ONE-HIT KO", tint: "#ff2f4a",
+    blurb: "One clean strike ends it. Don't blink.",
+    apply() { BASE_DMG *= 5.5; CRIT_CHANCE = 0; PARRY_CHANCE = 0.5; DMG_RAMP_IN = 0.5; } },
+  { id: "blade_storm", name: "BLADE STORM", tint: "#ff7a2f",
+    blurb: "Criticals everywhere.",
+    apply() { CRIT_CHANCE = 0.34; CRIT_MULT = 2.4; } },
+  { id: "low_gravity", name: "LOW GRAVITY", tint: "#66e0ff",
+    blurb: "Bouncy. Chaotic. Physics off the leash.",
+    apply() { ELASTIC_BONUS = 0.15; FRICTION_MULT = 0.4; } },
+  { id: "fast_storm", name: "FAST STORM", tint: "#ff3ec8",
+    blurb: "The arena slams shut twice as fast.",
+    apply() { SHRINK_MULT = 2.1; } },
+  { id: "regen", name: "REGENERATION", tint: "#2effa0",
+    blurb: "Both heal — only clean hits stick.",
+    apply() { REGEN_PER_SEC = 3.6; BASE_DMG *= 1.18; } },
+  { id: "giants", name: "GIANT vs GOBLIN", tint: "#e6b45a",
+    blurb: "One giant. One goblin. Can David win?",
+    apply() {},
+    world(w) {
+      const L = w.fighters;
+      // biggest-index/last spawned = giant, first = goblin (deterministic)
+      const giant = L[L.length - 1], goblin = L[0];
+      for (const f of L) f._role = "";
+      giant._baseR *= 1.62; giant.mass *= 1.9; giant.maxHp *= 1.7; giant.hp = giant.chipHp = giant.maxHp; giant._role = "GIANT";
+      goblin._baseR *= 0.66; goblin.mass *= 0.62; goblin.maxHp *= 0.72; goblin.hp = goblin.chipHp = goblin.maxHp; goblin._role = "GOBLIN";
+    } },
+];
+const mutRng = mulberry32(hashStr(SEED + "mutator"));
+const MUT = (Q.get("mut") != null)
+  ? (Q.get("mut") === "0" ? null : MUTATORS.find(m => m.id === Q.get("mut")) || null)
+  : (mutRng() < 0.45 ? MUTATORS[Math.floor(mutRng() * MUTATORS.length)] : null);
+if (MUT) MUT.apply();
 
 // ---------------------------------------------------------------------
 // small vec + color helpers
@@ -228,7 +282,11 @@ class Fighter {
     this.x = x; this.y = y; this.vx = 0; this.vy = 0;
     this.angle = rnd(0, Math.PI * 2);
     this.spin = rnd(-6, 6);
-    this.hp = START_HP; this.chipHp = START_HP; this.alive = true;
+    this.hp = START_HP; this.chipHp = START_HP; this.maxHp = START_HP; this.alive = true;
+    this.kills = 0;
+    this._role = "";                                  // GIANT / GOBLIN tag (giants mutator)
+    this.buff = null;                                 // active pickup buff {id,name,t,...}
+    this.shield = 0;                                  // hits the SHIELD pickup still absorbs
     this.mass = 0.80 + (this.power - 0.80) * 0.55;   // compressed (ported)
     this.hitFlash = 0; this.scale = 1;
     this.lungeCd = rnd(0.6, 1.6);
@@ -310,6 +368,10 @@ class World {
     // player is fighter 0 unless AUTO
     this.playerIdx = AUTO ? -1 : 0;
     this.hits = 0;
+    this.mutator = MUT;
+
+    // let a mutator reshape the fighters now that they exist
+    if (MUT && MUT.world) MUT.world(this);
   }
 
   living() { return this.fighters.filter(f => f.alive); }
@@ -356,9 +418,9 @@ class World {
 
     this.t += dt;
 
-    // shrink arena from min->max seconds
+    // shrink arena from min->max seconds (SHRINK_MULT closes it faster)
     const s0 = BATTLE_MIN_SECONDS * 0.5, s1 = BATTLE_MAX_SECONDS;
-    const k = Math.max(0, Math.min(1, (this.t - s0) / (s1 - s0)));
+    const k = Math.max(0, Math.min(1, (this.t - s0) / ((s1 - s0) / SHRINK_MULT)));
     this.arenaR = this.arenaR0 + (this.arenaRmin - this.arenaR0) * k;
 
     // ---- AI + player control ----
@@ -380,6 +442,10 @@ class World {
       f.hitFlash = Math.max(0, f.hitFlash - dt * 4);
       f.scale += (1 - f.scale) * Math.min(1, dt * 12);
       if (f.dmgPopT > 0) f.dmgPopT -= dt;
+      // buff timer + REGEN mutator + HEAL buff
+      if (f.buff) { f.buff.t -= dt; if (f.buff.t <= 0) f.buff = null; }
+      const regen = REGEN_PER_SEC + (f.buff && f.buff.id === "heal" ? f.buff.rate : 0);
+      if (regen > 0 && f.hp > 0) f.hp = Math.min(f.maxHp, f.hp + regen * dt);
       f.chipHp += (f.hp - f.chipHp) * Math.min(1, dt * 3.5);   // chip-damage trail
       f.trail.push({ x: f.x, y: f.y });
       if (f.trail.length > TRAIL_LEN) f.trail.shift();
@@ -403,7 +469,7 @@ class World {
       if (d > this.arenaR - f._baseR * 0.4) {
         f.hp -= 9 * dt;
         f.hitFlash = Math.max(f.hitFlash, 0.35);
-        if (f.hp <= 0) this._kill(f);
+        if (f.hp <= 0) this._kill(f);           // storm kill — no killer credit
       }
     }
 
@@ -441,9 +507,10 @@ class World {
     else this.finishText = byKo ? "WINNER!" : "TIME'S UP — TOP HP WINS";
   }
 
-  _kill(f) {
+  _kill(f, killer) {
     if (!f.alive) return;
     f.alive = false; f.hp = 0; f.chipHp = 0;
+    if (killer && killer !== f && killer.alive) killer.kills++;
     this.flash = Math.max(this.flash, 0.85); this.shakes = Math.max(this.shakes, 17);
     this.hitstop = Math.max(this.hitstop, 0.07);
     this.rings.push({ x: f.x, y: f.y, rr: f._baseR, spd: 900, life: 0.5, c: "#fff" });
@@ -471,7 +538,7 @@ class World {
       const [nx, ny] = norm(dx, dy);
       f.x = this.cx + nx * lim; f.y = this.cy + ny * lim;
       const vn = f.vx * nx + f.vy * ny;
-      if (vn > 0) { const e = MAT[f.material].elasticity; f.vx -= (1 + e) * vn * nx; f.vy -= (1 + e) * vn * ny; f.spin += rnd(-3, 3); }
+      if (vn > 0) { const e = Math.min(1.25, MAT[f.material].elasticity + ELASTIC_BONUS); f.vx -= (1 + e) * vn * nx; f.vy -= (1 + e) * vn * ny; f.spin += rnd(-3, 3); }
     }
   }
 
@@ -561,13 +628,13 @@ class World {
     const rvx = b.vx - a.vx, rvy = b.vy - a.vy;
     const vn = rvx * nx + rvy * ny;
     if (vn < 0) {
-      const e = Math.min(MAT[a.material].elasticity, MAT[b.material].elasticity);
+      const e = Math.min(1.25, Math.min(MAT[a.material].elasticity, MAT[b.material].elasticity) + ELASTIC_BONUS);
       let j = -(1 + e) * vn / (1 / a.mass + 1 / b.mass);
       const ix = j * nx, iy = j * ny;
       a.vx -= ix / a.mass; a.vy -= iy / a.mass;
       b.vx += ix / b.mass; b.vy += iy / b.mass;
       // friction -> spin transfer
-      const fr = (MAT[a.material].friction + MAT[b.material].friction) * 0.5;
+      const fr = (MAT[a.material].friction + MAT[b.material].friction) * 0.5 * FRICTION_MULT;
       a.spin += (-rvy * nx + rvx * ny) * fr * 0.02;
       b.spin -= (-rvy * nx + rvx * ny) * fr * 0.02;
     }
@@ -647,8 +714,8 @@ class World {
     sfx.hit(a.material, b.material, clean);
     this._logSfx("hit", { m1: a.material, m2: b.material, active: clean, crit: !!tag });
 
-    if (b.hp <= 0) this._kill(b);
-    if (a.hp <= 0) this._kill(a);
+    if (b.hp <= 0) this._kill(b, a);
+    if (a.hp <= 0) this._kill(a, b);
   }
 
   _spark(x, y, c, n) {
@@ -922,6 +989,25 @@ function drawHud(world) {
     ctx.fillText((AUTO && !DEBUG) ? th.name : th.name + "   ·   seed " + SEED, W / 2, 104);
   }
 
+  // mutator chip — always on while a mutator is live (under the theme name)
+  if (world.mutator && world.state !== "menu") {
+    const m = world.mutator;
+    ctx.textAlign = "center"; ctx.font = "800 26px Segoe UI, sans-serif";
+    const label = "⚡ " + m.name;
+    const w = ctx.measureText(label).width + 40;
+    ctx.fillStyle = m.tint; ctx.globalAlpha = 0.16;
+    ctx.beginPath(); ctx.roundRect(W / 2 - w / 2, 118, w, 40, 20); ctx.fill();
+    ctx.globalAlpha = 1; ctx.fillStyle = m.tint;
+    ctx.fillText(label, W / 2, 145);
+    // one-line blurb during the countdown so viewers know the rule
+    if (world.state === "intro" && world.t < 2.4) {
+      ctx.globalAlpha = Math.min(1, (2.4 - world.t) * 1.5);
+      ctx.font = "600 29px Segoe UI, sans-serif"; ctx.fillStyle = "#fff";
+      ctx.fillText(m.blurb, W / 2, 187);
+      ctx.globalAlpha = 1;
+    }
+  }
+
   // ---------- menu ----------
   if (world.state === "menu") {
     ctx.textAlign = "center";
@@ -942,18 +1028,19 @@ function drawHud(world) {
     return;
   }
 
-  // HP bars
+  // HP bars (pushed down a little when the mutator chip is showing)
   const bw = W - 160, x0 = 80;
-  let y = 148;
+  let y = world.mutator ? 236 : 148;
   for (const f of world.fighters) {
-    const frac = Math.max(0, f.hp / START_HP);
-    const chip = Math.max(0, Math.min(1, f.chipHp / START_HP));
+    const frac = Math.max(0, Math.min(1, f.hp / f.maxHp));
+    const chip = Math.max(0, Math.min(1, f.chipHp / f.maxHp));
     const low = f.alive && frac > 0 && frac < 0.25;
     const pulse = low ? 0.55 + 0.45 * Math.sin(world.t * 12) : 1;
 
     ctx.textAlign = "left"; ctx.font = "bold 26px Segoe UI, sans-serif";
     ctx.fillStyle = f.alive ? "#fff" : "rgba(255,255,255,.32)";
-    ctx.fillText(f.name + (f.idx === world.playerIdx ? "  (YOU)" : ""), x0, y - 8);
+    const roleTag = f._role ? "  — " + f._role : "";
+    ctx.fillText(f.name + (f.idx === world.playerIdx ? "  (YOU)" : "") + roleTag, x0, y - 8);
     ctx.textAlign = "right"; ctx.font = "bold 22px Segoe UI, sans-serif";
     ctx.fillStyle = f.alive ? "rgba(255,255,255,.7)" : "#c9414f";
     ctx.fillText(f.alive ? Math.ceil(f.hp) + "" : "OUT", x0 + bw, y - 8);
@@ -1166,9 +1253,14 @@ window.__WBA_STATE__ = () => ({ state: world.state, t: world.t, frame: outFrame,
 window.__WBA_META__ = () => ({
   seed: SEED, theme: world.theme.name,
   fighters: world.fighters.map(f => ({ name: f.name, kind: f.kind, tint: f.tint,
-    hp: Math.max(0, Math.round(f.hp)), alive: f.alive, isWinner: f === world.winner })),
+    hp: Math.max(0, Math.round(f.hp)), alive: f.alive, isWinner: f === world.winner,
+    role: f._role || undefined, kills: f.kills || 0 })),
   winner: world.winner && world.winner.name,
   winnerKind: world.winner && world.winner.kind,
+  winnerHp: world.winner ? Math.max(0, Math.round(world.winner.hp)) : null,
+  winnerKills: world.winner ? (world.winner.kills || 0) : null,
+  mutator: MUT ? MUT.name : null,
+  mutatorId: MUT ? MUT.id : null,
   finishText: world.finishText, hits: world.hits, n: world.n,
 });
 // full synth-audio timeline for the Node-side mixer (record/audio.js)
