@@ -117,9 +117,12 @@ const ROSTER = [
   { name: "Spear",       kind: "spear",    color: "#60ce94", power: 0.92, material: "metal",      reach: 1.25, zone: [[0, -0.82, 0.50]] },
   { name: "Trident",     kind: "trident",  color: "#46bed2", power: 0.98, material: "metal",      reach: 1.22, zone: [[0, -0.82, 0.50]] },
   { name: "Dagger",      kind: "dagger",   color: "#eccd46", power: 0.78, material: "metal",      reach: 0.72, zone: [[0, -0.72, 0.50]] },
+  { name: "Kunai",       kind: "kunai",    color: "#c8c8d2", power: 0.72, material: "metal",      reach: 0.70, zone: [[0, -0.72, 0.50]] },
   { name: "Mace",        kind: "mace",     color: "#b064d6", power: 1.22, material: "blunt",      reach: 0.85, zone: [[0, -0.58, 0.52]] },
   { name: "Flail",       kind: "flail",    color: "#d28c3c", power: 1.30, material: "blunt",      reach: 0.95, zone: [[0, -0.86, 0.46]] },
+  { name: "Nunchaku",    kind: "nunchaku", color: "#8c5a32", power: 0.85, material: "wood",       reach: 0.90, zone: [[0, -0.86, 0.44]] },
   { name: "Whip",        kind: "whip",     color: "#b43c3c", power: 0.85, material: "whip",       reach: 0.95, zone: [[0, -0.92, 0.42]] },
+  { name: "Claws",       kind: "claws",    color: "#e6e6eb", power: 0.88, material: "metal",      reach: 0.75, zone: [[0, -0.55, 0.54]] },
   { name: "Scythe",      kind: "scythe",   color: "#48bee2", power: 1.08, material: "metal",      reach: 1.15, zone: [[0.22, -0.62, 0.54]] },
   { name: "Chainsaw",    kind: "chainsaw", color: "#e6be28", power: 1.35, material: "mechanical", reach: 1.00, zone: [[0, -0.44, 0.56]] },
   { name: "Staff",       kind: "staff",    color: "#aa82dc", power: 0.80, material: "wood",       reach: 1.20, zone: [[0, -0.82, 0.50]] },
@@ -129,6 +132,9 @@ const ROSTER = [
   { name: "Cleaver",     kind: "cleaver",  color: "#d25a5a", power: 1.10, material: "metal",      reach: 0.85, zone: [[0, -0.62, 0.52]] },
   { name: "Boomerang",   kind: "boomerang",color: "#be8c4b", power: 0.82, material: "wood",       reach: 0.90, zone: null },
   { name: "War Axe",     kind: "war_axe",  color: "#b04230", power: 1.11, material: "metal",      reach: 1.05, zone: [[-0.31, -0.58, 0.38], [0.31, -0.58, 0.38]] },
+  { name: "Tomahawk",    kind: "tomahawk", color: "#96b65c", power: 0.90, material: "metal",      reach: 0.82, zone: [[0.26, -0.60, 0.50]] },
+  { name: "Dual Daggers",kind: "dual_daggers", color: "#ffa52d", power: 0.80, material: "metal",  reach: 0.80, zone: [[-0.45, -0.62, 0.40], [0.45, -0.62, 0.40]] },
+  { name: "Pistol",      kind: "pistol",   color: "#46464e", power: 0.74, material: "metal",      reach: 0.80, zone: [[0, -0.68, 0.46]] },
 ];
 
 // damage-model constants (ported)
@@ -139,8 +145,10 @@ const CLEAN_HIT_BONUS      = 1.15;
 const WHOLE_BODY_DISCOUNT  = 0.42;
 const CRIT_CHANCE = 0.10, CRIT_MULT = 2.0;
 const PARRY_CHANCE = 0.40, PARRY_KNOCK_MULT = 1.9;
-const BASE_DMG = 7.2;          // per clean exchange before ratios
-const HIT_COOLDOWN = 0.16;     // s between damage events for a pair
+const BASE_DMG = 3.8;          // per clean exchange before ratios (tuned for 12-28s fights)
+const HIT_COOLDOWN = 0.22;     // s between damage events for a pair
+const DMG_RAMP_IN = 2.2;       // s of fight over which damage scales 0.5 -> 1.0
+const DMG_RAMP_LATE = 22;      // s after which damage scales up toward 1.6 (break stalemates)
 
 // ---------------------------------------------------------------------
 // Arena themes (ported subset)
@@ -154,6 +162,14 @@ const THEMES = [
   { name: "Deep Space",       bg: "#05060f", grid: "#191b3a", accent: "#9a7dff", particle: "#c0b0ff" },
   { name: "Toxic Lab",        bg: "#0c1405", grid: "#2c4a0c", accent: "#b6ff2f", particle: "#d7ff7a" },
   { name: "Blood Moon",       bg: "#160608", grid: "#4a1016", accent: "#ff4655", particle: "#ff8a94" },
+  { name: "Sunset Coliseum",  bg: "#1e0f04", grid: "#5a2c10", accent: "#ff9d3c", particle: "#ffc47a" },
+  { name: "Volcanic Forge",   bg: "#180804", grid: "#4a1c0a", accent: "#ff5a2f", particle: "#ff9a5a" },
+  { name: "Frozen Peak",      bg: "#0a141c", grid: "#1e3a4a", accent: "#8fd8ff", particle: "#cdeeff" },
+  { name: "Golden Temple",    bg: "#161006", grid: "#4a3810", accent: "#ffcf4a", particle: "#ffe89a" },
+  { name: "Storm Clouds",     bg: "#0c0f14", grid: "#26303c", accent: "#9fb4d6", particle: "#cdd9ec" },
+  { name: "Coral Reef",       bg: "#04141a", grid: "#0c4048", accent: "#2fe0d0", particle: "#8af0e6" },
+  { name: "Desert Dunes",     bg: "#1a1206", grid: "#4a3616", accent: "#e6b45a", particle: "#f4d79a" },
+  { name: "Radioactive Waste",bg: "#0a1006", grid: "#2a4010", accent: "#8aff2f", particle: "#c0ff7a" },
 ];
 
 // ---------------------------------------------------------------------
@@ -303,7 +319,8 @@ class World {
     // ---- win / timeout ----
     const alive = this.living();
     if (alive.length <= 1 && this.t > BATTLE_MIN_SECONDS * 0.4) {
-      this._finish(alive[0] || this._topHp(), alive.length === 1);
+      if (alive.length === 0) { this._finish(this._topHp(), true); this.finishText = "DOUBLE KO!"; }
+      else this._finish(alive[0], true);
     } else if (this.t >= BATTLE_MAX_SECONDS) {
       this._finish(this._topHp(), false);
     }
@@ -478,14 +495,20 @@ class World {
     }
     if (critRng() < CRIT_CHANCE) { mult *= CRIT_MULT; tag = "CRITICAL!"; }
 
+    // time-of-fight envelope: soft ramp-in so nobody dies during the
+    // opening scramble, gentle ramp-up late so a stalemate resolves.
+    const rampIn = Math.min(1, 0.5 + 0.5 * this.t / DMG_RAMP_IN);
+    const rampLate = 1 + Math.max(0, (this.t - DMG_RAMP_LATE)) * 0.05;
+    const envMult = mult * rampIn * Math.min(1.6, rampLate);
+
     const dmgTo = (att, vic, attStrike, vicStrike) => {
-      let base = BASE_DMG * mult;
+      let base = BASE_DMG * envMult;
       base *= Math.pow(att.power / vic.power, POWER_DMG_EXPONENT);
       if (attStrike.whole) base *= WHOLE_BODY_DISCOUNT;
       base *= attStrike.active ? ACTIVE_DAMAGE_MULT : GUARD_DAMAGE_MULT;
       if (attStrike.active && !vicStrike.active) base *= CLEAN_HIT_BONUS;
-      // impact speed scaling
-      base *= 0.6 + Math.min(1.4, Math.abs(vn) / 520);
+      // impact speed scaling (capped tighter so a fast graze isn't a near-KO)
+      base *= 0.7 + Math.min(0.8, Math.abs(vn) / 900);
       return base;
     };
     const dA = dmgTo(a, b, sa, sb);   // damage a deals to b
@@ -627,9 +650,24 @@ function drawBlade(kind, r, reach) {
       ctx.beginPath(); ctx.moveTo(-reach * 0.7, 0); ctx.quadraticCurveTo(0, -reach * 0.8, reach * 0.7, 0);
       ctx.lineWidth = r * 0.28; ctx.stroke();
       break;
-    case "whip": case "flail":
+    case "whip": case "flail": case "nunchaku":
       ctx.beginPath(); ctx.moveTo(0, 0); ctx.quadraticCurveTo(r * 0.5, -reach * 0.6, 0, -reach * 1.2); ctx.stroke();
       ctx.beginPath(); ctx.arc(0, -reach * 1.2, r * 0.22, 0, Math.PI * 2); ctx.fill();
+      break;
+    case "claws":
+      for (let i = -1; i <= 1; i++) {
+        ctx.beginPath(); ctx.moveTo(i * r * 0.32, -r * 0.2);
+        ctx.quadraticCurveTo(i * r * 0.5, -reach * 0.9, i * r * 0.2, -reach * 1.05); ctx.stroke();
+      }
+      break;
+    case "pistol":
+      ctx.beginPath(); ctx.rect(-r * 0.16, -reach * 0.95, r * 0.32, reach * 0.7); ctx.fill();
+      ctx.beginPath(); ctx.rect(-r * 0.34, -reach * 0.28, r * 0.34, reach * 0.5); ctx.fill();
+      break;
+    case "dual_daggers":
+      for (const s of [-1, 1]) {
+        ctx.beginPath(); ctx.moveTo(s * r * 0.42, 0); ctx.lineTo(s * r * 0.42, -reach * 1.05); ctx.stroke();
+      }
       break;
     default: // sword-like
       ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(0, -reach * 1.25); ctx.stroke();
@@ -802,13 +840,55 @@ function startRecording() {
 function stopRecording() { if (recorder && recorder.state !== "inactive") recorder.stop(); }
 
 // ---------------------------------------------------------------------
-// Game loop  (fixed-step sim, capped catch-up)
+// Game loop
+//   Playable mode : wall-clock accumulator (feels right for a human).
+//   Director mode : FIXED sim-time per rendered frame, wall-clock
+//     independent -> byte-identical output for a given seed, and a
+//     browser that throttles requestAnimationFrame can't slow the
+//     match down. An external recorder (Node + Playwright) can also
+//     drive it one frame at a time via window.__WBA_TICK__().
 // ---------------------------------------------------------------------
+const STEPS_PER_FRAME = Math.max(1, Math.round((1 / FPS) / DT));   // sim steps per output frame
+const OVER_HOLD_FRAMES = Math.round(2.6 * FPS);                    // linger on the winner card
+const HARD_CAP_FRAMES  = Math.round((INTRO_SECONDS + BATTLE_MAX_SECONDS + 5) * FPS);
+const EXTERNAL = Q.get("drive") === "ext";                        // Node driver owns the clock
+
 let world = new World();
 let acc = 0, last = performance.now(), overHold = 0, prevState = "intro";
-window.__WBA_STATE__ = () => ({ state: world.state, t: world.t, winner: world.winner && world.winner.name, seed: SEED });
+let outFrame = 0, lastBeep = null;
 
-if (AUTO && RECORD) startRecording();
+window.__WBA_STATE__ = () => ({ state: world.state, t: world.t, frame: outFrame,
+  winner: world.winner && world.winner.name, done: !!window.__WBA_DONE__, seed: SEED });
+window.__WBA_META__ = () => ({
+  seed: SEED, theme: world.theme.name,
+  fighters: world.fighters.map(f => ({ name: f.name, kind: f.kind, hp: Math.max(0, Math.round(f.hp)), alive: f.alive })),
+  winner: world.winner && world.winner.name, finishText: world.finishText, hits: world.hits,
+});
+
+// advance EXACTLY one output frame of the simulation, then draw it.
+function tick() {
+  for (let s = 0; s < STEPS_PER_FRAME; s++) {
+    world.step(DT, input);
+    if (world.state === "intro") {
+      const n = Math.ceil(INTRO_SECONDS - world.t);
+      if (n !== lastBeep) { lastBeep = n; sfx.count(Math.max(0, n - 1)); }
+    }
+  }
+  if (world.state !== prevState) { if (world.state === "over") sfx.win(); prevState = world.state; }
+  render(world);
+  outFrame++;
+
+  if (world.state === "over") {
+    overHold++;
+    if (overHold >= OVER_HOLD_FRAMES && !window.__WBA_DONE__) {
+      stopRecording();
+      window.__WBA_DONE__ = true;
+    }
+  }
+  if (outFrame > HARD_CAP_FRAMES && !window.__WBA_DONE__) { stopRecording(); window.__WBA_DONE__ = true; }
+  return window.__WBA_STATE__();
+}
+window.__WBA_TICK__ = tick;
 
 function restart() {
   const u = new URL(location.href);
@@ -816,37 +896,37 @@ function restart() {
   location.href = u.toString();
 }
 
-function frame(now) {
+function frameAuto() {           // director: one fixed frame per rAF, no wall clock
+  tick();
+  if (!window.__WBA_DONE__) requestAnimationFrame(frameAuto);
+}
+
+function framePlay(now) {        // playable: wall-clock accumulator
   let dtReal = (now - last) / 1000; last = now;
-  if (dtReal > 0.25) dtReal = 0.25;               // tab-away guard
+  if (dtReal > 0.25) dtReal = 0.25;
   acc += dtReal;
   let steps = 0;
-  while (acc >= DT && steps < 20) {
-    world.step(DT, input);
-    acc -= DT; steps++;
-    // countdown beeps
+  while (acc >= DT && steps < 24) {
+    world.step(DT, input); acc -= DT; steps++;
     if (world.state === "intro") {
       const n = Math.ceil(INTRO_SECONDS - world.t);
-      if (n !== frame._lastBeep) { frame._lastBeep = n; sfx.count(Math.max(0, n - 1)); }
+      if (n !== lastBeep) { lastBeep = n; sfx.count(Math.max(0, n - 1)); }
     }
   }
-  if (world.state !== prevState) {
-    if (world.state === "over") sfx.win();
-    prevState = world.state;
-  }
+  if (world.state !== prevState) { if (world.state === "over") sfx.win(); prevState = world.state; }
   render(world);
-
-  // auto mode: hold on the winner screen a beat, then stop recording / signal done
-  if (world.state === "over") {
-    overHold += dtReal;
-    if (AUTO && overHold > 2.6 && !window.__WBA_DONE__) {
-      stopRecording();
-      window.__WBA_DONE__ = true;
-    }
-  }
-  requestAnimationFrame(frame);
+  requestAnimationFrame(framePlay);
 }
-requestAnimationFrame(frame);
+
+if (AUTO && RECORD) startRecording();
+if (EXTERNAL) {
+  // Node driver calls window.__WBA_TICK__() itself; do nothing here.
+  window.__WBA_READY__ = true;
+} else if (AUTO) {
+  requestAnimationFrame(frameAuto);
+} else {
+  requestAnimationFrame(framePlay);
+}
 </script>
 </body>
 </html>
