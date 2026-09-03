@@ -249,45 +249,44 @@ D:\weapon-ball-arena\
 
 ---
 
-## 9. Екеуіміз бірге істейтін қалған жұмыс (v0.5 — арна іске қосу)
+## 9. Арнаны іске қосу — қалған жұмыс (v0.5)
 
-Код түгел дайын. Қалғаны — қолмен жасалатын, аккаунтқа кіруді қажет ететін
-қадамдар. Реті бойынша:
+Код түгел дайын. Аккаунт жұмысының **көбі де бітті** (2026-09-04):
 
-### 9.1 Жаңа YouTube арна (пайдаланушы)
-1. Google аккаунтта жаңа **Brand Account** құру → атауы "Weapon Ball Fight
-   Arena" (bot атауымен сәйкес) немесе "Weapon Ball Arena".
-2. `node serve.js` → `http://localhost:8778/branding.html?seed=7` (seed-ті
-   ұнағанша ауыстыр) → **banner.png** + **avatar.png** жүктеп, арнаға қою.
-3. Арна "About": EN + RU сипаттама, keywords (weapon ball, physics battle,
-   who wins, satisfying, simulation, 1v1 fight, arena, marble battle).
+### Бітті ✅
+- **YouTube арна** `Weapon Ball Arena` (ID `UC7xEyQHGWkUVH4zyXFQ08kQ`) құрылды.
+- **Banner + avatar** — Apple-стиль `branding_banner.png` / `branding_avatar.png`
+  (`branding.html` → `record/branding-shot.js`), YT Studio-ға жүктеліп жарияланды.
+- **Арна сипаттамасы** (EN, 3 абзац) + **15 keyword** енгізілді.
+- **OAuth**: `client_secrets.json` + `youtube_token.json` бар; токен дәл осы
+  арнаны авторизациялайды (тексерілді: `channels.list mine=true`).
+- **Repo secrets**: `WBA_CLIENT_SECRETS_JSON`, `WBA_YOUTUBE_TOKEN_JSON`,
+  `WBA_TELEGRAM_NOTIFY_TOKEN`, `WBA_TELEGRAM_NOTIFY_CHAT_ID` — бәрі орнатылды.
+- **`director.yml`** dry-run бір рет сәтті өтті (seed 12345, артефакт шықты).
+- **Cron** белсенді: `17 8 * * *` және `43 16 * * *` UTC + `workflow_dispatch`.
 
-### 9.2 OAuth (пайдаланушы + мен)
-4. Ортақ `youtube-automation-489306` GCP жобасында **жаңа OAuth Client ID
-   (Desktop app)**, атауы "Weapon Ball Arena Uploader". JSON жүктеп →
-   `D:\weapon-ball-arena\client_secrets.json`.
-5. `cd upload && npm install` → `node login.js`. Жаңа арнаға кіріп рұқсат бер.
-   Скрипт `../youtube_token.json` жазады және **қай арна** екенін басып
-   шығарады — жаңа арна екенін тексер (weapon-ball-bot емес!).
-
-### 9.3 CI-ге қосу (мен, creds болғанда)
-6. Repo secrets қосу:
-   - `WBA_CLIENT_SECRETS_JSON` = `client_secrets.json` мазмұны
-   - `WBA_YOUTUBE_TOKEN_JSON` = `youtube_token.json` мазмұны
-   (`WBA_TELEGRAM_NOTIFY_*` — ✅ орнатылған.)
-7. **Ойнатылатын нұсқаны хостинг.** GitHub Pages тек public репо немесе
-   ақылы жоспарда жұмыс істейді — қазіргі private + free-те өшірулі.
+### Қалды
+1. **Ойнатылатын нұсқаны хостинг** (басты бөгет). Репо private + free →
+   GitHub Pages өшірулі (`pages.yml`-дегі `push:` комментте, API 404).
    Таңдау:
-   (а) репоны **public** жасау (sibling боттар да public) → Settings → Pages
-       → Source: GitHub Actions → `pages.yml`-дегі `push:` триггерін қайтару.
-   (ә) private қалдырып, **itch.io / Netlify / Cloudflare Pages**-ке салу
-       (үшеуі де тегін, `index.html` + `thumb.html` + `branding.html`).
-   URL шешілген соң `upload/meta.js`-тегі `playUrl` default-ын жаңарту.
+   - (а) репоны **public** жасау → `pages.yml`-дегі `push:` триггерін қайтару →
+     Pages өзі қосылады → play URL = `https://galymzhan120202-cyber.github.io/weapon-ball-arena/`
+     (бұл `upload/meta.js`-тегі default — өзгертпейсің).
+   - (ә) private қалдырып itch.io / Netlify / Cloudflare Pages-ке салу →
+     `upload/meta.js`-тегі `playUrl` + арна сілтемесін жаңарту.
+   Шешілмейінше әр видео сипаттамасындағы "▶ Play it yourself" сілтемесі өлі.
+2. **Бірінші нақты жүктеу тесті**. Actions → "Director" → Run workflow,
+   `dry_run: false`, `privacy: unlisted` → арнада шыққанын (thumbnail, мета,
+   Telegram) тексер → көр → өшір/қалдыр. Содан кейін ғана cron-ға сен.
+3. **Арна сілтемелері** (косметика) — хостинг болғанда қосу: Play → URL;
+   Source → GitHub (репо public болса ғана); Telegram (қаласаң).
+4. **Video watermark (Логотип канала)** — міндетті емес; ≤1 МБ, 150×150 PNG
+   керек (`branding.html` мark-інен бөлек `branding_watermark.png` рендерлеуге болады).
+5. **Псевдоним** `@WeaponBallArenaa` (қос "a") — косметика; `@WeaponBallArena`
+   бос болса 14 күнде ауыстыруға болады.
+6. **Страна проживания** YT Studio-да орнатылмаған — қаласаң қой.
 
-### 9.4 Тексеру
-8. Actions → "Director" → Run workflow, **dry_run: true** — рендер+артефакт
-   тексеру (жүктемейді).
-9. Жергілікті: `node record/record.js --seed=42 --max-seconds=40` →
-   `node upload/upload.js --video=out/wba_42.mp4 --privacy=unlisted` — бір
-   видеоны қолмен жүктеп, арнада көру.
-10. Бәрі дұрыс болса — cron өзінен-өзі жүреді (`17:08` және `16:43` UTC).
+### v1.0 / жалғасатын
+- Рекордер ~9 fps, ұзын клипте баяу — керек болса баптау.
+- Retention өлшеу + механика rebalance циклі (видео жиналған соң).
+- Cron кадансын / басқа боттармен соқтығысты бір апта бақылау.
