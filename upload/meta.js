@@ -18,12 +18,23 @@ function mulberry32(a) {
 function hashStr(s) { let h = 2166136261 >>> 0; for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; }
 const pick = (rng, arr) => arr[Math.floor(rng() * arr.length)];
 
+const path = require("path");
+const { nextChampion } = require("./streak");
+
+function readJson(p) { try { return JSON.parse(require("fs").readFileSync(p, "utf8")); } catch (e) { return null; } }
+
 const TITLE_FORMS = [
   (a, b) => `${a} vs ${b} — who wins?`,
   (a, b) => `Can ${a} beat ${b}?`,
   (a, b) => `${a} vs ${b} in a shrinking arena`,
   (a, b) => `${a} or ${b}? Physics decides`,
   (a, b) => `${a} vs ${b} — weapon ball duel`,
+];
+// used only when the winner is on a hot streak (spoiler-y but punchy)
+const STREAK_TITLES = [
+  (w, n) => `${w} wins again — ${n} in a row 🔥`,
+  (w, n) => `Can anything stop ${w}? (${n} straight)`,
+  (w, n) => `${w} is on a ${n}-win streak`,
 ];
 const HOOKS = [
   "Two weapon-balls, one shrinking arena, last one alive wins.",
@@ -60,20 +71,59 @@ function buildMeta(match, opts = {}) {
   const theme = match.theme || "the arena";
   const n = match.n || names.length;
 
-  const title = clampTitle(pick(rng, TITLE_FORMS)(a, b) + (n > 2 ? ` (+${n - 2} more)` : ""));
+  // --- champion streak (read the PRE-match state, compute where this puts us) ---
+  const stateDir = opts.stateDir || path.join(__dirname, "..", "state");
+  const prevChamp = readJson(path.join(stateDir, "champion.json"));
+  const champ = nextChampion(prevChamp, match);
+  const onStreak = champ && champ.streak >= 3 && champ.winner === winner;
+
+  // --- title ---
+  let title;
+  if (onStreak && rng() < 0.7) {
+    title = pick(rng, STREAK_TITLES)(winner, champ.streak);
+  } else {
+    title = pick(rng, TITLE_FORMS)(a, b) + (n > 2 ? ` (+${n - 2} more)` : "");
+  }
+  if (match.mutator) title += ` [${match.mutator}]`;
+  title = clampTitle(title);
+
+  // --- ranking leader (once we have enough data) ---
+  const rank = readJson(path.join(stateDir, "ranking.json"));
+  let leaderLine = "";
+  if (rank && (rank.matches || 0) >= 12 && rank.weapons) {
+    let bestK = null, bestPct = -1, bestG = 0;
+    for (const [k, v] of Object.entries(rank.weapons)) {
+      const g = (v.w || 0) + (v.l || 0);
+      if (g < 4) continue;
+      const pct = (v.w || 0) / g;
+      if (pct > bestPct) { bestPct = pct; bestK = k; bestG = g; }
+    }
+    if (bestK) leaderLine = `Win-rate leader: ${bestK} (${Math.round(bestPct * 100)}% of ${bestG})`;
+  }
 
   const playUrl = opts.playUrl || "https://galymzhan120202-cyber.github.io/weapon-ball-arena/";
   const matchup = n > 2 ? names.join(", ") : `${a} vs ${b}`;
+  const modifiers = [
+    match.mutator ? `Mutator: ${match.mutator}` : "",
+    match.hazard ? `Hazard: ${match.hazard}` : "",
+    (match.pickups && match.pickups.length)
+      ? `Pickups: ${match.pickups.map((p) => `${p.by} → ${p.buff}`).join(", ")}` : "",
+  ].filter(Boolean);
   const spoiler = opts.spoilerFree
     ? ""
-    : `\n\nWinner: ${winner}${match.finishText ? ` — ${match.finishText}` : ""}`;
+    : `\n\nWinner: ${winner}${match.finishText ? ` — ${match.finishText}` : ""}` +
+      (match.winnerKills ? `  ·  ${match.winnerKills} KO${match.winnerKills > 1 ? "s" : ""}` : "") +
+      (match.winnerHp != null ? `  ·  ${match.winnerHp} HP left` : "") +
+      (onStreak ? `\n${winner} is now on a ${champ.streak}-win streak.` : "");
 
   const description = [
     pick(rng, HOOKS),
     "",
     `Matchup: ${matchup}`,
     `Arena: ${theme}`,
+    ...modifiers,
     `Seed: ${seed} (same seed → same fight)`,
+    ...(leaderLine ? [leaderLine] : []),
     spoiler,
     "",
     `▶ Play it yourself: ${playUrl}`,
@@ -87,9 +137,11 @@ function buildMeta(match, opts = {}) {
     ...BASE_TAGS,
     a.toLowerCase(), b.toLowerCase(),
     `${a} vs ${b}`.toLowerCase(),
-    winner.toLowerCase() + " wins",
+    winner !== "—" ? winner.toLowerCase() + " wins" : "",
     theme.toLowerCase(),
-  ]);
+    match.mutator ? match.mutator.toLowerCase() : "",
+    match.hazard ? match.hazard.toLowerCase() : "",
+  ].filter(Boolean));
 
   return {
     title,

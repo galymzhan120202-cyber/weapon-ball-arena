@@ -124,6 +124,13 @@ function parseArgs(argv) {
     }
   }
 
+  // stamp the URL back into the match json so record-result.js / the
+  // workflow can pick it up without re-parsing stdout.
+  try {
+    match.videoUrl = url; match.videoId = id;
+    fs.writeFileSync(jsonPath, JSON.stringify(match, null, 2));
+  } catch (e) { /* non-fatal */ }
+
   const secs = ((Date.now() - t0) / 1000).toFixed(0);
   console.log(`✓ ${url}  ·  ${meta.privacyStatus}  ·  ${secs}s`);
 

@@ -1,0 +1,8 @@
+{
+  "weapons": {
+    "shuriken": { "w": 1, "l": 0 },
+    "spear": { "w": 0, "l": 1 }
+  },
+  "matches": 1,
+  "updated": "2026-09-04T00:00:00.000Z"
+}
