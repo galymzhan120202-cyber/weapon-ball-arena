@@ -151,37 +151,37 @@ const MAT = {
 const ZONE_SCALE = 1.22;
 const ROSTER = [
   { name: "Sword",       kind: "sword",    color: "#e1e1e8", power: 1.05, material: "metal",      reach: 1.00, zone: [[0, -0.72, 0.50]] },
-  { name: "Katana",      kind: "katana",   color: "#f0f0f8", power: 1.02, material: "metal",      reach: 1.05, zone: [[0, -0.72, 0.50]] },
-  { name: "Axe",         kind: "axe",      color: "#d65c44", power: 1.04, material: "metal",      reach: 0.95, zone: [[0.28, -0.59, 0.52]] },
-  { name: "Hammer",      kind: "hammer",   color: "#9696a0", power: 1.12, material: "blunt",      reach: 0.85, zone: [[0, -0.58, 0.52]] },
-  { name: "Warhammer",   kind: "warhammer",color: "#788296", power: 1.10, material: "blunt",      reach: 1.05, zone: [[0, -0.56, 0.54]] },
+  { name: "Katana",      kind: "katana",   color: "#f0f0f8", power: 1.12, material: "metal",      reach: 1.05, zone: [[0, -0.72, 0.50]] },
+  { name: "Axe",         kind: "axe",      color: "#d65c44", power: 0.98, material: "metal",      reach: 0.95, zone: [[0.28, -0.59, 0.52]] },
+  { name: "Hammer",      kind: "hammer",   color: "#9696a0", power: 1.00, material: "blunt",      reach: 0.85, zone: [[0, -0.58, 0.52]] },
+  { name: "Warhammer",   kind: "warhammer",color: "#788296", power: 1.02, material: "blunt",      reach: 1.05, zone: [[0, -0.56, 0.54]] },
   { name: "Spear",       kind: "spear",    color: "#60ce94", power: 1.02, material: "metal",      reach: 1.25, zone: [[0, -0.82, 0.50]] },
   { name: "Trident",     kind: "trident",  color: "#46bed2", power: 1.06, material: "metal",      reach: 1.22, zone: [[0, -0.82, 0.50]] },
-  { name: "Dagger",      kind: "dagger",   color: "#eccd46", power: 0.78, material: "metal",      reach: 0.72, zone: [[0, -0.72, 0.50]] },
-  { name: "Kunai",       kind: "kunai",    color: "#c8c8d2", power: 0.92, material: "metal",      reach: 0.70, zone: [[0, -0.72, 0.50]] },
-  { name: "Mace",        kind: "mace",     color: "#b064d6", power: 1.08, material: "blunt",      reach: 0.85, zone: [[0, -0.58, 0.52]] },
-  { name: "Flail",       kind: "flail",    color: "#d28c3c", power: 1.10, material: "blunt",      reach: 0.95, zone: [[0, -0.86, 0.46]] },
-  { name: "Nunchaku",    kind: "nunchaku", color: "#8c5a32", power: 0.98, material: "wood",       reach: 0.90, zone: [[0, -0.86, 0.44]] },
+  { name: "Dagger",      kind: "dagger",   color: "#eccd46", power: 1.08, material: "metal",      reach: 0.72, zone: [[0, -0.72, 0.50]] },
+  { name: "Kunai",       kind: "kunai",    color: "#c8c8d2", power: 1.08, material: "metal",      reach: 0.70, zone: [[0, -0.72, 0.50]] },
+  { name: "Mace",        kind: "mace",     color: "#b064d6", power: 1.00, material: "blunt",      reach: 0.85, zone: [[0, -0.58, 0.52]] },
+  { name: "Flail",       kind: "flail",    color: "#d28c3c", power: 1.02, material: "blunt",      reach: 0.95, zone: [[0, -0.86, 0.46]] },
+  { name: "Nunchaku",    kind: "nunchaku", color: "#8c5a32", power: 1.10, material: "wood",       reach: 0.90, zone: [[0, -0.86, 0.44]] },
   { name: "Whip",        kind: "whip",     color: "#b43c3c", power: 1.00, material: "whip",       reach: 0.95, zone: [[0, -0.92, 0.42]] },
-  { name: "Claws",       kind: "claws",    color: "#e6e6eb", power: 1.00, material: "metal",      reach: 0.75, zone: [[0, -0.55, 0.54]] },
+  { name: "Claws",       kind: "claws",    color: "#e6e6eb", power: 1.10, material: "metal",      reach: 0.75, zone: [[0, -0.55, 0.54]] },
   { name: "Scythe",      kind: "scythe",   color: "#48bee2", power: 1.08, material: "metal",      reach: 1.15, zone: [[0.22, -0.62, 0.54]] },
-  { name: "Chainsaw",    kind: "chainsaw", color: "#e6be28", power: 0.98, material: "mechanical", reach: 1.00, zone: [[0, -0.44, 0.56]] },
+  { name: "Chainsaw",    kind: "chainsaw", color: "#e6be28", power: 0.84, material: "mechanical", reach: 1.00, zone: [[0, -0.44, 0.56]] },
   { name: "Staff",       kind: "staff",    color: "#aa82dc", power: 1.02, material: "wood",       reach: 1.20, zone: [[0, -0.82, 0.50]] },
   { name: "Shuriken",    kind: "shuriken", color: "#d23c5a", power: 0.86, material: "metal",      reach: 0.65, zone: null },
-  { name: "Rapier",      kind: "rapier",   color: "#ebebf0", power: 0.98, material: "metal",      reach: 1.15, zone: [[0, -0.88, 0.46]] },
+  { name: "Rapier",      kind: "rapier",   color: "#ebebf0", power: 1.06, material: "metal",      reach: 1.15, zone: [[0, -0.88, 0.46]] },
   { name: "Halberd",     kind: "halberd",  color: "#c8643c", power: 1.05, material: "metal",      reach: 1.25, zone: [[0, -0.80, 0.40], [0.26, -0.56, 0.44]] },
   { name: "Cleaver",     kind: "cleaver",  color: "#d25a5a", power: 1.10, material: "metal",      reach: 0.85, zone: [[0, -0.62, 0.52]] },
-  { name: "Boomerang",   kind: "boomerang",color: "#be8c4b", power: 0.95, material: "wood",       reach: 0.90, zone: null },
-  { name: "War Axe",     kind: "war_axe",  color: "#b04230", power: 1.02, material: "metal",      reach: 1.05, zone: [[-0.31, -0.58, 0.38], [0.31, -0.58, 0.38]] },
-  { name: "Tomahawk",    kind: "tomahawk", color: "#96b65c", power: 1.00, material: "metal",      reach: 0.82, zone: [[0.26, -0.60, 0.50]] },
-  { name: "Dual Daggers",kind: "dual_daggers", color: "#ffa52d", power: 0.95, material: "metal",  reach: 0.80, zone: [[-0.45, -0.62, 0.40], [0.45, -0.62, 0.40]] },
+  { name: "Boomerang",   kind: "boomerang",color: "#be8c4b", power: 0.90, material: "wood",       reach: 0.90, zone: null },
+  { name: "War Axe",     kind: "war_axe",  color: "#b04230", power: 1.08, material: "metal",      reach: 1.05, zone: [[-0.31, -0.58, 0.38], [0.31, -0.58, 0.38]] },
+  { name: "Tomahawk",    kind: "tomahawk", color: "#96b65c", power: 1.06, material: "metal",      reach: 0.82, zone: [[0.26, -0.60, 0.50]] },
+  { name: "Dual Daggers",kind: "dual_daggers", color: "#ffa52d", power: 1.08, material: "metal",  reach: 0.80, zone: [[-0.45, -0.62, 0.40], [0.45, -0.62, 0.40]] },
   { name: "Pistol",      kind: "pistol",   color: "#46464e", power: 0.82, material: "metal",      reach: 0.80, zone: [[0, -0.68, 0.46]] },
 ];
 
 // damage-model constants (ported). A few are `let` because a per-match
 // MUTATOR (rolled from the seed, see below) can retune them before the
 // World is built — the roll happens up front so determinism is intact.
-const POWER_DMG_EXPONENT = 0.38;
+const POWER_DMG_EXPONENT = 0.32;   // balance pass 3: compress the power spread
 const ACTIVE_DAMAGE_MULT  = 1.15;
 const GUARD_DAMAGE_MULT    = 0.28;
 const CLEAN_HIT_BONUS      = 1.15;
@@ -313,24 +313,22 @@ const TRAIT = {
   // balance pass 1 (2026-09-04, from a 180-match base sweep): ranged +
   // chainsaw + hammer-knock were dominating, fast/low-power weapons were
   // losing 100% — projectiles and DoT nerfed hard, knock brought down.
-  // balance pass 2: chainsaw DoT + blunt family still dominant, projectiles
-  // over-nerfed. DoT gutted, knock made cosmetic, ranged brought back up.
-  chainsaw:     { dot: 7, cd: 1.4 },
-  hammer:       { knock: 1.12, cd: 1.15 },
-  warhammer:    { knock: 1.15, cd: 1.2 },
-  mace:         { knock: 1.1, cd: 1.1 },
-  flail:        { knock: 1.1, cd: 1.05 },
-  rapier:       { crit: 0.10, parry: 0.14 },
-  katana:       { crit: 0.09, parry: 0.10 },
-  dagger:       { cd: 0.72 },
-  kunai:        { cd: 0.8 },
-  dual_daggers: { cd: 0.68 },
-  claws:        { cd: 0.82 },
-  whip:         { pull: 260 },
-  nunchaku:     { pull: 180 },
-  pistol:       { proj: { speed: 1500, dmg: 6, cd: 4.0, returns: false, col: "#ffd27a", spin: 0 } },
-  shuriken:     { proj: { speed: 1150, dmg: 8, cd: 2.1, returns: false, col: "#ff4d6a", spin: 46 } },
-  boomerang:    { proj: { speed: 950,  dmg: 9, cd: 2.5, returns: true,  col: "#e0b070", spin: 34 } },
+  // balance pass 3: chainsaw DoT + ranged still 100%, daggers still ~0%.
+  // DoT is now a tiny burst, projectiles are chip-only, the dagger "faster
+  // re-hit" trait was hurting them (short reach) so it's dropped and their
+  // power carries it. Blunt knock removed — cosmetic only via the elastic
+  // collision now.
+  chainsaw:     { dot: 4, cd: 1.5 },
+  hammer:       { cd: 1.1 },
+  warhammer:    { cd: 1.15 },
+  mace:         { cd: 1.08 },
+  flail:        { cd: 1.05 },
+  rapier:       { crit: 0.10, parry: 0.12 },
+  katana:       { crit: 0.09, parry: 0.09 },
+  whip:         { pull: 240 },
+  pistol:       { proj: { speed: 1500, dmg: 4, cd: 5.0, returns: false, col: "#ffd27a", spin: 0 } },
+  shuriken:     { proj: { speed: 1150, dmg: 5, cd: 2.6, returns: false, col: "#ff4d6a", spin: 46 } },
+  boomerang:    { proj: { speed: 950,  dmg: 5, cd: 3.0, returns: true,  col: "#e0b070", spin: 34 } },
 };
 
 // ---------------------------------------------------------------------
@@ -949,7 +947,7 @@ class World {
       const T = TRAIT[att.kind]; if (!T || !atkStrike.active) return;
       if (T.knock) { vic.vx += nx * (att === a ? 1 : -1) * 260 * T.knock; vic.vy += ny * (att === a ? 1 : -1) * 260 * T.knock; vic.spin += rnd(-6, 6); }
       if (T.pull)  { const [px, py] = norm(att.x - vic.x, att.y - vic.y); vic.vx += px * T.pull; vic.vy += py * T.pull; }
-      if (T.dot)   { vic._dot = { by: att, dps: T.dot, t: 0.55 }; }
+      if (T.dot)   { vic._dot = { by: att, dps: T.dot, t: 0.35 }; }
     };
     idTrait(a, b, sa); idTrait(b, a, sb);
 
