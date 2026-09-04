@@ -217,13 +217,19 @@ Toxic Lab, Blood Moon) → 16-ға дейін кеңейеді. Әрқайсыс
       shatter + confetti, "comment your pick" биті, champion streak +
       win-rate ledger, meta.js байытылды. CI dry-run жасыл (WebCodecs 40 fps).
 
-### v0.7 — кейінге қалған идеялар (талқыланбаған)
-- [ ] **Турнир аптасы** — кездейсоқтың орнына апта бойы bracket ("Round 1:
-      Sword vs Axe"). Cron/scheduling қайта құруды қажет етеді + `state/bracket.json`.
-- [ ] **Айлық "Power Ranking" видеосы** — `state/ranking.json`-нан автоматты
-      түрде рендер (жаңа режим `index.html?mode=ranking` немесе бөлек бет керек).
-- [ ] Pinned-комментпен келесі матчты дауыс беру (`?a=&b=` дайын, workflow-қа
-      дауыс оқитын қадам қосу керек).
+### v0.7 — ТОЛЫҚ АВТОМАТ ✅ (2026-09-04, нөл қатысу)
+- [x] **Турнир bracket** — `state/tournament.json` (8 қару, QF→SF→FINAL).
+      Әр director run келесі матчты ойнайды; финал бітсе жаңа турнир өзі
+      сидтеледі. `upload/tournament.js next|record`. meta.js "🏆 Quarterfinal
+      1/4: A vs B" деп рамкалайды. CI dry-run жасыл (Nunchaku vs Shuriken).
+- [x] **Айлық "Power Ranking" видеосы** — `ranking.html` (жеке recorder-driven
+      бет, top-10 win-rate leaderboard, ~14с). `.github/workflows/ranking.yml`
+      cron 12:00 UTC әр айдың 1-і. CI dry-run жасыл.
+- [x] **Community дауыс** — `upload/vote.js` соңғы видеолардың
+      комментарийлерінен қару атауларын санайды (fuzzy + алиастар). Айқын
+      top-2 болса → сол матч (bracket-тың орнына). Тек `youtube.readonly`
+      скоуп керек, ештеңе постпайды, қайта авторизация керек емес. Дауыс
+      болмаса — үнсіз bracket-ке қайтады.
 
 ### v1.0 — тұрақты
 - [ ] Күнде 3 Shorts автоматты, тұрақты (cron 3×/күн орнатылды).
