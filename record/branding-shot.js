@@ -58,8 +58,16 @@ function arg(name, def) {
     await page.goto(url, { waitUntil: "networkidle0" });
     await page.waitForFunction("window.__WBA_BRANDING_READY__ === true", { timeout: 15000 });
 
-    for (const [id, name] of [["banner", "branding_banner.png"], ["avatar", "branding_avatar.png"], ["cover", "branding_cover.png"]]) {
-      const dataUrl = await page.$eval("#" + id, (c) => c.toDataURL("image/png"));
+    const jobs = [
+      ["banner", "branding_banner.png", "image/png"],
+      ["avatar", "branding_avatar.png", "image/png"],
+      ["cover",  "branding_cover.png",  "image/png"],
+      ["gm1",    "gm_512x384.jpg",      "image/jpeg"],
+      ["gm2",    "gm_512x512.jpg",      "image/jpeg"],
+      ["gm3",    "gm_512x340.jpg",      "image/jpeg"],
+    ];
+    for (const [id, name, mime] of jobs) {
+      const dataUrl = await page.$eval("#" + id, (c, m) => c.toDataURL(m, 0.92), mime);
       const buf = Buffer.from(dataUrl.split(",")[1], "base64");
       const dest = path.join(outDir, name);
       fs.writeFileSync(dest, buf);

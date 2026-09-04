@@ -60,6 +60,15 @@
     <canvas id="cover" width="1600" height="400" style="width:520px"></canvas>
     <button class="btn" data-dl="cover" data-name="branding_cover.png">↓ Cover</button>
   </div>
+  <div class="card">
+    <h2>GameMonetize thumbnails</h2>
+    <canvas id="gm1" width="512" height="384" style="width:256px"></canvas>
+    <canvas id="gm2" width="512" height="512" style="width:256px"></canvas>
+    <canvas id="gm3" width="512" height="340" style="width:256px"></canvas>
+    <button class="btn" data-dl="gm1" data-name="gm_512x384.jpg">↓ 512×384</button>
+    <button class="btn" data-dl="gm2" data-name="gm_512x512.jpg">↓ 512×512</button>
+    <button class="btn" data-dl="gm3" data-name="gm_512x340.jpg">↓ 512×340</button>
+  </div>
 </div>
 
 <script>
@@ -390,6 +399,26 @@ function roundRect(ctx, x, y, w, h, r) {
 
   grain(ctx, W, H, LIGHT ? 0.03 : 0.05);
 })();
+
+/* ===================== GameMonetize thumbnails ===================== */
+["gm1", "gm2", "gm3"].forEach((id) => {
+  const c = document.getElementById(id);
+  if (!c) return;
+  const ctx = c.getContext("2d");
+  const W = c.width, H = c.height;
+  backdrop(ctx, W, H);
+  const g = ctx.createRadialGradient(W / 2, H * 0.4, 0, W / 2, H / 2, W * 0.7);
+  g.addColorStop(0, rgba(ACCENT, 0.16)); g.addColorStop(1, rgba(ACCENT, 0));
+  ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+  const r = Math.min(W, H) * 0.2;
+  mark(ctx, W / 2, H * 0.38, r);
+  ctx.textAlign = "center"; ctx.fillStyle = INK; ctx.textBaseline = "alphabetic";
+  // fit the wordmark to ~86% width
+  let fs = Math.round(W * 0.12);
+  do { ctx.font = `700 ${fs}px ${FONT}`; if (ctx.measureText("WEAPON BALL ARENA").width <= W * 0.86) break; fs -= 2; } while (fs > 12);
+  ctx.fillText("WEAPON BALL ARENA", W / 2, H * 0.86);
+  grain(ctx, W, H, 0.045);
+});
 
 /* ---------- letter-spacing helpers (canvas has none natively) ---------- */
 function measureTracked(ctx, str, track) {
