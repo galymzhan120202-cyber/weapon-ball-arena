@@ -79,6 +79,22 @@ const DEBUG     = Q.get("debug") === "1";   // show seed / dev details on screen
 // frames). Ko-fi tips are pay-what-you-want. Empty = hidden.
 const FUND_URL  = "https://ko-fi.com/weaponballarena";
 
+// ---------------------------------------------------------------------
+// Playable-mode menu state (mode + fighter count + weapon picks).
+// Ignored in AUTO / EXTERNAL (recorder) runs. Rebuilt each time the
+// player hits START. `buttons` is repopulated every menu frame for
+// pointer hit-testing.
+// ---------------------------------------------------------------------
+const MENU = {
+  screen: "home",           // "home" | "weapons"
+  pickFor: "a",             // which slot the weapons grid is choosing
+  mode: "play",             // "play" (you steer fighter 0) | "watch" (all AI)
+  n: 2,                     // fighter count 2..4
+  pickA: null,              // your weapon kind, null = random
+  pickB: null,              // opponent kind, null = random
+  buttons: [],
+};
+
 const W = 1080, H = 1920;
 const DT = 1 / 120;                 // fixed physics step (determinism)
 const FPS = 60;                     // render / capture frame rate
@@ -134,32 +150,32 @@ const MAT = {
 };
 const ZONE_SCALE = 1.22;
 const ROSTER = [
-  { name: "Sword",       kind: "sword",    color: "#e1e1e8", power: 1.00, material: "metal",      reach: 1.00, zone: [[0, -0.72, 0.50]] },
+  { name: "Sword",       kind: "sword",    color: "#e1e1e8", power: 1.05, material: "metal",      reach: 1.00, zone: [[0, -0.72, 0.50]] },
   { name: "Katana",      kind: "katana",   color: "#f0f0f8", power: 1.02, material: "metal",      reach: 1.05, zone: [[0, -0.72, 0.50]] },
-  { name: "Axe",         kind: "axe",      color: "#d65c44", power: 1.15, material: "metal",      reach: 0.95, zone: [[0.28, -0.59, 0.52]] },
-  { name: "Hammer",      kind: "hammer",   color: "#9696a0", power: 1.28, material: "blunt",      reach: 0.85, zone: [[0, -0.58, 0.52]] },
-  { name: "Warhammer",   kind: "warhammer",color: "#788296", power: 1.38, material: "blunt",      reach: 1.05, zone: [[0, -0.56, 0.54]] },
-  { name: "Spear",       kind: "spear",    color: "#60ce94", power: 0.92, material: "metal",      reach: 1.25, zone: [[0, -0.82, 0.50]] },
-  { name: "Trident",     kind: "trident",  color: "#46bed2", power: 0.98, material: "metal",      reach: 1.22, zone: [[0, -0.82, 0.50]] },
+  { name: "Axe",         kind: "axe",      color: "#d65c44", power: 1.04, material: "metal",      reach: 0.95, zone: [[0.28, -0.59, 0.52]] },
+  { name: "Hammer",      kind: "hammer",   color: "#9696a0", power: 1.12, material: "blunt",      reach: 0.85, zone: [[0, -0.58, 0.52]] },
+  { name: "Warhammer",   kind: "warhammer",color: "#788296", power: 1.10, material: "blunt",      reach: 1.05, zone: [[0, -0.56, 0.54]] },
+  { name: "Spear",       kind: "spear",    color: "#60ce94", power: 1.02, material: "metal",      reach: 1.25, zone: [[0, -0.82, 0.50]] },
+  { name: "Trident",     kind: "trident",  color: "#46bed2", power: 1.06, material: "metal",      reach: 1.22, zone: [[0, -0.82, 0.50]] },
   { name: "Dagger",      kind: "dagger",   color: "#eccd46", power: 0.78, material: "metal",      reach: 0.72, zone: [[0, -0.72, 0.50]] },
-  { name: "Kunai",       kind: "kunai",    color: "#c8c8d2", power: 0.72, material: "metal",      reach: 0.70, zone: [[0, -0.72, 0.50]] },
-  { name: "Mace",        kind: "mace",     color: "#b064d6", power: 1.22, material: "blunt",      reach: 0.85, zone: [[0, -0.58, 0.52]] },
-  { name: "Flail",       kind: "flail",    color: "#d28c3c", power: 1.30, material: "blunt",      reach: 0.95, zone: [[0, -0.86, 0.46]] },
-  { name: "Nunchaku",    kind: "nunchaku", color: "#8c5a32", power: 0.85, material: "wood",       reach: 0.90, zone: [[0, -0.86, 0.44]] },
-  { name: "Whip",        kind: "whip",     color: "#b43c3c", power: 0.85, material: "whip",       reach: 0.95, zone: [[0, -0.92, 0.42]] },
-  { name: "Claws",       kind: "claws",    color: "#e6e6eb", power: 0.88, material: "metal",      reach: 0.75, zone: [[0, -0.55, 0.54]] },
+  { name: "Kunai",       kind: "kunai",    color: "#c8c8d2", power: 0.92, material: "metal",      reach: 0.70, zone: [[0, -0.72, 0.50]] },
+  { name: "Mace",        kind: "mace",     color: "#b064d6", power: 1.08, material: "blunt",      reach: 0.85, zone: [[0, -0.58, 0.52]] },
+  { name: "Flail",       kind: "flail",    color: "#d28c3c", power: 1.10, material: "blunt",      reach: 0.95, zone: [[0, -0.86, 0.46]] },
+  { name: "Nunchaku",    kind: "nunchaku", color: "#8c5a32", power: 0.98, material: "wood",       reach: 0.90, zone: [[0, -0.86, 0.44]] },
+  { name: "Whip",        kind: "whip",     color: "#b43c3c", power: 1.00, material: "whip",       reach: 0.95, zone: [[0, -0.92, 0.42]] },
+  { name: "Claws",       kind: "claws",    color: "#e6e6eb", power: 1.00, material: "metal",      reach: 0.75, zone: [[0, -0.55, 0.54]] },
   { name: "Scythe",      kind: "scythe",   color: "#48bee2", power: 1.08, material: "metal",      reach: 1.15, zone: [[0.22, -0.62, 0.54]] },
-  { name: "Chainsaw",    kind: "chainsaw", color: "#e6be28", power: 1.35, material: "mechanical", reach: 1.00, zone: [[0, -0.44, 0.56]] },
-  { name: "Staff",       kind: "staff",    color: "#aa82dc", power: 0.80, material: "wood",       reach: 1.20, zone: [[0, -0.82, 0.50]] },
-  { name: "Shuriken",    kind: "shuriken", color: "#d23c5a", power: 0.75, material: "metal",      reach: 0.65, zone: null },
-  { name: "Rapier",      kind: "rapier",   color: "#ebebf0", power: 0.85, material: "metal",      reach: 1.15, zone: [[0, -0.88, 0.46]] },
-  { name: "Halberd",     kind: "halberd",  color: "#c8643c", power: 1.20, material: "metal",      reach: 1.25, zone: [[0, -0.80, 0.40], [0.26, -0.56, 0.44]] },
+  { name: "Chainsaw",    kind: "chainsaw", color: "#e6be28", power: 0.98, material: "mechanical", reach: 1.00, zone: [[0, -0.44, 0.56]] },
+  { name: "Staff",       kind: "staff",    color: "#aa82dc", power: 1.02, material: "wood",       reach: 1.20, zone: [[0, -0.82, 0.50]] },
+  { name: "Shuriken",    kind: "shuriken", color: "#d23c5a", power: 0.86, material: "metal",      reach: 0.65, zone: null },
+  { name: "Rapier",      kind: "rapier",   color: "#ebebf0", power: 0.98, material: "metal",      reach: 1.15, zone: [[0, -0.88, 0.46]] },
+  { name: "Halberd",     kind: "halberd",  color: "#c8643c", power: 1.05, material: "metal",      reach: 1.25, zone: [[0, -0.80, 0.40], [0.26, -0.56, 0.44]] },
   { name: "Cleaver",     kind: "cleaver",  color: "#d25a5a", power: 1.10, material: "metal",      reach: 0.85, zone: [[0, -0.62, 0.52]] },
-  { name: "Boomerang",   kind: "boomerang",color: "#be8c4b", power: 0.82, material: "wood",       reach: 0.90, zone: null },
-  { name: "War Axe",     kind: "war_axe",  color: "#b04230", power: 1.11, material: "metal",      reach: 1.05, zone: [[-0.31, -0.58, 0.38], [0.31, -0.58, 0.38]] },
-  { name: "Tomahawk",    kind: "tomahawk", color: "#96b65c", power: 0.90, material: "metal",      reach: 0.82, zone: [[0.26, -0.60, 0.50]] },
-  { name: "Dual Daggers",kind: "dual_daggers", color: "#ffa52d", power: 0.80, material: "metal",  reach: 0.80, zone: [[-0.45, -0.62, 0.40], [0.45, -0.62, 0.40]] },
-  { name: "Pistol",      kind: "pistol",   color: "#46464e", power: 0.74, material: "metal",      reach: 0.80, zone: [[0, -0.68, 0.46]] },
+  { name: "Boomerang",   kind: "boomerang",color: "#be8c4b", power: 0.95, material: "wood",       reach: 0.90, zone: null },
+  { name: "War Axe",     kind: "war_axe",  color: "#b04230", power: 1.02, material: "metal",      reach: 1.05, zone: [[-0.31, -0.58, 0.38], [0.31, -0.58, 0.38]] },
+  { name: "Tomahawk",    kind: "tomahawk", color: "#96b65c", power: 1.00, material: "metal",      reach: 0.82, zone: [[0.26, -0.60, 0.50]] },
+  { name: "Dual Daggers",kind: "dual_daggers", color: "#ffa52d", power: 0.95, material: "metal",  reach: 0.80, zone: [[-0.45, -0.62, 0.40], [0.45, -0.62, 0.40]] },
+  { name: "Pistol",      kind: "pistol",   color: "#46464e", power: 0.82, material: "metal",      reach: 0.80, zone: [[0, -0.68, 0.46]] },
 ];
 
 // damage-model constants (ported). A few are `let` because a per-match
@@ -294,22 +310,27 @@ const hazRng = mulberry32(hashStr(SEED + "hazard"));
 //   proj  : this weapon throws a projectile {speed,dmg,cd,returns,col,spin}
 // ---------------------------------------------------------------------
 const TRAIT = {
-  chainsaw:     { dot: 32, cd: 0.5 },
-  hammer:       { knock: 1.9, cd: 1.5 },
-  warhammer:    { knock: 2.1, cd: 1.6 },
-  mace:         { knock: 1.7, cd: 1.35 },
-  flail:        { knock: 1.6, cd: 1.25 },
-  rapier:       { crit: 0.12, parry: 0.22 },
-  katana:       { crit: 0.10, parry: 0.16 },
-  dagger:       { cd: 0.55 },
-  kunai:        { cd: 0.6 },
-  dual_daggers: { cd: 0.5 },
-  claws:        { cd: 0.62 },
-  whip:         { pull: 620 },
-  nunchaku:     { pull: 380 },
-  pistol:       { proj: { speed: 1500, dmg: 13, cd: 2.6, returns: false, col: "#ffd27a", spin: 0 } },
-  shuriken:     { proj: { speed: 1150, dmg: 8,  cd: 1.7, returns: false, col: "#ff4d6a", spin: 46 } },
-  boomerang:    { proj: { speed: 950,  dmg: 9,  cd: 2.7, returns: true,  col: "#e0b070", spin: 34 } },
+  // balance pass 1 (2026-09-04, from a 180-match base sweep): ranged +
+  // chainsaw + hammer-knock were dominating, fast/low-power weapons were
+  // losing 100% — projectiles and DoT nerfed hard, knock brought down.
+  // balance pass 2: chainsaw DoT + blunt family still dominant, projectiles
+  // over-nerfed. DoT gutted, knock made cosmetic, ranged brought back up.
+  chainsaw:     { dot: 7, cd: 1.4 },
+  hammer:       { knock: 1.12, cd: 1.15 },
+  warhammer:    { knock: 1.15, cd: 1.2 },
+  mace:         { knock: 1.1, cd: 1.1 },
+  flail:        { knock: 1.1, cd: 1.05 },
+  rapier:       { crit: 0.10, parry: 0.14 },
+  katana:       { crit: 0.09, parry: 0.10 },
+  dagger:       { cd: 0.72 },
+  kunai:        { cd: 0.8 },
+  dual_daggers: { cd: 0.68 },
+  claws:        { cd: 0.82 },
+  whip:         { pull: 260 },
+  nunchaku:     { pull: 180 },
+  pistol:       { proj: { speed: 1500, dmg: 6, cd: 4.0, returns: false, col: "#ffd27a", spin: 0 } },
+  shuriken:     { proj: { speed: 1150, dmg: 8, cd: 2.1, returns: false, col: "#ff4d6a", spin: 46 } },
+  boomerang:    { proj: { speed: 950,  dmg: 9, cd: 2.5, returns: true,  col: "#e0b070", spin: 34 } },
 };
 
 // ---------------------------------------------------------------------
@@ -407,14 +428,21 @@ class World {
     this.callout = null;            // {txt, t} big screen callout
     this.killCount = 0; this.lastKillT = -9;
 
-    // roster selection
+    // roster selection — URL picks (recorder / share links) first, then the
+    // playable-mode MENU choices, then a weighted random matchup.
+    const useMenu = !AUTO && !EXTERNAL;
     let picked = null;
     if (PICK_LIST) {
       const chosen = PICK_LIST.map(k => ROSTER.find(w => w.kind === k || w.name.toLowerCase() === k)).filter(Boolean);
       if (chosen.length >= 2) picked = chosen.slice(0, 8);
+    } else if (useMenu && (MENU.pickA || MENU.pickB)) {
+      const want = MENU.n;
+      const fixed = [MENU.pickA, MENU.pickB].map(k => k && ROSTER.find(w => w.kind === k)).filter(Boolean);
+      const pool = ROSTER.filter(w => !fixed.includes(w));
+      picked = fixed.concat(sample(pool, Math.max(0, want - fixed.length))).slice(0, want);
     }
     if (picked) this.defs = picked;
-    else this.defs = sample(ROSTER, FORCE_N || weightedPick([[2, 55], [3, 28], [4, 17]]));
+    else this.defs = sample(ROSTER, FORCE_N || (useMenu ? MENU.n : weightedPick([[2, 55], [3, 28], [4, 17]])));
     const n = this.defs.length;
     this.n = n;
 
@@ -456,7 +484,7 @@ class World {
     }
 
     // player is fighter 0 unless AUTO
-    this.playerIdx = AUTO ? -1 : 0;
+    this.playerIdx = (AUTO || EXTERNAL || MENU.mode === "watch") ? -1 : 0;
     this.hits = 0;
     this.mutator = MUT;
 
@@ -1029,7 +1057,7 @@ class World {
         if (g === p.owner && !p.back) continue;
         if (g === p.owner) continue;
         if (len(g.x - p.x, g.y - p.y) < g._baseR + 12) {
-          const scaled = p.dmg * Math.min(1.4, 0.6 + 0.5 * this.t / DMG_RAMP_IN);
+          const scaled = p.dmg * Math.min(1.15, 0.5 + 0.4 * this.t / DMG_RAMP_IN);
           if (g.shield > 0) { g.shield--; g._tag = { txt: "BLOCKED", t: 0.7 }; }
           else { g.hp -= scaled; g.eDmg = Math.round(scaled); g.dmgPopT = 0.7; g.hitFlash = 1; g.scale = 1.14; }
           const [kx, ky] = norm(p.vx, p.vy);
@@ -1363,6 +1391,162 @@ function drawHazard(world) {
   }
 }
 
+/* =====================================================================
+   Playable-mode menu — Apple-flavoured: near-black stage, one accent,
+   tight-tracked wordmark, rounded pills, generous air. Canvas-drawn +
+   pointer hit-tested (works on touch). MENU.buttons is rebuilt here
+   every frame; menuHit(x,y) consumes it.
+   ===================================================================== */
+const MENU_ACCENT = "#0a84ff";
+function mRound(x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.arcTo(x + w, y, x + w, y + h, r);
+  ctx.arcTo(x + w, y + h, x, y + h, r);
+  ctx.arcTo(x, y + h, x, y, r);
+  ctx.arcTo(x, y, x + w, y, r);
+  ctx.closePath();
+}
+function mPill(id, x, y, w, h, label, on, opts) {
+  opts = opts || {};
+  MENU.buttons.push({ id, x, y, w, h });
+  const rad = opts.rad != null ? opts.rad : h / 2;
+  ctx.save();
+  if (on) {
+    ctx.fillStyle = opts.solid || MENU_ACCENT;
+    mRound(x, y, w, h, rad); ctx.fill();
+    ctx.fillStyle = "#fff";
+  } else {
+    ctx.fillStyle = "rgba(255,255,255,.05)";
+    mRound(x, y, w, h, rad); ctx.fill();
+    ctx.strokeStyle = "rgba(255,255,255,.14)"; ctx.lineWidth = 1.5;
+    mRound(x + 0.75, y + 0.75, w - 1.5, h - 1.5, rad); ctx.stroke();
+    ctx.fillStyle = "rgba(255,255,255,.82)";
+  }
+  ctx.font = (opts.font || "600 " + Math.round(h * 0.42) + "px") + ' "SF Pro Display", -apple-system, "Segoe UI", sans-serif';
+  ctx.textAlign = "center"; ctx.textBaseline = "middle";
+  ctx.fillText(label, x + w / 2, y + h / 2 + 1);
+  ctx.restore();
+  ctx.textBaseline = "alphabetic";
+}
+function drawMenu() {
+  MENU.buttons.length = 0;
+  const F = '"SF Pro Display", -apple-system, "Segoe UI", system-ui, sans-serif';
+
+  // stage
+  const bg = ctx.createRadialGradient(W / 2, H * 0.32, 0, W / 2, H * 0.42, Math.max(W, H) * 0.75);
+  bg.addColorStop(0, "#17181d"); bg.addColorStop(0.55, "#101014"); bg.addColorStop(1, "#08080a");
+  ctx.fillStyle = "#08080a"; ctx.fillRect(0, 0, W, H);
+  ctx.fillStyle = bg; ctx.fillRect(0, 0, W, H);
+  const gl = ctx.createRadialGradient(W / 2, -H * 0.12, 0, W / 2, -H * 0.12, W * 0.6);
+  gl.addColorStop(0, "rgba(10,132,255,0.14)"); gl.addColorStop(1, "rgba(10,132,255,0)");
+  ctx.fillStyle = gl; ctx.fillRect(0, 0, W, H);
+
+  if (MENU.screen === "weapons") return drawWeaponPicker(F);
+
+  // ---- wordmark ----
+  ctx.textAlign = "center"; ctx.fillStyle = "#f5f5f7";
+  ctx.font = `600 96px ${F}`;
+  ctx.save(); ctx.translate(0, 0);
+  // tight tracking
+  const word = "Weapon Ball Arena";
+  let tw = 0; for (const ch of word) tw += ctx.measureText(ch).width - 2;
+  let cur = W / 2 - tw / 2;
+  for (const ch of word) { ctx.textAlign = "left"; ctx.fillText(ch, cur, 300); cur += ctx.measureText(ch).width - 2; }
+  ctx.restore();
+  ctx.textAlign = "center"; ctx.fillStyle = "#86868b"; ctx.font = `400 30px ${F}`;
+  ctx.fillText("Physics duels. A new fight every day.", W / 2, 352);
+
+  const L = 200;                                    // left rail x
+
+  // ---- MODE ----
+  ctx.fillStyle = "#86868b"; ctx.font = `600 24px ${F}`; ctx.textAlign = "left";
+  ctx.fillText("MODE", L, 520);
+  mPill("mode_play",  L,       540, 330, 100, "Play",  MENU.mode === "play");
+  mPill("mode_watch", L + 350, 540, 330, 100, "Watch", MENU.mode === "watch");
+  ctx.fillStyle = "#6e6e73"; ctx.font = `400 24px ${F}`; ctx.textAlign = "left";
+  ctx.fillText(MENU.mode === "play" ? "You steer one ball — pointer aims, hold to thrust."
+                                    : "Sit back and watch the AI fight it out.", L, 690);
+
+  // ---- FIGHTERS ----
+  ctx.fillStyle = "#86868b"; ctx.font = `600 24px ${F}`;
+  ctx.fillText("FIGHTERS", L, 770);
+  [2, 3, 4].forEach((k, i) => mPill("n_" + k, L + i * 150, 790, 130, 92, "" + k, MENU.n === k));
+
+  // ---- WEAPONS (play mode) ----
+  if (MENU.mode === "play") {
+    ctx.fillStyle = "#86868b"; ctx.font = `600 24px ${F}`;
+    ctx.fillText("YOUR WEAPON", L, 950);
+    mPill("pick_a", L, 970, 400, 96, MENU.pickA ? prettyKind(MENU.pickA) : "Random", !!MENU.pickA, { rad: 20, font: "600 34px" });
+    ctx.fillStyle = "#86868b"; ctx.font = `600 24px ${F}`;
+    ctx.fillText("OPPONENT", L + 440, 950);
+    mPill("pick_b", L + 440, 970, 400, 96, MENU.pickB ? prettyKind(MENU.pickB) : "Random", !!MENU.pickB, { rad: 20, font: "600 34px" });
+  }
+
+  // ---- START ----
+  mPill("start", W / 2 - 320, 1240, 640, 140, MENU.mode === "play" ? "Fight" : "Watch fight", true,
+        { rad: 44, solid: MENU_ACCENT, font: "700 54px" });
+
+  ctx.fillStyle = "#6e6e73"; ctx.font = `400 24px ${F}`; ctx.textAlign = "center";
+  ctx.fillText("Space or tap the button to start  ·  R restart  ·  M mute", W / 2, 1470);
+}
+function drawWeaponPicker(F) {
+  ctx.textAlign = "center"; ctx.fillStyle = "#f5f5f7"; ctx.font = `600 56px ${F}`;
+  ctx.fillText(MENU.pickFor === "a" ? "Your weapon" : "Opponent", W / 2, 170);
+
+  const cols = 3, cw = 300, ch = 108, gapx = 24, gapy = 20;
+  const gridW = cols * cw + (cols - 1) * gapx;
+  const x0 = (W - gridW) / 2, y0 = 240;
+  const cells = [{ kind: null, name: "Random" }].concat(ROSTER.map(w => ({ kind: w.kind, name: w.name, color: w.color })));
+  const sel = MENU.pickFor === "a" ? MENU.pickA : MENU.pickB;
+  cells.forEach((c, i) => {
+    const cx = x0 + (i % cols) * (cw + gapx);
+    const cy = y0 + Math.floor(i / cols) * (ch + gapy);
+    const on = (c.kind || null) === (sel || null);
+    MENU.buttons.push({ id: "w_" + (c.kind || "random"), x: cx, y: cy, w: cw, h: ch, kind: c.kind || null });
+    ctx.save();
+    ctx.fillStyle = on ? MENU_ACCENT : "rgba(255,255,255,.05)";
+    mRound(cx, cy, cw, ch, 20); ctx.fill();
+    if (!on) { ctx.strokeStyle = "rgba(255,255,255,.12)"; ctx.lineWidth = 1.5; mRound(cx + 1, cy + 1, cw - 2, ch - 2, 20); ctx.stroke(); }
+    if (c.color) {
+      ctx.fillStyle = c.color;
+      ctx.beginPath(); ctx.arc(cx + 44, cy + ch / 2, 16, 0, Math.PI * 2); ctx.fill();
+    }
+    ctx.fillStyle = on ? "#fff" : "rgba(255,255,255,.85)";
+    ctx.font = `600 30px ${F}`; ctx.textAlign = "left"; ctx.textBaseline = "middle";
+    ctx.fillText(c.name, cx + (c.color ? 76 : 28), cy + ch / 2 + 1);
+    ctx.restore();
+    ctx.textBaseline = "alphabetic";
+  });
+  mPill("wp_back", W / 2 - 200, H - 200, 400, 96, "Done", true, { rad: 30, font: "700 40px" });
+}
+function prettyKind(k) {
+  const w = ROSTER.find(x => x.kind === k);
+  return w ? w.name : k;
+}
+function menuHit(x, y) {
+  for (const b of MENU.buttons) {
+    if (x < b.x || x > b.x + b.w || y < b.y || y > b.y + b.h) continue;
+    const id = b.id;
+    if (id === "mode_play") MENU.mode = "play";
+    else if (id === "mode_watch") MENU.mode = "watch";
+    else if (id.startsWith("n_")) MENU.n = parseInt(id.slice(2), 10);
+    else if (id === "pick_a") { MENU.screen = "weapons"; MENU.pickFor = "a"; }
+    else if (id === "pick_b") { MENU.screen = "weapons"; MENU.pickFor = "b"; }
+    else if (id === "wp_back") MENU.screen = "home";
+    else if (id.startsWith("w_")) {
+      if (MENU.pickFor === "a") MENU.pickA = b.kind; else MENU.pickB = b.kind;
+      MENU.screen = "home";
+    } else if (id === "start") startFromMenu();
+    return true;
+  }
+  return false;
+}
+function startFromMenu() {
+  world = new World();
+  world.state = "intro"; world.t = 0; prevState = "intro";
+}
+
 function render(world) {
   const th = world.theme;
 
@@ -1558,24 +1742,7 @@ function drawHud(world) {
   }
 
   // ---------- menu ----------
-  if (world.state === "menu") {
-    ctx.textAlign = "center";
-    ctx.font = "800 118px Segoe UI, sans-serif"; ctx.fillStyle = "#fff";
-    ctx.fillText("WEAPON", W / 2, world.cy - 210);
-    ctx.fillText("BALL ARENA", W / 2, world.cy - 90);
-    ctx.font = "bold 30px Segoe UI, sans-serif"; ctx.fillStyle = "rgba(255,255,255,.75)";
-    ctx.fillText(world.fighters.map(f => f.name).join("   vs   "), W / 2, world.cy + 10);
-    ctx.font = "24px Segoe UI, sans-serif"; ctx.fillStyle = th.accent;
-    ctx.fillText(world.n + " fighters  ·  " + th.name, W / 2, world.cy + 54);
-    const blink = 0.55 + 0.45 * Math.sin(performance.now() / 260);
-    ctx.globalAlpha = blink;
-    ctx.font = "800 44px Segoe UI, sans-serif"; ctx.fillStyle = "#fff";
-    ctx.fillText("TAP  ·  CLICK  ·  SPACE  TO FIGHT", W / 2, world.cy + 170);
-    ctx.globalAlpha = 1;
-    ctx.font = "20px Segoe UI, sans-serif"; ctx.fillStyle = "rgba(255,255,255,.5)";
-    ctx.fillText("you control the highlighted ball — pointer aims, hold to thrust", W / 2, H - 90);
-    return;
-  }
+  if (world.state === "menu") { drawMenu(); return; }
 
   // HP bars (pushed down for each rule chip shown above them)
   const bw = W - 160, x0 = 80;
@@ -1727,7 +1894,13 @@ addEventListener("pointerup", () => { input.thrust = false; });
 addEventListener("keydown", e => {
   const k = e.key.toLowerCase();
   input.keys.add(k);
-  if ((k === " " || k === "enter") && typeof advanceFromUI === "function" && advanceFromUI()) return;
+  if ((k === " " || k === "enter")) {
+    if (world.state === "menu") {
+      if (MENU.screen === "weapons") MENU.screen = "home"; else startFromMenu();
+      return;
+    }
+    if (typeof advanceFromUI === "function" && advanceFromUI()) return;
+  }
   if (k === " ") input.thrust = true;
   if (k === "r") restart();
   if (k === "m") location.href = toggleParam("mute");
@@ -1830,11 +2003,15 @@ const fundEl = document.getElementById("fund");
 if (!AUTO && FUND_URL) {
   document.getElementById("fundLink").href = FUND_URL;
 }
+const hintEl = document.getElementById("hint");
 function updateFund() {
-  if (!fundEl) return;
-  // only after a match, when a real player is most receptive; never on video
-  const show = !AUTO && FUND_URL && world.state === "over" && world.t > 0.8;
-  fundEl.style.display = show ? "block" : "none";
+  if (fundEl) {
+    // only after a match, when a real player is most receptive; never on video
+    const show = !AUTO && FUND_URL && world.state === "over" && world.t > 0.8;
+    fundEl.style.display = show ? "block" : "none";
+  }
+  // the play hint belongs on the fight screen only
+  if (hintEl && !AUTO) hintEl.hidden = world.state !== "fight";
 }
 
 let world = new World();
@@ -1911,9 +2088,9 @@ function restart() {
   u.searchParams.set("seed", (Math.random() * 2 ** 31) >>> 0);
   location.href = u.toString();
 }
-// tap / key to leave the menu or replay
+// tap / key to interact with the menu, or replay after a match
 function advanceFromUI() {
-  if (world.state === "menu") { world.state = "intro"; world.t = 0; return true; }
+  if (world.state === "menu") { menuHit(input.aimX, input.aimY); return true; }
   if (world.state === "over" && world.t > 0.6) { restart(); return true; }
   return false;
 }
