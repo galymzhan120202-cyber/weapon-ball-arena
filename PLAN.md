@@ -97,6 +97,19 @@
 - **Физика:** тіркелген қадам `DT = 1/120`, өз impulse-solver (Matter.js
   емес — детерминизм + нөл тәуелділік үшін).
 
+### 3.2b Вариация қабаттары (v0.6, 2026-09-04 — бәрі seed-детерминистік)
+
+| Қабат | Не істейді | Форс параметрі |
+|------|-----------|----------------|
+| **Mutators** (~45% матч) | 8 ереже твисі: SUDDEN DEATH, GLASS CANNON, ONE-HIT KO, BLADE STORM, LOW GRAVITY, FAST STORM, REGENERATION, GIANT vs GOBLIN | `?mut=<id>` / `?mut=0` |
+| **Pickups** (≤3 fighter) | Аренаға орб түседі (1.2с telegraph), бірінші тиген алады: RAGE ×2 дамаг, SHIELD 3 соққы, HEAL +35, BERSERK ×1.7 жылдамдық, BOMB келесі соққыда AoE жарылыс | `?pickups=0` |
+| **Hazards** (~58%, темаға байланысты) | LAVA PIT (орталық DoT), BUMPERS (7 пин, рикошет), SAW BLADE (жүретін ара), CROSSWIND (күш өрісі), ICE FLOOR (сырғанақ) | `?hz=<id>` / `?hz=0` |
+| **Weapon identity** | Chainsaw=DoT, Hammer/Warhammer/Mace/Flail=knockback, Rapier/Katana=+crit/+parry, Dagger/Kunai/Claws=жылдам, Whip/Nunchaku=тартып әкеледі, Pistol/Shuriken/Boomerang=снаряд атады (`TRAIT` кестесі) | — |
+| **KO payoff** | Соңғы өлтіретін соққыда ~0.85с нақты slow-mo + push-in; жеңімпаз статы (KOs · HP · mutator); өлген доп қару бөлшектеріне шашырайды; жеңіс картасында конфетти | — |
+| **Engagement** | Countdown кезінде "WHO WINS? — comment your pick ▼" картасы (тек AUTO); `?a=Sword&b=Axe` матчап таңдау | — |
+| **Champion streak** | Бір қару қатарынан жеңсе `state/champion.json` streak өседі; workflow оны repo-ға commit етеді; meta.js 3+ streak-те тайтлды өзгертеді | — |
+| **Win-rate ledger** | `state/ranking.json` әр қарудың w/l жинайды; 12+ матчтан кейін сипаттамада "Win-rate leader: X (NN%)" | — |
+
 ### 3.3 Арена тақырыптары
 
 v0.1-де 8 (Midnight, Neon City, Lava Pit, Ice Cave, Cyber Grid, Deep Space,
@@ -199,10 +212,24 @@ Toxic Lab, Blood Moon) → 16-ға дейін кеңейеді. Әрқайсыс
 - [ ] Бір видеоны `--privacy=unlisted`-пен қолмен жүктеп көру.
 - [ ] Cron-ды қосу (қазір жоспарланған, secrets жоқта өзі skip етеді).
 
+### v0.6 — ВАРИАЦИЯ ✅ (2026-09-04, §3.2b)
+- [x] Mutators, Pickups, Hazards, Weapon identity, KO slow-mo + stat card +
+      shatter + confetti, "comment your pick" биті, champion streak +
+      win-rate ledger, meta.js байытылды. CI dry-run жасыл (WebCodecs 40 fps).
+
+### v0.7 — кейінге қалған идеялар (талқыланбаған)
+- [ ] **Турнир аптасы** — кездейсоқтың орнына апта бойы bracket ("Round 1:
+      Sword vs Axe"). Cron/scheduling қайта құруды қажет етеді + `state/bracket.json`.
+- [ ] **Айлық "Power Ranking" видеосы** — `state/ranking.json`-нан автоматты
+      түрде рендер (жаңа режим `index.html?mode=ranking` немесе бөлек бет керек).
+- [ ] Pinned-комментпен келесі матчты дауыс беру (`?a=&b=` дайын, workflow-қа
+      дауыс оқитын қадам қосу керек).
+
 ### v1.0 — тұрақты
-- [ ] Күнде 2 Shorts автоматты, тұрақты.
-- [ ] Рекордер өнімділігі (~9 fps, ұзын клипте баяулайды) — керек болса баптау.
-- [ ] Retention өлшеу, механика баптау (weapon-ball-bot тәрізді rebalance циклі).
+- [ ] Күнде 3 Shorts автоматты, тұрақты (cron 3×/күн орнатылды).
+- [ ] Рекордер өнімділігі (CI-де ~40 fps ОК; Windows-та WebCodecs pull
+      loop ұзын клипте баяу — CI үшін мәселе емес).
+- [ ] Retention өлшеу, механика баптау (win-rate ledger енді деректі жинайды).
 
 ---
 
