@@ -144,6 +144,7 @@ function buildMeta(match, opts = {}) {
     "",
     `▶ Play it yourself: ${playUrl}`,
     "",
+    inTourney ? "" : "🗳️ Want a specific matchup? Comment two weapon names — top votes fight next.",
     "New fight every day. Subscribe so you don't miss the rematch.",
     "",
     "#shorts #weaponball #physics #simulation #whowins",

@@ -59,22 +59,34 @@ jobs:
 
       - name: Plan the match
         id: seed
+        env:
+          WBA_CLIENT_SECRETS_JSON: ${{ secrets.WBA_CLIENT_SECRETS_JSON }}
+          WBA_YOUTUBE_TOKEN_JSON: ${{ secrets.WBA_YOUTUBE_TOKEN_JSON }}
         run: |
           if [ -n "${{ github.event.inputs.seed }}" ]; then
             # manual one-off: explicit seed, random matchup, not part of the bracket
             echo "seed=${{ github.event.inputs.seed }}" >> "$GITHUB_OUTPUT"
             echo "tourney=0" >> "$GITHUB_OUTPUT"
             echo "One-off seed ${{ github.event.inputs.seed }}"
-          else
-            # default: play the next match in the running tournament bracket
-            node upload/tournament.js next
-            echo "tourney=1" >> "$GITHUB_OUTPUT"
+            exit 0
           fi
+          # 1) community vote — if recent comments name a clear top-2 matchup, run that
+          VOTE=$(node upload/vote.js tally 2>/dev/null || true)
+          if echo "$VOTE" | grep -q '^vote=1$'; then
+            echo "$VOTE" >> "$GITHUB_OUTPUT"
+            echo "seed=$(( (RANDOM<<15 | RANDOM) ))" >> "$GITHUB_OUTPUT"
+            echo "tourney=0" >> "$GITHUB_OUTPUT"
+            echo "Community-voted matchup"
+            exit 0
+          fi
+          # 2) otherwise play the next match in the running tournament bracket
+          node upload/tournament.js next
+          echo "tourney=1" >> "$GITHUB_OUTPUT"
 
       - name: Record the fight
         run: |
           ARGS=""
-          if [ "${{ steps.seed.outputs.tourney }}" = "1" ]; then
+          if [ "${{ steps.seed.outputs.tourney }}" = "1" ] || [ "${{ steps.seed.outputs.vote }}" = "1" ]; then
             ARGS="--a=${{ steps.seed.outputs.a }} --b=${{ steps.seed.outputs.b }}"
           fi
           node record/record.js \
