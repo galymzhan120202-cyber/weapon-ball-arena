@@ -74,10 +74,83 @@ const PICK_LIST = Q.get("weapons")
   : (Q.get("a") && Q.get("b")) ? [Q.get("a").trim().toLowerCase(), Q.get("b").trim().toLowerCase()] : null;
 const MUTED     = AUTO ? (Q.get("sound") !== "1") : (Q.get("mute") === "1");
 const DEBUG     = Q.get("debug") === "1";   // show seed / dev details on screen
+const EXTERNAL  = Q.get("drive") === "ext"; // Node recorder drives the clock via __WBA_TICK__
 
 // Release-fund donation link — shown to real players (never on recorded
 // frames). Ko-fi tips are pay-what-you-want. Empty = hidden.
 const FUND_URL  = "https://ko-fi.com/weaponballarena";
+
+// ---------------------------------------------------------------------
+// Ads — a short video ad between matches, real players only. Provider-
+// agnostic hook: set AD_PROVIDER + AD_GAME_ID once you have an account.
+//   ""            -> ads off (default; nothing loads)
+//   "gamemonetize"-> AD_GAME_ID = your GameMonetize game id (a UUID)
+//   "crazygames"  -> AD_GAME_ID unused; needs the CrazyGames SDK
+// Never runs in AUTO / EXTERNAL (recorder) — the SDK isn't even loaded.
+// ---------------------------------------------------------------------
+const AD_PROVIDER = Q.get("ads") === "0" ? "" : "";     // "" | "gamemonetize" | "crazygames"
+const AD_GAME_ID  = "";
+const AD_MIN_GAP  = 90;      // seconds between ads
+const AD_EVERY    = 2;       // show at most once per N finished matches
+const AD_ENABLED  = !AUTO && !EXTERNAL && !!AD_PROVIDER;
+// match count + last-ad time persist across the per-match page reload
+const adState = {
+  loading: false, ready: false,
+  matches: (() => { try { return parseInt(localStorage.getItem("wba_m") || "0", 10) || 0; } catch (e) { return 0; } })(),
+  last:    (() => { try { return parseInt(localStorage.getItem("wba_ad") || "0", 10) || 0; } catch (e) { return 0; } })(),
+};
+
+(function bootAdSdk() {
+  if (!AD_ENABLED) return;
+  try {
+    if (AD_PROVIDER === "gamemonetize") {
+      window.SDK_OPTIONS = {
+        gameId: AD_GAME_ID, prefixAds: false,
+        onEvent: (a) => { if (a && (a.name === "SDK_READY" || a.name === "SDK_GAME_START")) adState.ready = true; },
+      };
+      const s = document.createElement("script");
+      s.src = "https://api.gamemonetize.com/sdk.js"; s.async = true;
+      s.onerror = () => { adState.ready = false; };
+      document.head.appendChild(s);
+    } else if (AD_PROVIDER === "crazygames") {
+      const s = document.createElement("script");
+      s.src = "https://sdk.crazygames.com/crazygames-sdk-v3.js"; s.async = true;
+      s.onload = () => {
+        try { window.CrazyGames.SDK.init().then(() => { adState.ready = true; }).catch(() => {}); }
+        catch (e) {}
+      };
+      document.head.appendChild(s);
+    }
+  } catch (e) { /* ads are best-effort */ }
+})();
+
+// Play a between-match ad if one is due, then call `done`. Never blocks:
+// a stuck/failed ad falls through after a short timeout.
+function maybeShowAd(done) {
+  const now = Date.now();
+  const due = AD_ENABLED && adState.ready && !adState.loading
+    && adState.matches > 0 && adState.matches % AD_EVERY === 0
+    && (now - adState.last) > AD_MIN_GAP * 1000;
+  if (!due) { done(); return; }
+  adState.loading = true;
+  let fired = false;
+  const finish = () => {
+    if (fired) return; fired = true;
+    clearTimeout(guard);
+    adState.loading = false;
+    try { localStorage.setItem("wba_ad", String(Date.now())); } catch (e) {}
+    done();
+  };
+  const guard = setTimeout(finish, 12000);
+  try {
+    if (AD_PROVIDER === "gamemonetize" && window.sdk && window.sdk.showBanner) {
+      const p = window.sdk.showBanner();
+      if (p && p.then) p.then(finish, finish); else setTimeout(finish, 4000);
+    } else if (AD_PROVIDER === "crazygames" && window.CrazyGames && window.CrazyGames.SDK) {
+      window.CrazyGames.SDK.ad.requestAd("midgame", { adFinished: finish, adError: finish });
+    } else { finish(); }
+  } catch (e) { finish(); }
+}
 
 // ---------------------------------------------------------------------
 // Playable-mode menu state (mode + fighter count + weapon picks).
@@ -152,28 +225,28 @@ const ZONE_SCALE = 1.22;
 const ROSTER = [
   { name: "Sword",       kind: "sword",    color: "#e1e1e8", power: 1.05, material: "metal",      reach: 1.00, zone: [[0, -0.72, 0.50]] },
   { name: "Katana",      kind: "katana",   color: "#f0f0f8", power: 1.12, material: "metal",      reach: 1.05, zone: [[0, -0.72, 0.50]] },
-  { name: "Axe",         kind: "axe",      color: "#d65c44", power: 0.98, material: "metal",      reach: 0.95, zone: [[0.28, -0.59, 0.52]] },
-  { name: "Hammer",      kind: "hammer",   color: "#9696a0", power: 1.00, material: "blunt",      reach: 0.85, zone: [[0, -0.58, 0.52]] },
+  { name: "Axe",         kind: "axe",      color: "#d65c44", power: 1.05, material: "metal",      reach: 0.95, zone: [[0.28, -0.59, 0.52]] },
+  { name: "Hammer",      kind: "hammer",   color: "#9696a0", power: 1.08, material: "blunt",      reach: 0.85, zone: [[0, -0.58, 0.52]] },
   { name: "Warhammer",   kind: "warhammer",color: "#788296", power: 1.02, material: "blunt",      reach: 1.05, zone: [[0, -0.56, 0.54]] },
   { name: "Spear",       kind: "spear",    color: "#60ce94", power: 1.02, material: "metal",      reach: 1.25, zone: [[0, -0.82, 0.50]] },
   { name: "Trident",     kind: "trident",  color: "#46bed2", power: 1.06, material: "metal",      reach: 1.22, zone: [[0, -0.82, 0.50]] },
-  { name: "Dagger",      kind: "dagger",   color: "#eccd46", power: 1.08, material: "metal",      reach: 0.72, zone: [[0, -0.72, 0.50]] },
-  { name: "Kunai",       kind: "kunai",    color: "#c8c8d2", power: 1.08, material: "metal",      reach: 0.70, zone: [[0, -0.72, 0.50]] },
-  { name: "Mace",        kind: "mace",     color: "#b064d6", power: 1.00, material: "blunt",      reach: 0.85, zone: [[0, -0.58, 0.52]] },
-  { name: "Flail",       kind: "flail",    color: "#d28c3c", power: 1.02, material: "blunt",      reach: 0.95, zone: [[0, -0.86, 0.46]] },
-  { name: "Nunchaku",    kind: "nunchaku", color: "#8c5a32", power: 1.10, material: "wood",       reach: 0.90, zone: [[0, -0.86, 0.44]] },
-  { name: "Whip",        kind: "whip",     color: "#b43c3c", power: 1.00, material: "whip",       reach: 0.95, zone: [[0, -0.92, 0.42]] },
+  { name: "Dagger",      kind: "dagger",   color: "#eccd46", power: 0.98, material: "metal",      reach: 0.72, zone: [[0, -0.72, 0.50]] },
+  { name: "Kunai",       kind: "kunai",    color: "#c8c8d2", power: 0.98, material: "metal",      reach: 0.70, zone: [[0, -0.72, 0.50]] },
+  { name: "Mace",        kind: "mace",     color: "#b064d6", power: 1.08, material: "blunt",      reach: 0.85, zone: [[0, -0.58, 0.52]] },
+  { name: "Flail",       kind: "flail",    color: "#d28c3c", power: 1.08, material: "blunt",      reach: 0.95, zone: [[0, -0.86, 0.46]] },
+  { name: "Nunchaku",    kind: "nunchaku", color: "#8c5a32", power: 1.00, material: "wood",       reach: 0.90, zone: [[0, -0.86, 0.44]] },
+  { name: "Whip",        kind: "whip",     color: "#b43c3c", power: 1.10, material: "whip",       reach: 0.95, zone: [[0, -0.92, 0.42]] },
   { name: "Claws",       kind: "claws",    color: "#e6e6eb", power: 1.10, material: "metal",      reach: 0.75, zone: [[0, -0.55, 0.54]] },
   { name: "Scythe",      kind: "scythe",   color: "#48bee2", power: 1.08, material: "metal",      reach: 1.15, zone: [[0.22, -0.62, 0.54]] },
-  { name: "Chainsaw",    kind: "chainsaw", color: "#e6be28", power: 0.84, material: "mechanical", reach: 1.00, zone: [[0, -0.44, 0.56]] },
-  { name: "Staff",       kind: "staff",    color: "#aa82dc", power: 1.02, material: "wood",       reach: 1.20, zone: [[0, -0.82, 0.50]] },
-  { name: "Shuriken",    kind: "shuriken", color: "#d23c5a", power: 0.86, material: "metal",      reach: 0.65, zone: null },
-  { name: "Rapier",      kind: "rapier",   color: "#ebebf0", power: 1.06, material: "metal",      reach: 1.15, zone: [[0, -0.88, 0.46]] },
+  { name: "Chainsaw",    kind: "chainsaw", color: "#e6be28", power: 0.80, material: "mechanical", reach: 1.00, zone: [[0, -0.44, 0.56]] },
+  { name: "Staff",       kind: "staff",    color: "#aa82dc", power: 1.12, material: "wood",       reach: 1.20, zone: [[0, -0.82, 0.50]] },
+  { name: "Shuriken",    kind: "shuriken", color: "#d23c5a", power: 0.95, material: "metal",      reach: 0.72, zone: [[0, -0.2, 0.7]] },
+  { name: "Rapier",      kind: "rapier",   color: "#ebebf0", power: 1.00, material: "metal",      reach: 1.15, zone: [[0, -0.88, 0.46]] },
   { name: "Halberd",     kind: "halberd",  color: "#c8643c", power: 1.05, material: "metal",      reach: 1.25, zone: [[0, -0.80, 0.40], [0.26, -0.56, 0.44]] },
   { name: "Cleaver",     kind: "cleaver",  color: "#d25a5a", power: 1.10, material: "metal",      reach: 0.85, zone: [[0, -0.62, 0.52]] },
-  { name: "Boomerang",   kind: "boomerang",color: "#be8c4b", power: 0.90, material: "wood",       reach: 0.90, zone: null },
+  { name: "Boomerang",   kind: "boomerang",color: "#be8c4b", power: 1.00, material: "wood",       reach: 0.90, zone: [[0, -0.2, 0.7]] },
   { name: "War Axe",     kind: "war_axe",  color: "#b04230", power: 1.08, material: "metal",      reach: 1.05, zone: [[-0.31, -0.58, 0.38], [0.31, -0.58, 0.38]] },
-  { name: "Tomahawk",    kind: "tomahawk", color: "#96b65c", power: 1.06, material: "metal",      reach: 0.82, zone: [[0.26, -0.60, 0.50]] },
+  { name: "Tomahawk",    kind: "tomahawk", color: "#96b65c", power: 1.00, material: "metal",      reach: 0.82, zone: [[0.26, -0.60, 0.50]] },
   { name: "Dual Daggers",kind: "dual_daggers", color: "#ffa52d", power: 1.08, material: "metal",  reach: 0.80, zone: [[-0.45, -0.62, 0.40], [0.45, -0.62, 0.40]] },
   { name: "Pistol",      kind: "pistol",   color: "#46464e", power: 0.82, material: "metal",      reach: 0.80, zone: [[0, -0.68, 0.46]] },
 ];
@@ -327,8 +400,8 @@ const TRAIT = {
   katana:       { crit: 0.09, parry: 0.09 },
   whip:         { pull: 240 },
   pistol:       { proj: { speed: 1500, dmg: 4, cd: 5.0, returns: false, col: "#ffd27a", spin: 0 } },
-  shuriken:     { proj: { speed: 1150, dmg: 5, cd: 2.6, returns: false, col: "#ff4d6a", spin: 46 } },
-  boomerang:    { proj: { speed: 950,  dmg: 5, cd: 3.0, returns: true,  col: "#e0b070", spin: 34 } },
+  shuriken:     { proj: { speed: 1150, dmg: 7, cd: 2.4, returns: false, col: "#ff4d6a", spin: 46 } },
+  boomerang:    { proj: { speed: 950,  dmg: 7, cd: 2.8, returns: true,  col: "#e0b070", spin: 34 } },
 };
 
 // ---------------------------------------------------------------------
@@ -1993,7 +2066,7 @@ function wcEncodeFrame() {
 const STEPS_PER_FRAME = Math.max(1, Math.round((1 / FPS) / DT));   // sim steps per output frame
 const OVER_HOLD_FRAMES = Math.round(2.6 * FPS);                    // linger on the winner card
 const HARD_CAP_FRAMES  = Math.round((INTRO_SECONDS + BATTLE_MAX_SECONDS + 5) * FPS);
-const EXTERNAL = Q.get("drive") === "ext";                        // Node driver owns the clock
+// EXTERNAL is declared with the other run-config consts near the top
 if (AUTO) { const h = document.getElementById("hint"); if (h) h.hidden = true; }  // clean frames for the recorder
 
 // release-fund panel — real players only, never on recorded frames
@@ -2089,7 +2162,7 @@ function restart() {
 // tap / key to interact with the menu, or replay after a match
 function advanceFromUI() {
   if (world.state === "menu") { menuHit(input.aimX, input.aimY); return true; }
-  if (world.state === "over" && world.t > 0.6) { restart(); return true; }
+  if (world.state === "over" && world.t > 0.6) { maybeShowAd(restart); return true; }
   return false;
 }
 
@@ -2116,7 +2189,10 @@ function framePlay(now) {        // playable: wall-clock accumulator
       if (world.hitstop > 0) { acc = 0; break; }
     }
   }
-  if (world.state !== prevState) { if (world.state === "over") sfx.win(); prevState = world.state; }
+  if (world.state !== prevState) {
+    if (world.state === "over") { sfx.win(); adState.matches++; try { localStorage.setItem("wba_m", String(adState.matches)); } catch (e) {} }
+    prevState = world.state;
+  }
   render(world);
   updateFund();
   requestAnimationFrame(framePlay);
