@@ -76,8 +76,8 @@ const MUTED     = AUTO ? (Q.get("sound") !== "1") : (Q.get("mute") === "1");
 const DEBUG     = Q.get("debug") === "1";   // show seed / dev details on screen
 
 // Release-fund donation link — shown to real players (never on recorded
-// frames). Fill in a Ko-fi / Buy Me a Coffee / Boosty URL. Empty = hidden.
-const FUND_URL  = "";
+// frames). Ko-fi tips are pay-what-you-want. Empty = hidden.
+const FUND_URL  = "https://ko-fi.com/weaponballarena";
 
 const W = 1080, H = 1920;
 const DT = 1 / 120;                 // fixed physics step (determinism)
