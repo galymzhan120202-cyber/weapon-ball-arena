@@ -58,6 +58,7 @@ function parseArgs(argv) {
     else if (k === "keep-json") a.keepJson = true;
     else if (k === "no-json") a.keepJson = false;
     else if (k === "mode") a.mode = v;                 // "webcodecs" (default) | "screenshot"
+    else if (k === "page") a.page = v;                 // drive a page other than index.html
     else if (k === "a") a.a = v;                       // force matchup (weapon name/kind)
     else if (k === "b") a.b = v;
     else if (k === "batch") a.batch = Math.max(1, parseInt(v, 10) || 15);
@@ -151,7 +152,8 @@ function checkFfmpeg() {
   const forceShot = args.mode === "screenshot";
   const matchup = (args.a && args.b)
     ? `&a=${encodeURIComponent(args.a)}&b=${encodeURIComponent(args.b)}` : "";
-  const url = `http://127.0.0.1:${port}/index.html?auto=1&drive=ext&seed=${SEED}${matchup}` + (forceShot ? "" : "&encode=wc");
+  const pageName = args.page || "index.html";
+  const url = `http://127.0.0.1:${port}/${pageName}?auto=1&drive=ext&seed=${SEED}${matchup}` + (forceShot ? "" : "&encode=wc");
   log(`● seed ${SEED}  →  ${path.relative(process.cwd(), OUT)}`);
   vlog(`  serving ${GAME_DIR} on :${port}`);
 
@@ -306,7 +308,8 @@ function checkFfmpeg() {
     const secs = ((Date.now() - t0) / 1000).toFixed(1);
     const size = (fs.statSync(OUT).size / 1e6).toFixed(1);
     log(`✓ ${frame} frames / ${meta.durationSec}s video  ·  ${size} MB  ·  ${secs}s  (${(frame / secs).toFixed(1)} fps)`);
-    log(`  ${meta.fighters.map((f) => f.name).join(" vs ")}  →  ${meta.winner || "—"}  (${meta.finishText || "truncated"})`);
+    if (meta.fighters) log(`  ${meta.fighters.map((f) => f.name).join(" vs ")}  →  ${meta.winner || "—"}  (${meta.finishText || "truncated"})`);
+    else log(`  ${meta.kind || "clip"} · ${meta.month || ""}`);
     if (args.keepJson) log(`  meta: ${path.relative(process.cwd(), JSON_OUT)}`);
   } catch (err) {
     console.error("✗ record failed:", err && err.message || err);

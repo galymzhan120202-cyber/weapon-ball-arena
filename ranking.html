@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Weapon Ball Arena — Power Ranking</title>
+<style>
+  :root { color-scheme: dark; }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 100%; height: 100%; background: #05060a; overflow: hidden;
+    font-family: "Segoe UI", system-ui, sans-serif; color: #e8e8ef; }
+  #wrap { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; }
+  canvas { display: block; background: #0a0c14; }
+</style>
+</head>
+<body>
+<div id="wrap"><canvas id="c" width="1080" height="1920"></canvas></div>
+<script>
+"use strict";
+/* =====================================================================
+   Weapon Ball Arena — monthly Power Ranking (standalone, recorder-driven)
+   Reads state/ranking.json (win/loss ledger accumulated by the daily
+   director) and animates a top-10 leaderboard by win rate.
+   Exposes the same __WBA_* hooks record/record.js drives (screenshot
+   path only — pass --mode=screenshot --page=ranking.html).
+   ===================================================================== */
+const Q = new URLSearchParams(location.search);
+const W = 1080, H = 1920, FPS = 60;
+const cv = document.getElementById("c"), ctx = cv.getContext("2d");
+function fit() { const s = Math.min(innerWidth / W, innerHeight / H); cv.style.width = W * s + "px"; cv.style.height = H * s + "px"; }
+addEventListener("resize", fit); fit();
+
+const PRETTY = { war_axe: "War Axe", dual_daggers: "Dual Daggers" };
+const pretty = (k) => PRETTY[k] || k.replace(/(^|_)(\w)/g, (_, s, c) => (s ? " " : "") + c.toUpperCase());
+
+const DUR = { intro: 1.6, bars: 6.5, hold: 3.4, outro: 2.0 };
+const TOTAL = DUR.intro + DUR.bars + DUR.hold + DUR.outro;   // ~13.5s
+const TOTAL_FRAMES = Math.ceil(TOTAL * FPS) + 30;
+
+let rows = [];
+let monthLabel = "";
+let ready = false;
+let frame = 0, done = false;
+
+function easeOut(t) { return 1 - Math.pow(1 - t, 3); }
+
+fetch("state/ranking.json")
+  .then((r) => r.ok ? r.json() : Promise.reject())
+  .then((data) => {
+    const ws = data.weapons || {};
+    rows = Object.entries(ws)
+      .map(([k, v]) => {
+        const w = v.w || 0, l = v.l || 0, g = w + l;
+        return { k, name: pretty(k), w, l, g, pct: g ? w / g : 0 };
+      })
+      .filter((r) => r.g >= 3)
+      .sort((a, b) => b.pct - a.pct || b.g - a.g)
+      .slice(0, 10);
+    const d = data.updated ? new Date(data.updated) : new Date();
+    monthLabel = d.toLocaleString("en-US", { month: "long", year: "numeric" }).toUpperCase();
+  })
+  .catch(() => {
+    rows = [{ k: "shuriken", name: "Shuriken", w: 1, l: 0, g: 1, pct: 1 }];
+    monthLabel = new Date().toLocaleString("en-US", { month: "long", year: "numeric" }).toUpperCase();
+  })
+  .finally(() => { ready = true; window.__WBA_READY__ = true; });
+
+function bg() {
+  const g = ctx.createRadialGradient(W / 2, H * 0.42, 80, W / 2, H * 0.42, Math.max(W, H) * 0.8);
+  g.addColorStop(0, "#141a2e"); g.addColorStop(1, "#08080d");
+  ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+  ctx.strokeStyle = "#1b2748"; ctx.globalAlpha = 0.4; ctx.lineWidth = 2;
+  for (let x = 0; x <= W; x += 90) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke(); }
+  for (let y = 0; y <= H; y += 90) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke(); }
+  ctx.globalAlpha = 1;
+}
+
+function render(t) {
+  bg();
+  ctx.textAlign = "center";
+  ctx.fillStyle = "rgba(255,255,255,.95)"; ctx.font = "800 62px Segoe UI, sans-serif";
+  ctx.fillText("POWER RANKING", W / 2, 150);
+  ctx.font = "600 34px Segoe UI, sans-serif"; ctx.fillStyle = "#5aa0ff";
+  ctx.fillText(monthLabel + "  ·  by win rate", W / 2, 200);
+
+  if (t < DUR.intro) {
+    ctx.font = "700 40px Segoe UI, sans-serif"; ctx.fillStyle = "rgba(255,255,255,.6)";
+    ctx.fillText("Every weapon. Every fight this month.", W / 2, H / 2);
+    return;
+  }
+
+  const barsT = Math.min(1, (t - DUR.intro) / DUR.bars);
+  const top = 278, rowH = 118, x0 = 90, barX = 360, barW = W - barX - 150;
+  ctx.textAlign = "left";
+  rows.forEach((r, i) => {
+    const appear = easeOut(Math.max(0, Math.min(1, barsT * rows.length - i)));
+    if (appear <= 0) return;
+    const y = top + i * rowH;
+    ctx.globalAlpha = appear;
+
+    // rank
+    ctx.font = "800 46px Segoe UI, sans-serif";
+    ctx.fillStyle = i === 0 ? "#ffd27a" : i < 3 ? "#cfd6e6" : "rgba(255,255,255,.45)";
+    ctx.fillText("#" + (i + 1), x0, y + 58);
+
+    // name
+    ctx.font = "700 42px Segoe UI, sans-serif"; ctx.fillStyle = "#fff";
+    ctx.fillText(r.name, x0 + 90, y + 40);
+    ctx.font = "500 26px Segoe UI, sans-serif"; ctx.fillStyle = "rgba(255,255,255,.5)";
+    ctx.fillText(r.w + "W · " + r.l + "L", x0 + 90, y + 76);
+
+    // bar
+    const fill = barW * r.pct * appear;
+    ctx.fillStyle = "rgba(255,255,255,.08)";
+    ctx.fillRect(barX, y + 14, barW, 56);
+    const bg2 = ctx.createLinearGradient(barX, 0, barX + barW, 0);
+    bg2.addColorStop(0, i === 0 ? "#ffb347" : "#4f8cff");
+    bg2.addColorStop(1, i === 0 ? "#ffd27a" : "#7ab0ff");
+    ctx.fillStyle = bg2;
+    ctx.fillRect(barX, y + 14, fill, 56);
+    ctx.font = "800 34px Segoe UI, sans-serif"; ctx.fillStyle = "#fff";
+    ctx.fillText(Math.round(r.pct * 100) + "%", barX + fill + 14, y + 54);
+    ctx.globalAlpha = 1;
+  });
+
+  // hold: spotlight #1
+  if (t > DUR.intro + DUR.bars && rows[0]) {
+    const hT = Math.min(1, (t - DUR.intro - DUR.bars) / 0.6);
+    ctx.globalAlpha = hT;
+    ctx.textAlign = "center";
+    ctx.font = "800 40px Segoe UI, sans-serif"; ctx.fillStyle = "#ffd27a";
+    ctx.fillText("👑  " + rows[0].name.toUpperCase() + "  —  #1 THIS MONTH", W / 2, H - 250);
+    ctx.globalAlpha = 1;
+  }
+
+  // outro
+  if (t > TOTAL - DUR.outro) {
+    const oT = Math.min(1, (t - (TOTAL - DUR.outro)) / 0.5);
+    ctx.globalAlpha = oT; ctx.textAlign = "center";
+    ctx.font = "800 46px Segoe UI, sans-serif"; ctx.fillStyle = "#fff";
+    ctx.fillText("▶ New fight every day — Subscribe", W / 2, H - 180);
+    ctx.globalAlpha = 1;
+  }
+}
+
+function tick() {
+  const t = frame / FPS;
+  if (ready) render(t);
+  frame++;
+  if (t >= TOTAL || frame > TOTAL_FRAMES) { done = true; window.__WBA_DONE__ = true; }
+  return window.__WBA_STATE__();
+}
+
+window.__WBA_STATE__ = () => ({ state: done ? "over" : "run", t: frame / FPS, frame, done: !!window.__WBA_DONE__ });
+window.__WBA_META__ = () => ({ kind: "ranking", month: monthLabel, top: rows.map((r) => ({ name: r.name, pct: Math.round(r.pct * 100) })), frames: frame });
+window.__WBA_AUDIO_LOG__ = () => ({ fps: FPS, clock: frame / FPS, events: [] });
+window.__WBA_TICK__ = tick;
+
+// stand-alone preview (not recorder-driven)
+if (Q.get("drive") !== "ext") {
+  const loop = () => { tick(); if (!done) requestAnimationFrame(loop); };
+  const wait = setInterval(() => { if (ready) { clearInterval(wait); requestAnimationFrame(loop); } }, 30);
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,110 @@
+name: Monthly Power Ranking video
+
+on:
+  schedule:
+    - cron: "0 12 1 * *"        # 12:00 UTC on the 1st of each month
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Render only, don't upload"
+        type: boolean
+        default: false
+      privacy:
+        description: "YouTube privacy"
+        type: choice
+        options: [public, unlisted, private]
+        default: public
+
+concurrency:
+  group: ranking
+  cancel-in-progress: false
+
+jobs:
+  ranking:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install ffmpeg
+        run: sudo apt-get update && sudo apt-get install -y ffmpeg
+
+      - name: Install recorder deps + Chrome
+        working-directory: record
+        run: |
+          npm ci --no-audit --no-fund
+          npx --yes puppeteer browsers install chrome
+
+      - name: Install uploader deps
+        working-directory: upload
+        run: npm ci --no-audit --no-fund
+
+      - name: Render the ranking
+        run: |
+          node record/record.js \
+            --page=ranking.html --mode=screenshot \
+            --seed=1 --max-seconds=20 \
+            --no-audio --no-thumb \
+            --out=out/ranking.mp4 --verbose
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ranking
+          path: out/ranking.mp4
+          retention-days: 14
+
+      - name: Build title + description
+        id: meta
+        run: |
+          node -e '
+            const fs = require("fs");
+            let r = { weapons: {}, matches: 0 };
+            try { r = JSON.parse(fs.readFileSync("state/ranking.json", "utf8")); } catch (e) {}
+            const pretty = k => ({war_axe:"War Axe",dual_daggers:"Dual Daggers"}[k] || k.replace(/(^|_)(\w)/g,(_,s,c)=>(s?" ":"")+c.toUpperCase()));
+            const rows = Object.entries(r.weapons||{})
+              .map(([k,v])=>({k,w:v.w||0,l:v.l||0,g:(v.w||0)+(v.l||0)}))
+              .filter(x=>x.g>=3).map(x=>({...x,pct:x.w/x.g}))
+              .sort((a,b)=>b.pct-a.pct||b.g-a.g).slice(0,10);
+            const month = new Date(r.updated||Date.now()).toLocaleString("en-US",{month:"long",year:"numeric"});
+            const top = rows[0] ? pretty(rows[0].k) : "—";
+            const title = `Weapon Ball Arena — Power Ranking (${month})`;
+            const lines = [
+              `Every weapon ranked by win rate across ${r.matches||0} automated fights this month.`,
+              "",
+              ...rows.map((x,i)=>`#${i+1}  ${pretty(x.k)} — ${Math.round(x.pct*100)}%  (${x.w}W ${x.l}L)`),
+              "",
+              `👑 #1: ${top}`,
+              "",
+              "▶ Play it yourself: https://galymzhan120202-cyber.github.io/weapon-ball-arena/",
+              "New fight every day. Subscribe.",
+              "",
+              "#shorts #weaponball #tierlist #ranking #physics",
+            ];
+            fs.writeFileSync("out/ranking-desc.txt", lines.join("\n"));
+            fs.appendFileSync(process.env.GITHUB_OUTPUT, "title=" + title + "\n");
+          '
+          echo "----- description -----"; cat out/ranking-desc.txt
+
+      - name: Upload to YouTube
+        if: ${{ github.event.inputs.dry_run != 'true' }}
+        env:
+          WBA_CLIENT_SECRETS_JSON: ${{ secrets.WBA_CLIENT_SECRETS_JSON }}
+          WBA_YOUTUBE_TOKEN_JSON: ${{ secrets.WBA_YOUTUBE_TOKEN_JSON }}
+          WBA_TELEGRAM_NOTIFY_TOKEN: ${{ secrets.WBA_TELEGRAM_NOTIFY_TOKEN }}
+          WBA_TELEGRAM_NOTIFY_CHAT_ID: ${{ secrets.WBA_TELEGRAM_NOTIFY_CHAT_ID }}
+        run: |
+          if [ -z "$WBA_YOUTUBE_TOKEN_JSON" ]; then
+            echo "::warning::WBA_YOUTUBE_TOKEN_JSON not set — skipping upload."
+            exit 0
+          fi
+          node upload/upload.js \
+            --video=out/ranking.mp4 \
+            --title="${{ steps.meta.outputs.title }}" \
+            --desc-file=out/ranking-desc.txt \
+            --tags="weapon ball,weapon ball arena,tier list,weapon tier list,ranking,power ranking,physics,shorts" \
+            --privacy=${{ github.event.inputs.privacy || 'public' }}

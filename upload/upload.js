@@ -37,6 +37,9 @@ function parseArgs(argv) {
     else if (k === "spoiler-free") a.spoilerFree = true;
     else if (k === "dry-run") a.dryRun = true;
     else if (k === "play-url") a.playUrl = v;
+    else if (k === "title") a.title = v;             // override (used by the ranking video)
+    else if (k === "desc-file") a.descFile = v;      // override description from a file
+    else if (k === "tags") a.tagsCsv = v;
     else if (k === "help") a.help = true;
   }
   return a;
@@ -55,14 +58,28 @@ function parseArgs(argv) {
   const jsonPath = path.resolve(args.json || stem + ".json");
   const thumbPath = path.resolve(args.thumb || stem + ".jpg");
 
-  if (!fs.existsSync(jsonPath)) throw new Error("match json not found: " + jsonPath + " (run record.js with --keep-json)");
-  const match = JSON.parse(fs.readFileSync(jsonPath, "utf8"));
+  const hasJson = fs.existsSync(jsonPath);
+  if (!hasJson && !args.title) throw new Error("match json not found: " + jsonPath + " (run record.js with --keep-json, or pass --title/--desc-file)");
+  const match = hasJson ? JSON.parse(fs.readFileSync(jsonPath, "utf8")) : {};
 
-  const meta = buildMeta(match, {
-    privacyStatus: args.privacy,
-    spoilerFree: args.spoilerFree,
-    playUrl: args.playUrl,
-  });
+  let meta;
+  if (args.title) {
+    // explicit override — the monthly ranking video, not a match
+    meta = {
+      title: args.title.slice(0, 100),
+      description: (args.descFile && fs.existsSync(args.descFile)) ? fs.readFileSync(args.descFile, "utf8") : "",
+      tags: (args.tagsCsv || "weapon ball,weapon ball arena,tier list,ranking,physics").split(",").map((s) => s.trim()).filter(Boolean),
+      categoryId: "20",
+      privacyStatus: args.privacy || "public",
+      madeForKids: false,
+    };
+  } else {
+    meta = buildMeta(match, {
+      privacyStatus: args.privacy,
+      spoilerFree: args.spoilerFree,
+      playUrl: args.playUrl,
+    });
+  }
 
   console.log("● " + meta.title);
   console.log("  " + (match.fighters || []).map((f) => f.name).join(" vs ") + "  →  " + (match.winner || "—"));
@@ -126,7 +143,7 @@ function parseArgs(argv) {
 
   // stamp the URL back into the match json so record-result.js / the
   // workflow can pick it up without re-parsing stdout.
-  try {
+  if (hasJson) try {
     match.videoUrl = url; match.videoId = id;
     fs.writeFileSync(jsonPath, JSON.stringify(match, null, 2));
   } catch (e) { /* non-fatal */ }
