@@ -13,7 +13,7 @@
     "war_axe"
   ],
   "round": 8,
-  "matchIndex": 2,
+  "matchIndex": 3,
   "bracket": [
     {
       "a": "nunchaku",
@@ -32,9 +32,9 @@
     {
       "a": "staff",
       "b": "axe",
-      "winner": null,
-      "seed": null,
-      "video": null
+      "winner": "staff",
+      "seed": 2828407253,
+      "video": "https://youtu.be/zBh4rD-WSuI"
     },
     {
       "a": "rapier",
