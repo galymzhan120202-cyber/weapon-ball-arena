@@ -1,0 +1,50 @@
+{
+  "n": 1,
+  "id": 1,
+  "size": 8,
+  "entrants": [
+    "nunchaku",
+    "shuriken",
+    "kunai",
+    "dagger",
+    "staff",
+    "axe",
+    "rapier",
+    "war_axe"
+  ],
+  "round": 8,
+  "matchIndex": 0,
+  "bracket": [
+    {
+      "a": "nunchaku",
+      "b": "shuriken",
+      "winner": null,
+      "seed": null,
+      "video": null
+    },
+    {
+      "a": "kunai",
+      "b": "dagger",
+      "winner": null,
+      "seed": null,
+      "video": null
+    },
+    {
+      "a": "staff",
+      "b": "axe",
+      "winner": null,
+      "seed": null,
+      "video": null
+    },
+    {
+      "a": "rapier",
+      "b": "war_axe",
+      "winner": null,
+      "seed": null,
+      "video": null
+    }
+  ],
+  "history": [],
+  "champion": null,
+  "started": "2026-09-04T04:27:48.549Z"
+}

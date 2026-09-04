@@ -57,21 +57,31 @@ jobs:
         working-directory: upload
         run: npm ci --no-audit --no-fund
 
-      - name: Pick a seed
+      - name: Plan the match
         id: seed
         run: |
-          SEED="${{ github.event.inputs.seed }}"
-          if [ -z "$SEED" ]; then SEED=$(( (RANDOM<<15 | RANDOM) )); fi
-          echo "seed=$SEED" >> "$GITHUB_OUTPUT"
-          echo "Seed: $SEED"
+          if [ -n "${{ github.event.inputs.seed }}" ]; then
+            # manual one-off: explicit seed, random matchup, not part of the bracket
+            echo "seed=${{ github.event.inputs.seed }}" >> "$GITHUB_OUTPUT"
+            echo "tourney=0" >> "$GITHUB_OUTPUT"
+            echo "One-off seed ${{ github.event.inputs.seed }}"
+          else
+            # default: play the next match in the running tournament bracket
+            node upload/tournament.js next
+            echo "tourney=1" >> "$GITHUB_OUTPUT"
+          fi
 
       - name: Record the fight
         run: |
+          ARGS=""
+          if [ "${{ steps.seed.outputs.tourney }}" = "1" ]; then
+            ARGS="--a=${{ steps.seed.outputs.a }} --b=${{ steps.seed.outputs.b }}"
+          fi
           node record/record.js \
             --seed=${{ steps.seed.outputs.seed }} \
             --max-seconds=${{ github.event.inputs.max_seconds || '45' }} \
             --out=out/wba_${{ steps.seed.outputs.seed }}.mp4 \
-            --verbose
+            $ARGS --verbose
 
       - name: Upload artifacts (for inspection)
         uses: actions/upload-artifact@v4
@@ -106,6 +116,9 @@ jobs:
           [ -f "$JSON" ] || { echo "no match json, skipping state update"; exit 0; }
           grep -q '"videoUrl"' "$JSON" || { echo "no videoUrl (upload skipped), not touching state"; exit 0; }
           node upload/record-result.js "$JSON"
+          if [ "${{ steps.seed.outputs.tourney }}" = "1" ]; then
+            node upload/tournament.js record "$JSON"
+          fi
           git config user.name  "wba-director[bot]"
           git config user.email "wba-director[bot]@users.noreply.github.com"
           git add state/

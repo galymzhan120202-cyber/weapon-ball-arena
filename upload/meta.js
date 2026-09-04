@@ -20,6 +20,8 @@ const pick = (rng, arr) => arr[Math.floor(rng() * arr.length)];
 
 const path = require("path");
 const { nextChampion } = require("./streak");
+let tournament = null;
+try { tournament = require("./tournament"); } catch (e) { /* optional */ }
 
 function readJson(p) { try { return JSON.parse(require("fs").readFileSync(p, "utf8")); } catch (e) { return null; } }
 
@@ -77,9 +79,17 @@ function buildMeta(match, opts = {}) {
   const champ = nextChampion(prevChamp, match);
   const onStreak = champ && champ.streak >= 3 && champ.winner === winner;
 
+  // --- tournament context (this video IS the current bracket match) ---
+  const tctx = (opts.tournament !== false && tournament && tournament.currentContext)
+    ? tournament.currentContext() : null;
+  const inTourney = tctx && (tctx.a === a || tctx.b === b || tctx.a === b || tctx.b === a);
+
   // --- title ---
   let title;
-  if (onStreak && rng() < 0.7) {
+  if (inTourney) {
+    const rn = tctx.isFinal ? "🏆 TOURNAMENT FINAL" : `🏆 ${tctx.roundName}${tctx.matchOf ? " " + tctx.matchOf.replace(" of ", "/") : ""}`;
+    title = `${rn}: ${a} vs ${b}`;
+  } else if (onStreak && rng() < 0.7) {
     title = pick(rng, STREAK_TITLES)(winner, champ.streak);
   } else {
     title = pick(rng, TITLE_FORMS)(a, b) + (n > 2 ? ` (+${n - 2} more)` : "");
@@ -116,9 +126,15 @@ function buildMeta(match, opts = {}) {
       (match.winnerHp != null ? `  ·  ${match.winnerHp} HP left` : "") +
       (onStreak ? `\n${winner} is now on a ${champ.streak}-win streak.` : "");
 
+  const tourneyLine = inTourney
+    ? `🏆 Tournament #${tctx.id} — ${tctx.isFinal ? "the FINAL" : tctx.roundName + (tctx.matchOf ? " (" + tctx.matchOf + ")" : "")}`
+      + (tctx.previousChampion ? `. Defending champ: ${tctx.previousChampion}.` : "")
+    : "";
+
   const description = [
     pick(rng, HOOKS),
     "",
+    ...(tourneyLine ? [tourneyLine] : []),
     `Matchup: ${matchup}`,
     `Arena: ${theme}`,
     ...modifiers,
