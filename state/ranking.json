@@ -1,8 +1,18 @@
 {
   "weapons": {
-    "shuriken": { "w": 1, "l": 0 },
-    "spear": { "w": 0, "l": 1 }
+    "shuriken": {
+      "w": 2,
+      "l": 0
+    },
+    "spear": {
+      "w": 0,
+      "l": 1
+    },
+    "nunchaku": {
+      "w": 0,
+      "l": 1
+    }
   },
-  "matches": 1,
-  "updated": "2026-09-04T00:00:00.000Z"
+  "matches": 2,
+  "updated": "2026-09-04T04:57:53.216Z"
 }
