@@ -55,6 +55,11 @@
     <canvas id="avatar" width="800" height="800" style="width:280px"></canvas>
     <button class="btn" data-dl="avatar" data-name="branding_avatar.png">↓ Avatar</button>
   </div>
+  <div class="card">
+    <h2>Cover — 1600 × 400&nbsp;&nbsp;·&nbsp;&nbsp;Ko-fi / wide header</h2>
+    <canvas id="cover" width="1600" height="400" style="width:520px"></canvas>
+    <button class="btn" data-dl="cover" data-name="branding_cover.png">↓ Cover</button>
+  </div>
 </div>
 
 <script>
@@ -351,6 +356,39 @@ function roundRect(ctx, x, y, w, h, r) {
   mark(ctx, cx, cy - 6, 140);
 
   grain(ctx, W, H, LIGHT ? 0.03 : 0.045);
+})();
+
+/* ===================== COVER (1600x400 wide header) ===================== */
+(function () {
+  const c = document.getElementById("cover");
+  if (!c) return;
+  const ctx = c.getContext("2d");
+  const W = c.width, H = c.height, cy = H / 2;
+  backdrop(ctx, W, H);
+
+  const r = 82, gap = 52, wordSize = 92;
+  ctx.font = `600 ${wordSize}px ${FONT}`;
+  const word = "Weapon Ball Arena";
+  const trackedWidth = measureTracked(ctx, word, -0.02 * wordSize);
+  const lockupW = r * 2 + gap + trackedWidth;
+  const markX = W / 2 - lockupW / 2 + r;
+  const textX = markX + r + gap;
+
+  mark(ctx, markX, cy - 4, r);
+
+  ctx.textBaseline = "alphabetic";
+  ctx.fillStyle = INK;
+  fillTracked(ctx, word, textX, cy + wordSize * 0.1, -0.02 * wordSize);
+
+  ctx.font = `400 30px ${FONT}`;
+  ctx.fillStyle = SUBTLE; ctx.textAlign = "left";
+  ctx.fillText("A new physics duel every day", textX, cy + wordSize * 0.1 + 44);
+
+  ctx.fillStyle = ACCENT;
+  roundRect(ctx, textX, cy + wordSize * 0.1 + 44 + 22, 76, 4, 2);
+  ctx.fill();
+
+  grain(ctx, W, H, LIGHT ? 0.03 : 0.05);
 })();
 
 /* ---------- letter-spacing helpers (canvas has none natively) ---------- */
