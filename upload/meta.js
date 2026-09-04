@@ -20,6 +20,10 @@ const pick = (rng, arr) => arr[Math.floor(rng() * arr.length)];
 
 const path = require("path");
 const { nextChampion } = require("./streak");
+
+// Release-fund link for video descriptions. Fill in once (Ko-fi etc.);
+// empty string = the line is omitted.
+const FUND_URL = process.env.WBA_FUND_URL || "";
 let tournament = null;
 try { tournament = require("./tournament"); } catch (e) { /* optional */ }
 
@@ -143,6 +147,7 @@ function buildMeta(match, opts = {}) {
     spoiler,
     "",
     `▶ Play it yourself: ${playUrl}`,
+    ...(FUND_URL ? ["", `🎯 Help bring Weapon Ball Arena to the App Store & Google Play: ${FUND_URL}`] : []),
     "",
     inTourney ? "" : "🗳️ Want a specific matchup? Comment two weapon names — top votes fight next.",
     "New fight every day. Subscribe so you don't miss the rematch.",

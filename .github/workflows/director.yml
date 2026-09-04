@@ -112,6 +112,7 @@ jobs:
           WBA_YOUTUBE_TOKEN_JSON: ${{ secrets.WBA_YOUTUBE_TOKEN_JSON }}
           WBA_TELEGRAM_NOTIFY_TOKEN: ${{ secrets.WBA_TELEGRAM_NOTIFY_TOKEN }}
           WBA_TELEGRAM_NOTIFY_CHAT_ID: ${{ secrets.WBA_TELEGRAM_NOTIFY_CHAT_ID }}
+          WBA_FUND_URL: ${{ vars.WBA_FUND_URL }}
         run: |
           if [ -z "$WBA_YOUTUBE_TOKEN_JSON" ]; then
             echo "::warning::WBA_YOUTUBE_TOKEN_JSON not set — skipping upload. Add the repo secrets to go live."

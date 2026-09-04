@@ -24,12 +24,27 @@
     background: #2b7; color: #04120a; font-weight: 700; padding: 8px 14px;
     border-radius: 8px; text-decoration: none; font-size: 13px; display: none;
   }
+  #fund {
+    position: fixed; left: 50%; bottom: 40px; transform: translateX(-50%);
+    z-index: 10; display: none; text-align: center; width: min(92vw, 460px);
+    font-size: 13px; line-height: 1.5;
+  }
+  #fund .goal { color: #cfd6e6; opacity: .85; margin-bottom: 8px; }
+  #fund a {
+    display: inline-block; background: #ffd27a; color: #1a1205; font-weight: 800;
+    padding: 10px 20px; border-radius: 980px; text-decoration: none; font-size: 14px;
+    letter-spacing: .2px;
+  }
 </style>
 </head>
 <body>
 <div id="wrap"><canvas id="c" width="1080" height="1920"></canvas></div>
 <div id="hint">TAP / HOLD to thrust &nbsp;·&nbsp; aim with the pointer &nbsp;·&nbsp; R to restart</div>
 <a id="dl" download="weapon-ball-arena.webm">⬇ Download clip</a>
+<div id="fund">
+  <div class="goal">🎯 Help bring Weapon Ball Arena to the App&nbsp;Store &amp; Google&nbsp;Play</div>
+  <a id="fundLink" href="#" target="_blank" rel="noopener">☕ Chip in to the release fund</a>
+</div>
 <script>
 "use strict";
 /* =====================================================================
@@ -59,6 +74,10 @@ const PICK_LIST = Q.get("weapons")
   : (Q.get("a") && Q.get("b")) ? [Q.get("a").trim().toLowerCase(), Q.get("b").trim().toLowerCase()] : null;
 const MUTED     = AUTO ? (Q.get("sound") !== "1") : (Q.get("mute") === "1");
 const DEBUG     = Q.get("debug") === "1";   // show seed / dev details on screen
+
+// Release-fund donation link — shown to real players (never on recorded
+// frames). Fill in a Ko-fi / Buy Me a Coffee / Boosty URL. Empty = hidden.
+const FUND_URL  = "";
 
 const W = 1080, H = 1920;
 const DT = 1 / 120;                 // fixed physics step (determinism)
@@ -1806,6 +1825,18 @@ const HARD_CAP_FRAMES  = Math.round((INTRO_SECONDS + BATTLE_MAX_SECONDS + 5) * F
 const EXTERNAL = Q.get("drive") === "ext";                        // Node driver owns the clock
 if (AUTO) { const h = document.getElementById("hint"); if (h) h.hidden = true; }  // clean frames for the recorder
 
+// release-fund panel — real players only, never on recorded frames
+const fundEl = document.getElementById("fund");
+if (!AUTO && FUND_URL) {
+  document.getElementById("fundLink").href = FUND_URL;
+}
+function updateFund() {
+  if (!fundEl) return;
+  // only after a match, when a real player is most receptive; never on video
+  const show = !AUTO && FUND_URL && world.state === "over" && world.t > 0.8;
+  fundEl.style.display = show ? "block" : "none";
+}
+
 let world = new World();
 let acc = 0, last = performance.now(), overHold = 0, prevState = "intro";
 let outFrame = 0, lastBeep = null;
@@ -1895,7 +1926,7 @@ function frameAuto() {           // director: one fixed frame per rAF, no wall c
 function framePlay(now) {        // playable: wall-clock accumulator
   let dtReal = (now - last) / 1000; last = now;
   if (dtReal > 0.25) dtReal = 0.25;
-  if (world.state === "menu") { world._stepAmbient(dtReal); render(world); return requestAnimationFrame(framePlay); }
+  if (world.state === "menu") { world._stepAmbient(dtReal); render(world); updateFund(); return requestAnimationFrame(framePlay); }
   if (world.hitstop > 0) {
     world.hitstop -= dtReal; acc = 0;
   } else if (world.slowmo > 0) {
@@ -1912,6 +1943,7 @@ function framePlay(now) {        // playable: wall-clock accumulator
   }
   if (world.state !== prevState) { if (world.state === "over") sfx.win(); prevState = world.state; }
   render(world);
+  updateFund();
   requestAnimationFrame(framePlay);
 }
 
