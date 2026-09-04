@@ -88,8 +88,8 @@ const FUND_URL  = "https://ko-fi.com/weaponballarena";
 //   "crazygames"  -> AD_GAME_ID unused; needs the CrazyGames SDK
 // Never runs in AUTO / EXTERNAL (recorder) — the SDK isn't even loaded.
 // ---------------------------------------------------------------------
-const AD_PROVIDER = Q.get("ads") === "0" ? "" : "";     // "" | "gamemonetize" | "crazygames"
-const AD_GAME_ID  = "";
+const AD_PROVIDER = Q.get("ads") === "0" ? "" : "gamemonetize";  // "" | "gamemonetize" | "crazygames"
+const AD_GAME_ID  = "7b7tf8jlqx6b4inrvvl9d2wnul50y6nv";           // GameMonetize game id
 const AD_MIN_GAP  = 90;      // seconds between ads
 const AD_EVERY    = 2;       // show at most once per N finished matches
 const AD_ENABLED  = !AUTO && !EXTERNAL && !!AD_PROVIDER;
