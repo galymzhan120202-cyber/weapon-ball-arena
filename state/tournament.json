@@ -12,19 +12,12 @@
     "rapier",
     "war_axe"
   ],
-  "round": 4,
-  "matchIndex": 1,
+  "round": 2,
+  "matchIndex": 0,
   "bracket": [
     {
       "a": "shuriken",
-      "b": "kunai",
-      "winner": "shuriken",
-      "seed": 1202871899,
-      "video": "https://youtu.be/nbZRg83KP1I"
-    },
-    {
-      "a": "staff",
-      "b": "rapier",
+      "b": "staff",
       "winner": null,
       "seed": null,
       "video": null
@@ -61,6 +54,25 @@
           "winner": "rapier",
           "seed": 2811629634,
           "video": "https://youtu.be/8tFvmi9VCw8"
+        }
+      ]
+    },
+    {
+      "round": 4,
+      "matches": [
+        {
+          "a": "shuriken",
+          "b": "kunai",
+          "winner": "shuriken",
+          "seed": 1202871899,
+          "video": "https://youtu.be/nbZRg83KP1I"
+        },
+        {
+          "a": "staff",
+          "b": "rapier",
+          "winner": "staff",
+          "seed": 1186094280,
+          "video": "https://youtu.be/WwtRDUR7WMc"
         }
       ]
     }
