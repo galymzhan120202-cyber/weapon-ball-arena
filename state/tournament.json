@@ -1,82 +1,51 @@
 {
-  "n": 1,
-  "id": 1,
+  "n": 2,
+  "id": 2,
   "size": 8,
   "entrants": [
     "nunchaku",
+    "flail",
     "shuriken",
-    "kunai",
-    "dagger",
-    "staff",
-    "axe",
-    "rapier",
-    "war_axe"
+    "trident",
+    "chainsaw",
+    "dual_daggers",
+    "spear",
+    "hammer"
   ],
-  "round": 2,
+  "round": 8,
   "matchIndex": 0,
   "bracket": [
     {
+      "a": "nunchaku",
+      "b": "flail",
+      "winner": null,
+      "seed": null,
+      "video": null
+    },
+    {
       "a": "shuriken",
-      "b": "staff",
+      "b": "trident",
+      "winner": null,
+      "seed": null,
+      "video": null
+    },
+    {
+      "a": "chainsaw",
+      "b": "dual_daggers",
+      "winner": null,
+      "seed": null,
+      "video": null
+    },
+    {
+      "a": "spear",
+      "b": "hammer",
       "winner": null,
       "seed": null,
       "video": null
     }
   ],
-  "history": [
-    {
-      "round": 8,
-      "matches": [
-        {
-          "a": "nunchaku",
-          "b": "shuriken",
-          "winner": "shuriken",
-          "seed": 2794852015,
-          "video": "https://youtu.be/_tv2mCvh-Sw"
-        },
-        {
-          "a": "kunai",
-          "b": "dagger",
-          "winner": "kunai",
-          "seed": 2778074396,
-          "video": "https://youtu.be/sPvEt0SXtRc"
-        },
-        {
-          "a": "staff",
-          "b": "axe",
-          "winner": "staff",
-          "seed": 2828407253,
-          "video": "https://youtu.be/zBh4rD-WSuI"
-        },
-        {
-          "a": "rapier",
-          "b": "war_axe",
-          "winner": "rapier",
-          "seed": 2811629634,
-          "video": "https://youtu.be/8tFvmi9VCw8"
-        }
-      ]
-    },
-    {
-      "round": 4,
-      "matches": [
-        {
-          "a": "shuriken",
-          "b": "kunai",
-          "winner": "shuriken",
-          "seed": 1202871899,
-          "video": "https://youtu.be/nbZRg83KP1I"
-        },
-        {
-          "a": "staff",
-          "b": "rapier",
-          "winner": "staff",
-          "seed": 1186094280,
-          "video": "https://youtu.be/WwtRDUR7WMc"
-        }
-      ]
-    }
-  ],
+  "history": [],
   "champion": null,
-  "started": "2026-09-04T04:27:48.549Z"
+  "started": "2026-09-05T15:50:32.125Z",
+  "previousChampion": "staff"
 }
