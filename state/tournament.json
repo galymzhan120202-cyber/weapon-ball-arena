@@ -13,7 +13,7 @@
     "hammer"
   ],
   "round": 8,
-  "matchIndex": 2,
+  "matchIndex": 3,
   "bracket": [
     {
       "a": "nunchaku",
@@ -32,9 +32,9 @@
     {
       "a": "chainsaw",
       "b": "dual_daggers",
-      "winner": null,
-      "seed": null,
-      "video": null
+      "winner": "chainsaw",
+      "seed": 221368452,
+      "video": "https://youtu.be/4oyw1oSTgZo"
     },
     {
       "a": "spear",
