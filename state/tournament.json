@@ -12,39 +12,59 @@
     "spear",
     "hammer"
   ],
-  "round": 8,
-  "matchIndex": 3,
+  "round": 4,
+  "matchIndex": 0,
   "bracket": [
     {
-      "a": "nunchaku",
-      "b": "flail",
-      "winner": "flail",
-      "seed": 254923690,
-      "video": "https://youtu.be/bvy6uKL86-0"
-    },
-    {
-      "a": "shuriken",
-      "b": "trident",
-      "winner": "shuriken",
-      "seed": 271701309,
-      "video": "https://youtu.be/W8dXc-zq7gI"
+      "a": "flail",
+      "b": "shuriken",
+      "winner": null,
+      "seed": null,
+      "video": null
     },
     {
       "a": "chainsaw",
-      "b": "dual_daggers",
-      "winner": "chainsaw",
-      "seed": 221368452,
-      "video": "https://youtu.be/4oyw1oSTgZo"
-    },
-    {
-      "a": "spear",
       "b": "hammer",
       "winner": null,
       "seed": null,
       "video": null
     }
   ],
-  "history": [],
+  "history": [
+    {
+      "round": 8,
+      "matches": [
+        {
+          "a": "nunchaku",
+          "b": "flail",
+          "winner": "flail",
+          "seed": 254923690,
+          "video": "https://youtu.be/bvy6uKL86-0"
+        },
+        {
+          "a": "shuriken",
+          "b": "trident",
+          "winner": "shuriken",
+          "seed": 271701309,
+          "video": "https://youtu.be/W8dXc-zq7gI"
+        },
+        {
+          "a": "chainsaw",
+          "b": "dual_daggers",
+          "winner": "chainsaw",
+          "seed": 221368452,
+          "video": "https://youtu.be/4oyw1oSTgZo"
+        },
+        {
+          "a": "spear",
+          "b": "hammer",
+          "winner": "hammer",
+          "seed": 238146071,
+          "video": "https://youtu.be/JrwVxPEC52g"
+        }
+      ]
+    }
+  ],
   "champion": null,
   "started": "2026-09-05T15:50:32.125Z",
   "previousChampion": "staff"
