@@ -13,7 +13,7 @@
     "hammer"
   ],
   "round": 8,
-  "matchIndex": 1,
+  "matchIndex": 2,
   "bracket": [
     {
       "a": "nunchaku",
@@ -25,9 +25,9 @@
     {
       "a": "shuriken",
       "b": "trident",
-      "winner": null,
-      "seed": null,
-      "video": null
+      "winner": "shuriken",
+      "seed": 271701309,
+      "video": "https://youtu.be/W8dXc-zq7gI"
     },
     {
       "a": "chainsaw",
