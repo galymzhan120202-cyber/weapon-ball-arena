@@ -13,14 +13,14 @@
     "whip"
   ],
   "round": 8,
-  "matchIndex": 0,
+  "matchIndex": 1,
   "bracket": [
     {
       "a": "halberd",
       "b": "claws",
-      "winner": null,
-      "seed": null,
-      "video": null
+      "winner": "halberd",
+      "seed": 3810310717,
+      "video": "https://youtu.be/ZASoppKVPfY"
     },
     {
       "a": "trident",
