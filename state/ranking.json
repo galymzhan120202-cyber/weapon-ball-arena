@@ -1,7 +1,7 @@
 {
   "weapons": {
     "shuriken": {
-      "w": 5,
+      "w": 6,
       "l": 1
     },
     "spear": {
@@ -54,9 +54,9 @@
     },
     "chainsaw": {
       "w": 1,
-      "l": 0
+      "l": 1
     }
   },
-  "matches": 14,
-  "updated": "2026-09-07T05:05:38.725Z"
+  "matches": 15,
+  "updated": "2026-09-07T14:15:25.587Z"
 }
