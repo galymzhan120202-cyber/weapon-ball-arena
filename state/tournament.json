@@ -12,19 +12,12 @@
     "spear",
     "hammer"
   ],
-  "round": 4,
-  "matchIndex": 1,
+  "round": 2,
+  "matchIndex": 0,
   "bracket": [
     {
-      "a": "flail",
-      "b": "shuriken",
-      "winner": "shuriken",
-      "seed": 273594998,
-      "video": "https://youtu.be/Og9XRnVi8ME"
-    },
-    {
-      "a": "chainsaw",
-      "b": "hammer",
+      "a": "shuriken",
+      "b": "chainsaw",
       "winner": null,
       "seed": null,
       "video": null
@@ -61,6 +54,25 @@
           "winner": "hammer",
           "seed": 238146071,
           "video": "https://youtu.be/JrwVxPEC52g"
+        }
+      ]
+    },
+    {
+      "round": 4,
+      "matches": [
+        {
+          "a": "flail",
+          "b": "shuriken",
+          "winner": "shuriken",
+          "seed": 273594998,
+          "video": "https://youtu.be/Og9XRnVi8ME"
+        },
+        {
+          "a": "chainsaw",
+          "b": "hammer",
+          "winner": "chainsaw",
+          "seed": 290372617,
+          "video": "https://youtu.be/rNPTox1ckos"
         }
       ]
     }
