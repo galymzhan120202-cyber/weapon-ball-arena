@@ -12,39 +12,59 @@
     "kunai",
     "whip"
   ],
-  "round": 8,
-  "matchIndex": 3,
+  "round": 4,
+  "matchIndex": 0,
   "bracket": [
     {
       "a": "halberd",
-      "b": "claws",
-      "winner": "halberd",
-      "seed": 3810310717,
-      "video": "https://youtu.be/ZASoppKVPfY"
+      "b": "trident",
+      "winner": null,
+      "seed": null,
+      "video": null
     },
     {
-      "a": "trident",
-      "b": "sword",
-      "winner": "trident",
-      "seed": 3793533098,
-      "video": "https://youtu.be/zaAxx8tpr8Q"
-    },
-    {
-      "a": "chainsaw",
-      "b": "staff",
-      "winner": "staff",
-      "seed": 3776755479,
-      "video": "https://youtu.be/i9kweeKf1RM"
-    },
-    {
-      "a": "kunai",
+      "a": "staff",
       "b": "whip",
       "winner": null,
       "seed": null,
       "video": null
     }
   ],
-  "history": [],
+  "history": [
+    {
+      "round": 8,
+      "matches": [
+        {
+          "a": "halberd",
+          "b": "claws",
+          "winner": "halberd",
+          "seed": 3810310717,
+          "video": "https://youtu.be/ZASoppKVPfY"
+        },
+        {
+          "a": "trident",
+          "b": "sword",
+          "winner": "trident",
+          "seed": 3793533098,
+          "video": "https://youtu.be/zaAxx8tpr8Q"
+        },
+        {
+          "a": "chainsaw",
+          "b": "staff",
+          "winner": "staff",
+          "seed": 3776755479,
+          "video": "https://youtu.be/i9kweeKf1RM"
+        },
+        {
+          "a": "kunai",
+          "b": "whip",
+          "winner": "whip",
+          "seed": 3759977860,
+          "video": "https://youtu.be/xi1zVyQTll8"
+        }
+      ]
+    }
+  ],
   "champion": null,
   "started": "2026-09-07T14:15:25.618Z",
   "previousChampion": "shuriken"
