@@ -12,19 +12,12 @@
     "kunai",
     "whip"
   ],
-  "round": 4,
-  "matchIndex": 1,
+  "round": 2,
+  "matchIndex": 0,
   "bracket": [
     {
       "a": "halberd",
-      "b": "trident",
-      "winner": "halberd",
-      "seed": 1902780161,
-      "video": "https://youtu.be/TnRrZpmVdYY"
-    },
-    {
-      "a": "staff",
-      "b": "whip",
+      "b": "staff",
       "winner": null,
       "seed": null,
       "video": null
@@ -61,6 +54,25 @@
           "winner": "whip",
           "seed": 3759977860,
           "video": "https://youtu.be/xi1zVyQTll8"
+        }
+      ]
+    },
+    {
+      "round": 4,
+      "matches": [
+        {
+          "a": "halberd",
+          "b": "trident",
+          "winner": "halberd",
+          "seed": 1902780161,
+          "video": "https://youtu.be/TnRrZpmVdYY"
+        },
+        {
+          "a": "staff",
+          "b": "whip",
+          "winner": "staff",
+          "seed": 1886002542,
+          "video": "https://youtu.be/GUrdtJm0da8"
         }
       ]
     }
