@@ -13,14 +13,14 @@
     "rapier"
   ],
   "round": 8,
-  "matchIndex": 0,
+  "matchIndex": 1,
   "bracket": [
     {
       "a": "warhammer",
       "b": "staff",
-      "winner": null,
-      "seed": null,
-      "video": null
+      "winner": "staff",
+      "seed": 2701708352,
+      "video": "https://youtu.be/pxRYSuY89Bs"
     },
     {
       "a": "dagger",
