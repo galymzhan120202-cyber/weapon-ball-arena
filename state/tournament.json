@@ -13,7 +13,7 @@
     "rapier"
   ],
   "round": 8,
-  "matchIndex": 2,
+  "matchIndex": 3,
   "bracket": [
     {
       "a": "warhammer",
@@ -32,9 +32,9 @@
     {
       "a": "nunchaku",
       "b": "hammer",
-      "winner": null,
-      "seed": null,
-      "video": null
+      "winner": "nunchaku",
+      "seed": 2735263590,
+      "video": "https://youtu.be/8vDUuyjnP1Y"
     },
     {
       "a": "war_axe",
