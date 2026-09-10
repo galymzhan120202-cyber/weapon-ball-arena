@@ -12,39 +12,59 @@
     "war_axe",
     "rapier"
   ],
-  "round": 8,
-  "matchIndex": 3,
+  "round": 4,
+  "matchIndex": 0,
   "bracket": [
     {
-      "a": "warhammer",
-      "b": "staff",
-      "winner": "staff",
-      "seed": 2701708352,
-      "video": "https://youtu.be/pxRYSuY89Bs"
-    },
-    {
-      "a": "dagger",
+      "a": "staff",
       "b": "pistol",
-      "winner": "pistol",
-      "seed": 2718485971,
-      "video": "https://youtu.be/ffHYBNK1eW0"
+      "winner": null,
+      "seed": null,
+      "video": null
     },
     {
       "a": "nunchaku",
-      "b": "hammer",
-      "winner": "nunchaku",
-      "seed": 2735263590,
-      "video": "https://youtu.be/8vDUuyjnP1Y"
-    },
-    {
-      "a": "war_axe",
-      "b": "rapier",
+      "b": "war_axe",
       "winner": null,
       "seed": null,
       "video": null
     }
   ],
-  "history": [],
+  "history": [
+    {
+      "round": 8,
+      "matches": [
+        {
+          "a": "warhammer",
+          "b": "staff",
+          "winner": "staff",
+          "seed": 2701708352,
+          "video": "https://youtu.be/pxRYSuY89Bs"
+        },
+        {
+          "a": "dagger",
+          "b": "pistol",
+          "winner": "pistol",
+          "seed": 2718485971,
+          "video": "https://youtu.be/ffHYBNK1eW0"
+        },
+        {
+          "a": "nunchaku",
+          "b": "hammer",
+          "winner": "nunchaku",
+          "seed": 2735263590,
+          "video": "https://youtu.be/8vDUuyjnP1Y"
+        },
+        {
+          "a": "war_axe",
+          "b": "rapier",
+          "winner": "war_axe",
+          "seed": 2752041209,
+          "video": "https://youtu.be/KYbdN066L_g"
+        }
+      ]
+    }
+  ],
   "champion": null,
   "started": "2026-09-09T12:58:40.803Z",
   "previousChampion": "halberd"
