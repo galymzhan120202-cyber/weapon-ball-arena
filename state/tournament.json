@@ -12,19 +12,12 @@
     "war_axe",
     "rapier"
   ],
-  "round": 4,
-  "matchIndex": 1,
+  "round": 2,
+  "matchIndex": 0,
   "bracket": [
     {
       "a": "staff",
-      "b": "pistol",
-      "winner": "staff",
-      "seed": 3972778948,
-      "video": "https://youtu.be/JYYUMTQB_KA"
-    },
-    {
-      "a": "nunchaku",
-      "b": "war_axe",
+      "b": "nunchaku",
       "winner": null,
       "seed": null,
       "video": null
@@ -61,6 +54,25 @@
           "winner": "war_axe",
           "seed": 2752041209,
           "video": "https://youtu.be/KYbdN066L_g"
+        }
+      ]
+    },
+    {
+      "round": 4,
+      "matches": [
+        {
+          "a": "staff",
+          "b": "pistol",
+          "winner": "staff",
+          "seed": 3972778948,
+          "video": "https://youtu.be/JYYUMTQB_KA"
+        },
+        {
+          "a": "nunchaku",
+          "b": "war_axe",
+          "winner": "nunchaku",
+          "seed": 3989556567,
+          "video": "https://youtu.be/rlpA38XX3Ko"
         }
       ]
     }
