@@ -12,19 +12,12 @@
     "hammer",
     "staff"
   ],
-  "round": 4,
-  "matchIndex": 1,
+  "round": 2,
+  "matchIndex": 0,
   "bracket": [
     {
-      "a": "sword",
-      "b": "mace",
-      "winner": "mace",
-      "seed": 201441607,
-      "video": "https://youtu.be/UUZ6Cg_9NMQ"
-    },
-    {
-      "a": "war_axe",
-      "b": "hammer",
+      "a": "mace",
+      "b": "war_axe",
       "winner": null,
       "seed": null,
       "video": null
@@ -61,6 +54,25 @@
           "winner": "hammer",
           "seed": 1588865974,
           "video": "https://youtu.be/qpSu-GlvcfA"
+        }
+      ]
+    },
+    {
+      "round": 4,
+      "matches": [
+        {
+          "a": "sword",
+          "b": "mace",
+          "winner": "mace",
+          "seed": 201441607,
+          "video": "https://youtu.be/UUZ6Cg_9NMQ"
+        },
+        {
+          "a": "war_axe",
+          "b": "hammer",
+          "winner": "war_axe",
+          "seed": 184663988,
+          "video": "https://youtu.be/1hR1CZNXsTI"
         }
       ]
     }
