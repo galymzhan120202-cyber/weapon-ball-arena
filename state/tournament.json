@@ -12,39 +12,59 @@
     "hammer",
     "staff"
   ],
-  "round": 8,
-  "matchIndex": 3,
+  "round": 4,
+  "matchIndex": 0,
   "bracket": [
     {
       "a": "sword",
-      "b": "cleaver",
-      "winner": "sword",
-      "seed": 1572088355,
-      "video": "https://youtu.be/ycaa5jlXKdk"
-    },
-    {
-      "a": "tomahawk",
       "b": "mace",
-      "winner": "mace",
-      "seed": 1555310736,
-      "video": "https://youtu.be/Nnq-3T_IcQE"
+      "winner": null,
+      "seed": null,
+      "video": null
     },
     {
       "a": "war_axe",
-      "b": "spear",
-      "winner": "war_axe",
-      "seed": 1605643593,
-      "video": "https://youtu.be/IAaUoBvsCa8"
-    },
-    {
-      "a": "hammer",
-      "b": "staff",
+      "b": "hammer",
       "winner": null,
       "seed": null,
       "video": null
     }
   ],
-  "history": [],
+  "history": [
+    {
+      "round": 8,
+      "matches": [
+        {
+          "a": "sword",
+          "b": "cleaver",
+          "winner": "sword",
+          "seed": 1572088355,
+          "video": "https://youtu.be/ycaa5jlXKdk"
+        },
+        {
+          "a": "tomahawk",
+          "b": "mace",
+          "winner": "mace",
+          "seed": 1555310736,
+          "video": "https://youtu.be/Nnq-3T_IcQE"
+        },
+        {
+          "a": "war_axe",
+          "b": "spear",
+          "winner": "war_axe",
+          "seed": 1605643593,
+          "video": "https://youtu.be/IAaUoBvsCa8"
+        },
+        {
+          "a": "hammer",
+          "b": "staff",
+          "winner": "hammer",
+          "seed": 1588865974,
+          "video": "https://youtu.be/qpSu-GlvcfA"
+        }
+      ]
+    }
+  ],
   "champion": null,
   "started": "2026-09-11T19:17:27.972Z",
   "previousChampion": "nunchaku"
