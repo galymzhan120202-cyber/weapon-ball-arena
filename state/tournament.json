@@ -1,83 +1,51 @@
 {
-  "n": 5,
-  "id": 5,
+  "n": 6,
+  "id": 6,
   "size": 8,
   "entrants": [
-    "sword",
-    "cleaver",
-    "tomahawk",
     "mace",
+    "nunchaku",
+    "trident",
+    "claws",
+    "shuriken",
+    "axe",
     "war_axe",
-    "spear",
-    "hammer",
-    "staff"
+    "boomerang"
   ],
-  "round": 2,
+  "round": 8,
   "matchIndex": 0,
   "bracket": [
     {
       "a": "mace",
-      "b": "war_axe",
+      "b": "nunchaku",
+      "winner": null,
+      "seed": null,
+      "video": null
+    },
+    {
+      "a": "trident",
+      "b": "claws",
+      "winner": null,
+      "seed": null,
+      "video": null
+    },
+    {
+      "a": "shuriken",
+      "b": "axe",
+      "winner": null,
+      "seed": null,
+      "video": null
+    },
+    {
+      "a": "war_axe",
+      "b": "boomerang",
       "winner": null,
       "seed": null,
       "video": null
     }
   ],
-  "history": [
-    {
-      "round": 8,
-      "matches": [
-        {
-          "a": "sword",
-          "b": "cleaver",
-          "winner": "sword",
-          "seed": 1572088355,
-          "video": "https://youtu.be/ycaa5jlXKdk"
-        },
-        {
-          "a": "tomahawk",
-          "b": "mace",
-          "winner": "mace",
-          "seed": 1555310736,
-          "video": "https://youtu.be/Nnq-3T_IcQE"
-        },
-        {
-          "a": "war_axe",
-          "b": "spear",
-          "winner": "war_axe",
-          "seed": 1605643593,
-          "video": "https://youtu.be/IAaUoBvsCa8"
-        },
-        {
-          "a": "hammer",
-          "b": "staff",
-          "winner": "hammer",
-          "seed": 1588865974,
-          "video": "https://youtu.be/qpSu-GlvcfA"
-        }
-      ]
-    },
-    {
-      "round": 4,
-      "matches": [
-        {
-          "a": "sword",
-          "b": "mace",
-          "winner": "mace",
-          "seed": 201441607,
-          "video": "https://youtu.be/UUZ6Cg_9NMQ"
-        },
-        {
-          "a": "war_axe",
-          "b": "hammer",
-          "winner": "war_axe",
-          "seed": 184663988,
-          "video": "https://youtu.be/1hR1CZNXsTI"
-        }
-      ]
-    }
-  ],
+  "history": [],
   "champion": null,
-  "started": "2026-09-11T19:17:27.972Z",
-  "previousChampion": "nunchaku"
+  "started": "2026-09-14T05:19:47.257Z",
+  "previousChampion": "mace"
 }
