@@ -13,14 +13,14 @@
     "boomerang"
   ],
   "round": 4,
-  "matchIndex": 0,
+  "matchIndex": 1,
   "bracket": [
     {
       "a": "mace",
       "b": "trident",
-      "winner": null,
-      "seed": null,
-      "video": null
+      "winner": "trident",
+      "seed": 871785218,
+      "video": "https://youtu.be/R38Agfx9FxA"
     },
     {
       "a": "shuriken",
