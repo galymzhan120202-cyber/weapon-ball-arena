@@ -12,39 +12,59 @@
     "war_axe",
     "boomerang"
   ],
-  "round": 8,
-  "matchIndex": 3,
+  "round": 4,
+  "matchIndex": 0,
   "bracket": [
     {
       "a": "mace",
-      "b": "nunchaku",
-      "winner": "mace",
-      "seed": 1837647966,
-      "video": "https://youtu.be/nhYC_g3nKuc"
-    },
-    {
-      "a": "trident",
-      "b": "claws",
-      "winner": "trident",
-      "seed": 1854425585,
-      "video": "https://youtu.be/eN9_VG5dsFU"
+      "b": "trident",
+      "winner": null,
+      "seed": null,
+      "video": null
     },
     {
       "a": "shuriken",
-      "b": "axe",
-      "winner": "shuriken",
-      "seed": 1804092728,
-      "video": "https://youtu.be/AH6c5EkyhtI"
-    },
-    {
-      "a": "war_axe",
-      "b": "boomerang",
+      "b": "war_axe",
       "winner": null,
       "seed": null,
       "video": null
     }
   ],
-  "history": [],
+  "history": [
+    {
+      "round": 8,
+      "matches": [
+        {
+          "a": "mace",
+          "b": "nunchaku",
+          "winner": "mace",
+          "seed": 1837647966,
+          "video": "https://youtu.be/nhYC_g3nKuc"
+        },
+        {
+          "a": "trident",
+          "b": "claws",
+          "winner": "trident",
+          "seed": 1854425585,
+          "video": "https://youtu.be/eN9_VG5dsFU"
+        },
+        {
+          "a": "shuriken",
+          "b": "axe",
+          "winner": "shuriken",
+          "seed": 1804092728,
+          "video": "https://youtu.be/AH6c5EkyhtI"
+        },
+        {
+          "a": "war_axe",
+          "b": "boomerang",
+          "winner": "war_axe",
+          "seed": 1820870347,
+          "video": "https://youtu.be/kyUAW78U6Ss"
+        }
+      ]
+    }
+  ],
   "champion": null,
   "started": "2026-09-14T05:19:47.257Z",
   "previousChampion": "mace"
