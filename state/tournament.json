@@ -1,83 +1,51 @@
 {
-  "n": 6,
-  "id": 6,
+  "n": 7,
+  "id": 7,
   "size": 8,
   "entrants": [
     "mace",
-    "nunchaku",
+    "warhammer",
+    "hammer",
+    "sword",
+    "chainsaw",
     "trident",
-    "claws",
-    "shuriken",
-    "axe",
-    "war_axe",
-    "boomerang"
+    "boomerang",
+    "axe"
   ],
-  "round": 2,
+  "round": 8,
   "matchIndex": 0,
   "bracket": [
     {
-      "a": "trident",
-      "b": "shuriken",
+      "a": "mace",
+      "b": "warhammer",
+      "winner": null,
+      "seed": null,
+      "video": null
+    },
+    {
+      "a": "hammer",
+      "b": "sword",
+      "winner": null,
+      "seed": null,
+      "video": null
+    },
+    {
+      "a": "chainsaw",
+      "b": "trident",
+      "winner": null,
+      "seed": null,
+      "video": null
+    },
+    {
+      "a": "boomerang",
+      "b": "axe",
       "winner": null,
       "seed": null,
       "video": null
     }
   ],
-  "history": [
-    {
-      "round": 8,
-      "matches": [
-        {
-          "a": "mace",
-          "b": "nunchaku",
-          "winner": "mace",
-          "seed": 1837647966,
-          "video": "https://youtu.be/nhYC_g3nKuc"
-        },
-        {
-          "a": "trident",
-          "b": "claws",
-          "winner": "trident",
-          "seed": 1854425585,
-          "video": "https://youtu.be/eN9_VG5dsFU"
-        },
-        {
-          "a": "shuriken",
-          "b": "axe",
-          "winner": "shuriken",
-          "seed": 1804092728,
-          "video": "https://youtu.be/AH6c5EkyhtI"
-        },
-        {
-          "a": "war_axe",
-          "b": "boomerang",
-          "winner": "war_axe",
-          "seed": 1820870347,
-          "video": "https://youtu.be/kyUAW78U6Ss"
-        }
-      ]
-    },
-    {
-      "round": 4,
-      "matches": [
-        {
-          "a": "mace",
-          "b": "trident",
-          "winner": "trident",
-          "seed": 871785218,
-          "video": "https://youtu.be/R38Agfx9FxA"
-        },
-        {
-          "a": "shuriken",
-          "b": "war_axe",
-          "winner": "shuriken",
-          "seed": 888562837,
-          "video": "https://youtu.be/RI7_6Jrq1Uw"
-        }
-      ]
-    }
-  ],
+  "history": [],
   "champion": null,
-  "started": "2026-09-14T05:19:47.257Z",
-  "previousChampion": "mace"
+  "started": "2026-09-16T13:30:27.983Z",
+  "previousChampion": "shuriken"
 }
