@@ -12,19 +12,12 @@
     "war_axe",
     "boomerang"
   ],
-  "round": 4,
-  "matchIndex": 1,
+  "round": 2,
+  "matchIndex": 0,
   "bracket": [
     {
-      "a": "mace",
-      "b": "trident",
-      "winner": "trident",
-      "seed": 871785218,
-      "video": "https://youtu.be/R38Agfx9FxA"
-    },
-    {
-      "a": "shuriken",
-      "b": "war_axe",
+      "a": "trident",
+      "b": "shuriken",
       "winner": null,
       "seed": null,
       "video": null
@@ -61,6 +54,25 @@
           "winner": "war_axe",
           "seed": 1820870347,
           "video": "https://youtu.be/kyUAW78U6Ss"
+        }
+      ]
+    },
+    {
+      "round": 4,
+      "matches": [
+        {
+          "a": "mace",
+          "b": "trident",
+          "winner": "trident",
+          "seed": 871785218,
+          "video": "https://youtu.be/R38Agfx9FxA"
+        },
+        {
+          "a": "shuriken",
+          "b": "war_axe",
+          "winner": "shuriken",
+          "seed": 888562837,
+          "video": "https://youtu.be/RI7_6Jrq1Uw"
         }
       ]
     }
