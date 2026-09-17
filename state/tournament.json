@@ -13,7 +13,7 @@
     "axe"
   ],
   "round": 8,
-  "matchIndex": 2,
+  "matchIndex": 3,
   "bracket": [
     {
       "a": "mace",
@@ -32,9 +32,9 @@
     {
       "a": "chainsaw",
       "b": "trident",
-      "winner": null,
-      "seed": null,
-      "video": null
+      "winner": "chainsaw",
+      "seed": 1963882491,
+      "video": "https://youtu.be/iY97a9_jItU"
     },
     {
       "a": "boomerang",
