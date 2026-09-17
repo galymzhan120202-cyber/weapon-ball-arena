@@ -12,39 +12,59 @@
     "boomerang",
     "axe"
   ],
-  "round": 8,
-  "matchIndex": 3,
+  "round": 4,
+  "matchIndex": 0,
   "bracket": [
     {
-      "a": "mace",
-      "b": "warhammer",
-      "winner": "warhammer",
-      "seed": 1997437729,
-      "video": "https://youtu.be/LLCcdPyh2S0"
-    },
-    {
-      "a": "hammer",
-      "b": "sword",
-      "winner": "hammer",
-      "seed": 1980660110,
-      "video": "https://youtu.be/LGWgNEmF6e4"
+      "a": "warhammer",
+      "b": "hammer",
+      "winner": null,
+      "seed": null,
+      "video": null
     },
     {
       "a": "chainsaw",
-      "b": "trident",
-      "winner": "chainsaw",
-      "seed": 1963882491,
-      "video": "https://youtu.be/iY97a9_jItU"
-    },
-    {
-      "a": "boomerang",
-      "b": "axe",
+      "b": "boomerang",
       "winner": null,
       "seed": null,
       "video": null
     }
   ],
-  "history": [],
+  "history": [
+    {
+      "round": 8,
+      "matches": [
+        {
+          "a": "mace",
+          "b": "warhammer",
+          "winner": "warhammer",
+          "seed": 1997437729,
+          "video": "https://youtu.be/LLCcdPyh2S0"
+        },
+        {
+          "a": "hammer",
+          "b": "sword",
+          "winner": "hammer",
+          "seed": 1980660110,
+          "video": "https://youtu.be/LGWgNEmF6e4"
+        },
+        {
+          "a": "chainsaw",
+          "b": "trident",
+          "winner": "chainsaw",
+          "seed": 1963882491,
+          "video": "https://youtu.be/iY97a9_jItU"
+        },
+        {
+          "a": "boomerang",
+          "b": "axe",
+          "winner": "boomerang",
+          "seed": 1947104872,
+          "video": "https://youtu.be/mcfS3L5tr3A"
+        }
+      ]
+    }
+  ],
   "champion": null,
   "started": "2026-09-16T13:30:27.983Z",
   "previousChampion": "shuriken"
