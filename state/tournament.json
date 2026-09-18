@@ -1,83 +1,51 @@
 {
-  "n": 7,
-  "id": 7,
+  "n": 8,
+  "id": 8,
   "size": 8,
   "entrants": [
-    "mace",
-    "warhammer",
+    "shuriken",
+    "war_axe",
+    "kunai",
     "hammer",
-    "sword",
-    "chainsaw",
-    "trident",
-    "boomerang",
-    "axe"
+    "rapier",
+    "nunchaku",
+    "claws",
+    "katana"
   ],
-  "round": 2,
+  "round": 8,
   "matchIndex": 0,
   "bracket": [
     {
-      "a": "warhammer",
-      "b": "chainsaw",
+      "a": "shuriken",
+      "b": "war_axe",
+      "winner": null,
+      "seed": null,
+      "video": null
+    },
+    {
+      "a": "kunai",
+      "b": "hammer",
+      "winner": null,
+      "seed": null,
+      "video": null
+    },
+    {
+      "a": "rapier",
+      "b": "nunchaku",
+      "winner": null,
+      "seed": null,
+      "video": null
+    },
+    {
+      "a": "claws",
+      "b": "katana",
       "winner": null,
       "seed": null,
       "video": null
     }
   ],
-  "history": [
-    {
-      "round": 8,
-      "matches": [
-        {
-          "a": "mace",
-          "b": "warhammer",
-          "winner": "warhammer",
-          "seed": 1997437729,
-          "video": "https://youtu.be/LLCcdPyh2S0"
-        },
-        {
-          "a": "hammer",
-          "b": "sword",
-          "winner": "hammer",
-          "seed": 1980660110,
-          "video": "https://youtu.be/LGWgNEmF6e4"
-        },
-        {
-          "a": "chainsaw",
-          "b": "trident",
-          "winner": "chainsaw",
-          "seed": 1963882491,
-          "video": "https://youtu.be/iY97a9_jItU"
-        },
-        {
-          "a": "boomerang",
-          "b": "axe",
-          "winner": "boomerang",
-          "seed": 1947104872,
-          "video": "https://youtu.be/mcfS3L5tr3A"
-        }
-      ]
-    },
-    {
-      "round": 4,
-      "matches": [
-        {
-          "a": "warhammer",
-          "b": "hammer",
-          "winner": "warhammer",
-          "seed": 4117145437,
-          "video": "https://youtu.be/I6WqWe0iaRQ"
-        },
-        {
-          "a": "chainsaw",
-          "b": "boomerang",
-          "winner": "chainsaw",
-          "seed": 4100367818,
-          "video": "https://youtu.be/T5GOUGi6MAg"
-        }
-      ]
-    }
-  ],
+  "history": [],
   "champion": null,
-  "started": "2026-09-16T13:30:27.983Z",
-  "previousChampion": "shuriken"
+  "started": "2026-09-18T19:11:37.299Z",
+  "previousChampion": "warhammer"
 }
