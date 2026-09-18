@@ -12,19 +12,12 @@
     "boomerang",
     "axe"
   ],
-  "round": 4,
-  "matchIndex": 1,
+  "round": 2,
+  "matchIndex": 0,
   "bracket": [
     {
       "a": "warhammer",
-      "b": "hammer",
-      "winner": "warhammer",
-      "seed": 4117145437,
-      "video": "https://youtu.be/I6WqWe0iaRQ"
-    },
-    {
-      "a": "chainsaw",
-      "b": "boomerang",
+      "b": "chainsaw",
       "winner": null,
       "seed": null,
       "video": null
@@ -61,6 +54,25 @@
           "winner": "boomerang",
           "seed": 1947104872,
           "video": "https://youtu.be/mcfS3L5tr3A"
+        }
+      ]
+    },
+    {
+      "round": 4,
+      "matches": [
+        {
+          "a": "warhammer",
+          "b": "hammer",
+          "winner": "warhammer",
+          "seed": 4117145437,
+          "video": "https://youtu.be/I6WqWe0iaRQ"
+        },
+        {
+          "a": "chainsaw",
+          "b": "boomerang",
+          "winner": "chainsaw",
+          "seed": 4100367818,
+          "video": "https://youtu.be/T5GOUGi6MAg"
         }
       ]
     }
