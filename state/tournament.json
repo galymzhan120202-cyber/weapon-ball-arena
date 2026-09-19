@@ -13,14 +13,14 @@
     "katana"
   ],
   "round": 8,
-  "matchIndex": 0,
+  "matchIndex": 1,
   "bracket": [
     {
       "a": "shuriken",
       "b": "war_axe",
-      "winner": null,
-      "seed": null,
-      "video": null
+      "winner": "shuriken",
+      "seed": 1998896644,
+      "video": "https://youtu.be/2qMpXgboiuU"
     },
     {
       "a": "kunai",
