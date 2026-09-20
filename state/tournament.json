@@ -12,19 +12,12 @@
     "claws",
     "katana"
   ],
-  "round": 4,
-  "matchIndex": 1,
+  "round": 2,
+  "matchIndex": 0,
   "bracket": [
     {
       "a": "shuriken",
-      "b": "kunai",
-      "winner": "shuriken",
-      "seed": 727826048,
-      "video": "https://youtu.be/3zdjzNzQj8A"
-    },
-    {
-      "a": "rapier",
-      "b": "claws",
+      "b": "rapier",
       "winner": null,
       "seed": null,
       "video": null
@@ -61,6 +54,25 @@
           "winner": "claws",
           "seed": 2049229501,
           "video": "https://youtu.be/J2pZQ7lEAQY"
+        }
+      ]
+    },
+    {
+      "round": 4,
+      "matches": [
+        {
+          "a": "shuriken",
+          "b": "kunai",
+          "winner": "shuriken",
+          "seed": 727826048,
+          "video": "https://youtu.be/3zdjzNzQj8A"
+        },
+        {
+          "a": "rapier",
+          "b": "claws",
+          "winner": "rapier",
+          "seed": 744603667,
+          "video": "https://youtu.be/Ryp63jpqtQg"
         }
       ]
     }
