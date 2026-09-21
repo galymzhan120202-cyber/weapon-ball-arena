@@ -13,7 +13,7 @@
     "spear"
   ],
   "round": 8,
-  "matchIndex": 1,
+  "matchIndex": 2,
   "bracket": [
     {
       "a": "dual_daggers",
@@ -25,9 +25,9 @@
     {
       "a": "chainsaw",
       "b": "staff",
-      "winner": null,
-      "seed": null,
-      "video": null
+      "winner": "staff",
+      "seed": 4286388180,
+      "video": "https://youtu.be/7jLK_fqrw7U"
     },
     {
       "a": "kunai",
