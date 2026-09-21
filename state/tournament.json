@@ -1,83 +1,51 @@
 {
-  "n": 8,
-  "id": 8,
+  "n": 9,
+  "id": 9,
   "size": 8,
   "entrants": [
-    "shuriken",
-    "war_axe",
+    "dual_daggers",
+    "dagger",
+    "chainsaw",
+    "staff",
     "kunai",
-    "hammer",
-    "rapier",
-    "nunchaku",
-    "claws",
-    "katana"
+    "flail",
+    "whip",
+    "spear"
   ],
-  "round": 2,
+  "round": 8,
   "matchIndex": 0,
   "bracket": [
     {
-      "a": "shuriken",
-      "b": "rapier",
+      "a": "dual_daggers",
+      "b": "dagger",
+      "winner": null,
+      "seed": null,
+      "video": null
+    },
+    {
+      "a": "chainsaw",
+      "b": "staff",
+      "winner": null,
+      "seed": null,
+      "video": null
+    },
+    {
+      "a": "kunai",
+      "b": "flail",
+      "winner": null,
+      "seed": null,
+      "video": null
+    },
+    {
+      "a": "whip",
+      "b": "spear",
       "winner": null,
       "seed": null,
       "video": null
     }
   ],
-  "history": [
-    {
-      "round": 8,
-      "matches": [
-        {
-          "a": "shuriken",
-          "b": "war_axe",
-          "winner": "shuriken",
-          "seed": 1998896644,
-          "video": "https://youtu.be/2qMpXgboiuU"
-        },
-        {
-          "a": "kunai",
-          "b": "hammer",
-          "winner": "kunai",
-          "seed": 2015674263,
-          "video": "https://youtu.be/d1cCM4rvNBE"
-        },
-        {
-          "a": "rapier",
-          "b": "nunchaku",
-          "winner": "rapier",
-          "seed": 2032451882,
-          "video": "https://youtu.be/PZozTqdCzjI"
-        },
-        {
-          "a": "claws",
-          "b": "katana",
-          "winner": "claws",
-          "seed": 2049229501,
-          "video": "https://youtu.be/J2pZQ7lEAQY"
-        }
-      ]
-    },
-    {
-      "round": 4,
-      "matches": [
-        {
-          "a": "shuriken",
-          "b": "kunai",
-          "winner": "shuriken",
-          "seed": 727826048,
-          "video": "https://youtu.be/3zdjzNzQj8A"
-        },
-        {
-          "a": "rapier",
-          "b": "claws",
-          "winner": "rapier",
-          "seed": 744603667,
-          "video": "https://youtu.be/Ryp63jpqtQg"
-        }
-      ]
-    }
-  ],
+  "history": [],
   "champion": null,
-  "started": "2026-09-18T19:11:37.299Z",
-  "previousChampion": "warhammer"
+  "started": "2026-09-21T05:19:37.894Z",
+  "previousChampion": "shuriken"
 }
