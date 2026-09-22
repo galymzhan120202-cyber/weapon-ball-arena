@@ -12,39 +12,59 @@
     "whip",
     "spear"
   ],
-  "round": 8,
-  "matchIndex": 3,
+  "round": 4,
+  "matchIndex": 0,
   "bracket": [
     {
-      "a": "dual_daggers",
-      "b": "dagger",
-      "winner": "dagger",
-      "seed": 8198503,
-      "video": "https://youtu.be/FSYHZ9JnUsw"
-    },
-    {
-      "a": "chainsaw",
+      "a": "dagger",
       "b": "staff",
-      "winner": "staff",
-      "seed": 4286388180,
-      "video": "https://youtu.be/7jLK_fqrw7U"
+      "winner": null,
+      "seed": null,
+      "video": null
     },
     {
       "a": "kunai",
-      "b": "flail",
-      "winner": "kunai",
-      "seed": 41753741,
-      "video": "https://youtu.be/EUbZvlQVLGo"
-    },
-    {
-      "a": "whip",
-      "b": "spear",
+      "b": "whip",
       "winner": null,
       "seed": null,
       "video": null
     }
   ],
-  "history": [],
+  "history": [
+    {
+      "round": 8,
+      "matches": [
+        {
+          "a": "dual_daggers",
+          "b": "dagger",
+          "winner": "dagger",
+          "seed": 8198503,
+          "video": "https://youtu.be/FSYHZ9JnUsw"
+        },
+        {
+          "a": "chainsaw",
+          "b": "staff",
+          "winner": "staff",
+          "seed": 4286388180,
+          "video": "https://youtu.be/7jLK_fqrw7U"
+        },
+        {
+          "a": "kunai",
+          "b": "flail",
+          "winner": "kunai",
+          "seed": 41753741,
+          "video": "https://youtu.be/EUbZvlQVLGo"
+        },
+        {
+          "a": "whip",
+          "b": "spear",
+          "winner": "whip",
+          "seed": 24976122,
+          "video": "https://youtu.be/a18iF6Se6So"
+        }
+      ]
+    }
+  ],
   "champion": null,
   "started": "2026-09-21T05:19:37.894Z",
   "previousChampion": "shuriken"
