@@ -13,14 +13,14 @@
     "spear"
   ],
   "round": 4,
-  "matchIndex": 0,
+  "matchIndex": 1,
   "bracket": [
     {
       "a": "dagger",
       "b": "staff",
-      "winner": null,
-      "seed": null,
-      "video": null
+      "winner": "dagger",
+      "seed": 3738557635,
+      "video": "https://youtu.be/yYtExeRCGlk"
     },
     {
       "a": "kunai",
