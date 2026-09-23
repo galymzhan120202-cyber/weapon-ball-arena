@@ -1,83 +1,51 @@
 {
-  "n": 9,
-  "id": 9,
+  "n": 10,
+  "id": 10,
   "size": 8,
   "entrants": [
-    "dual_daggers",
+    "rapier",
+    "cleaver",
+    "sword",
     "dagger",
-    "chainsaw",
-    "staff",
-    "kunai",
-    "flail",
-    "whip",
-    "spear"
+    "war_axe",
+    "axe",
+    "dual_daggers",
+    "staff"
   ],
-  "round": 2,
+  "round": 8,
   "matchIndex": 0,
   "bracket": [
     {
-      "a": "dagger",
-      "b": "whip",
+      "a": "rapier",
+      "b": "cleaver",
+      "winner": null,
+      "seed": null,
+      "video": null
+    },
+    {
+      "a": "sword",
+      "b": "dagger",
+      "winner": null,
+      "seed": null,
+      "video": null
+    },
+    {
+      "a": "war_axe",
+      "b": "axe",
+      "winner": null,
+      "seed": null,
+      "video": null
+    },
+    {
+      "a": "dual_daggers",
+      "b": "staff",
       "winner": null,
       "seed": null,
       "video": null
     }
   ],
-  "history": [
-    {
-      "round": 8,
-      "matches": [
-        {
-          "a": "dual_daggers",
-          "b": "dagger",
-          "winner": "dagger",
-          "seed": 8198503,
-          "video": "https://youtu.be/FSYHZ9JnUsw"
-        },
-        {
-          "a": "chainsaw",
-          "b": "staff",
-          "winner": "staff",
-          "seed": 4286388180,
-          "video": "https://youtu.be/7jLK_fqrw7U"
-        },
-        {
-          "a": "kunai",
-          "b": "flail",
-          "winner": "kunai",
-          "seed": 41753741,
-          "video": "https://youtu.be/EUbZvlQVLGo"
-        },
-        {
-          "a": "whip",
-          "b": "spear",
-          "winner": "whip",
-          "seed": 24976122,
-          "video": "https://youtu.be/a18iF6Se6So"
-        }
-      ]
-    },
-    {
-      "round": 4,
-      "matches": [
-        {
-          "a": "dagger",
-          "b": "staff",
-          "winner": "dagger",
-          "seed": 3738557635,
-          "video": "https://youtu.be/yYtExeRCGlk"
-        },
-        {
-          "a": "kunai",
-          "b": "whip",
-          "winner": "whip",
-          "seed": 3721780016,
-          "video": "https://youtu.be/GuzcTpfJc8Q"
-        }
-      ]
-    }
-  ],
+  "history": [],
   "champion": null,
-  "started": "2026-09-21T05:19:37.894Z",
-  "previousChampion": "shuriken"
+  "started": "2026-09-23T13:39:14.049Z",
+  "previousChampion": "whip"
 }
