@@ -12,18 +12,11 @@
     "whip",
     "spear"
   ],
-  "round": 4,
-  "matchIndex": 1,
+  "round": 2,
+  "matchIndex": 0,
   "bracket": [
     {
       "a": "dagger",
-      "b": "staff",
-      "winner": "dagger",
-      "seed": 3738557635,
-      "video": "https://youtu.be/yYtExeRCGlk"
-    },
-    {
-      "a": "kunai",
       "b": "whip",
       "winner": null,
       "seed": null,
@@ -61,6 +54,25 @@
           "winner": "whip",
           "seed": 24976122,
           "video": "https://youtu.be/a18iF6Se6So"
+        }
+      ]
+    },
+    {
+      "round": 4,
+      "matches": [
+        {
+          "a": "dagger",
+          "b": "staff",
+          "winner": "dagger",
+          "seed": 3738557635,
+          "video": "https://youtu.be/yYtExeRCGlk"
+        },
+        {
+          "a": "kunai",
+          "b": "whip",
+          "winner": "whip",
+          "seed": 3721780016,
+          "video": "https://youtu.be/GuzcTpfJc8Q"
         }
       ]
     }
