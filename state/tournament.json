@@ -13,7 +13,7 @@
     "staff"
   ],
   "round": 8,
-  "matchIndex": 1,
+  "matchIndex": 2,
   "bracket": [
     {
       "a": "rapier",
@@ -25,9 +25,9 @@
     {
       "a": "sword",
       "b": "dagger",
-      "winner": null,
-      "seed": null,
-      "video": null
+      "winner": "sword",
+      "seed": 1834513184,
+      "video": "https://youtu.be/YFc4cF-2d7k"
     },
     {
       "a": "war_axe",
