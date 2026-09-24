@@ -12,39 +12,59 @@
     "dual_daggers",
     "staff"
   ],
-  "round": 8,
-  "matchIndex": 3,
+  "round": 4,
+  "matchIndex": 0,
   "bracket": [
     {
       "a": "rapier",
-      "b": "cleaver",
-      "winner": "rapier",
-      "seed": 1851290803,
-      "video": "https://youtu.be/ARwDN4ste5Q"
-    },
-    {
-      "a": "sword",
-      "b": "dagger",
-      "winner": "sword",
-      "seed": 1834513184,
-      "video": "https://youtu.be/YFc4cF-2d7k"
+      "b": "sword",
+      "winner": null,
+      "seed": null,
+      "video": null
     },
     {
       "a": "war_axe",
-      "b": "axe",
-      "winner": "war_axe",
-      "seed": 1884846041,
-      "video": "https://youtu.be/wHbnu3QJC9s"
-    },
-    {
-      "a": "dual_daggers",
       "b": "staff",
       "winner": null,
       "seed": null,
       "video": null
     }
   ],
-  "history": [],
+  "history": [
+    {
+      "round": 8,
+      "matches": [
+        {
+          "a": "rapier",
+          "b": "cleaver",
+          "winner": "rapier",
+          "seed": 1851290803,
+          "video": "https://youtu.be/ARwDN4ste5Q"
+        },
+        {
+          "a": "sword",
+          "b": "dagger",
+          "winner": "sword",
+          "seed": 1834513184,
+          "video": "https://youtu.be/YFc4cF-2d7k"
+        },
+        {
+          "a": "war_axe",
+          "b": "axe",
+          "winner": "war_axe",
+          "seed": 1884846041,
+          "video": "https://youtu.be/wHbnu3QJC9s"
+        },
+        {
+          "a": "dual_daggers",
+          "b": "staff",
+          "winner": "staff",
+          "seed": 1868068422,
+          "video": "https://youtu.be/VPQ4lmo-Qn4"
+        }
+      ]
+    }
+  ],
   "champion": null,
   "started": "2026-09-23T13:39:14.049Z",
   "previousChampion": "whip"
