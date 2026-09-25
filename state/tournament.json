@@ -12,19 +12,12 @@
     "dual_daggers",
     "staff"
   ],
-  "round": 4,
-  "matchIndex": 1,
+  "round": 2,
+  "matchIndex": 0,
   "bracket": [
     {
       "a": "rapier",
-      "b": "sword",
-      "winner": "rapier",
-      "seed": 3616543511,
-      "video": "https://youtu.be/E7U3_jEeQk0"
-    },
-    {
-      "a": "war_axe",
-      "b": "staff",
+      "b": "war_axe",
       "winner": null,
       "seed": null,
       "video": null
@@ -61,6 +54,25 @@
           "winner": "staff",
           "seed": 1868068422,
           "video": "https://youtu.be/VPQ4lmo-Qn4"
+        }
+      ]
+    },
+    {
+      "round": 4,
+      "matches": [
+        {
+          "a": "rapier",
+          "b": "sword",
+          "winner": "rapier",
+          "seed": 3616543511,
+          "video": "https://youtu.be/E7U3_jEeQk0"
+        },
+        {
+          "a": "war_axe",
+          "b": "staff",
+          "winner": "war_axe",
+          "seed": 3599765892,
+          "video": "https://youtu.be/pGvY0yqvgck"
         }
       ]
     }
