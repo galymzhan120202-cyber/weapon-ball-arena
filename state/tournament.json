@@ -13,7 +13,7 @@
     "katana"
   ],
   "round": 8,
-  "matchIndex": 2,
+  "matchIndex": 3,
   "bracket": [
     {
       "a": "halberd",
@@ -32,9 +32,9 @@
     {
       "a": "whip",
       "b": "boomerang",
-      "winner": null,
-      "seed": null,
-      "video": null
+      "winner": "whip",
+      "seed": 358682870,
+      "video": "https://youtu.be/kS3JMalnyUo"
     },
     {
       "a": "chainsaw",
