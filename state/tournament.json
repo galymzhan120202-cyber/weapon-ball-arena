@@ -12,39 +12,59 @@
     "chainsaw",
     "katana"
   ],
-  "round": 8,
-  "matchIndex": 3,
+  "round": 4,
+  "matchIndex": 0,
   "bracket": [
     {
       "a": "halberd",
-      "b": "war_axe",
-      "winner": "halberd",
-      "seed": 325127632,
-      "video": "https://youtu.be/AzTlzOHE7XQ"
-    },
-    {
-      "a": "pistol",
-      "b": "staff",
-      "winner": "pistol",
-      "seed": 341905251,
-      "video": "https://youtu.be/lag82VrEjRI"
+      "b": "pistol",
+      "winner": null,
+      "seed": null,
+      "video": null
     },
     {
       "a": "whip",
-      "b": "boomerang",
-      "winner": "whip",
-      "seed": 358682870,
-      "video": "https://youtu.be/kS3JMalnyUo"
-    },
-    {
-      "a": "chainsaw",
       "b": "katana",
       "winner": null,
       "seed": null,
       "video": null
     }
   ],
-  "history": [],
+  "history": [
+    {
+      "round": 8,
+      "matches": [
+        {
+          "a": "halberd",
+          "b": "war_axe",
+          "winner": "halberd",
+          "seed": 325127632,
+          "video": "https://youtu.be/AzTlzOHE7XQ"
+        },
+        {
+          "a": "pistol",
+          "b": "staff",
+          "winner": "pistol",
+          "seed": 341905251,
+          "video": "https://youtu.be/lag82VrEjRI"
+        },
+        {
+          "a": "whip",
+          "b": "boomerang",
+          "winner": "whip",
+          "seed": 358682870,
+          "video": "https://youtu.be/kS3JMalnyUo"
+        },
+        {
+          "a": "chainsaw",
+          "b": "katana",
+          "winner": "katana",
+          "seed": 375460489,
+          "video": "https://youtu.be/Z1k4XlsA0cg"
+        }
+      ]
+    }
+  ],
   "champion": null,
   "started": "2026-09-25T20:08:16.642Z",
   "previousChampion": "rapier"
