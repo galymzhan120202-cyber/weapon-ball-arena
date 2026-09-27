@@ -12,19 +12,12 @@
     "chainsaw",
     "katana"
   ],
-  "round": 4,
-  "matchIndex": 1,
+  "round": 2,
+  "matchIndex": 0,
   "bracket": [
     {
       "a": "halberd",
-      "b": "pistol",
-      "winner": "halberd",
-      "seed": 3743630292,
-      "video": "https://youtu.be/PZMeDHeVT6k"
-    },
-    {
-      "a": "whip",
-      "b": "katana",
+      "b": "whip",
       "winner": null,
       "seed": null,
       "video": null
@@ -61,6 +54,25 @@
           "winner": "katana",
           "seed": 375460489,
           "video": "https://youtu.be/Z1k4XlsA0cg"
+        }
+      ]
+    },
+    {
+      "round": 4,
+      "matches": [
+        {
+          "a": "halberd",
+          "b": "pistol",
+          "winner": "halberd",
+          "seed": 3743630292,
+          "video": "https://youtu.be/PZMeDHeVT6k"
+        },
+        {
+          "a": "whip",
+          "b": "katana",
+          "winner": "whip",
+          "seed": 3760407911,
+          "video": "https://youtu.be/2ql63Dx-5Gc"
         }
       ]
     }
