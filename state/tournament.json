@@ -13,14 +13,14 @@
     "axe"
   ],
   "round": 8,
-  "matchIndex": 0,
+  "matchIndex": 1,
   "bracket": [
     {
       "a": "whip",
       "b": "kunai",
-      "winner": null,
-      "seed": null,
-      "video": null
+      "winner": "whip",
+      "seed": 1078092145,
+      "video": "https://youtu.be/BFt8V1mtVcE"
     },
     {
       "a": "nunchaku",
