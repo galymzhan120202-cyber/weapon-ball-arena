@@ -1,83 +1,51 @@
 {
-  "n": 11,
-  "id": 11,
+  "n": 12,
+  "id": 12,
   "size": 8,
   "entrants": [
-    "halberd",
-    "war_axe",
-    "pistol",
-    "staff",
     "whip",
+    "kunai",
+    "nunchaku",
     "boomerang",
-    "chainsaw",
-    "katana"
+    "pistol",
+    "war_axe",
+    "dual_daggers",
+    "axe"
   ],
-  "round": 2,
+  "round": 8,
   "matchIndex": 0,
   "bracket": [
     {
-      "a": "halberd",
-      "b": "whip",
+      "a": "whip",
+      "b": "kunai",
+      "winner": null,
+      "seed": null,
+      "video": null
+    },
+    {
+      "a": "nunchaku",
+      "b": "boomerang",
+      "winner": null,
+      "seed": null,
+      "video": null
+    },
+    {
+      "a": "pistol",
+      "b": "war_axe",
+      "winner": null,
+      "seed": null,
+      "video": null
+    },
+    {
+      "a": "dual_daggers",
+      "b": "axe",
       "winner": null,
       "seed": null,
       "video": null
     }
   ],
-  "history": [
-    {
-      "round": 8,
-      "matches": [
-        {
-          "a": "halberd",
-          "b": "war_axe",
-          "winner": "halberd",
-          "seed": 325127632,
-          "video": "https://youtu.be/AzTlzOHE7XQ"
-        },
-        {
-          "a": "pistol",
-          "b": "staff",
-          "winner": "pistol",
-          "seed": 341905251,
-          "video": "https://youtu.be/lag82VrEjRI"
-        },
-        {
-          "a": "whip",
-          "b": "boomerang",
-          "winner": "whip",
-          "seed": 358682870,
-          "video": "https://youtu.be/kS3JMalnyUo"
-        },
-        {
-          "a": "chainsaw",
-          "b": "katana",
-          "winner": "katana",
-          "seed": 375460489,
-          "video": "https://youtu.be/Z1k4XlsA0cg"
-        }
-      ]
-    },
-    {
-      "round": 4,
-      "matches": [
-        {
-          "a": "halberd",
-          "b": "pistol",
-          "winner": "halberd",
-          "seed": 3743630292,
-          "video": "https://youtu.be/PZMeDHeVT6k"
-        },
-        {
-          "a": "whip",
-          "b": "katana",
-          "winner": "whip",
-          "seed": 3760407911,
-          "video": "https://youtu.be/2ql63Dx-5Gc"
-        }
-      ]
-    }
-  ],
+  "history": [],
   "champion": null,
-  "started": "2026-09-25T20:08:16.642Z",
-  "previousChampion": "rapier"
+  "started": "2026-09-28T05:44:45.362Z",
+  "previousChampion": "halberd"
 }
