@@ -12,39 +12,59 @@
     "dual_daggers",
     "axe"
   ],
-  "round": 8,
-  "matchIndex": 3,
+  "round": 4,
+  "matchIndex": 0,
   "bracket": [
     {
       "a": "whip",
-      "b": "kunai",
-      "winner": "whip",
-      "seed": 1078092145,
-      "video": "https://youtu.be/BFt8V1mtVcE"
-    },
-    {
-      "a": "nunchaku",
-      "b": "boomerang",
-      "winner": "nunchaku",
-      "seed": 1061314526,
-      "video": "https://youtu.be/-YMv-ATz1d8"
+      "b": "nunchaku",
+      "winner": null,
+      "seed": null,
+      "video": null
     },
     {
       "a": "pistol",
-      "b": "war_axe",
-      "winner": "pistol",
-      "seed": 1044536907,
-      "video": "https://youtu.be/g5CKVN9pe8A"
-    },
-    {
-      "a": "dual_daggers",
-      "b": "axe",
+      "b": "dual_daggers",
       "winner": null,
       "seed": null,
       "video": null
     }
   ],
-  "history": [],
+  "history": [
+    {
+      "round": 8,
+      "matches": [
+        {
+          "a": "whip",
+          "b": "kunai",
+          "winner": "whip",
+          "seed": 1078092145,
+          "video": "https://youtu.be/BFt8V1mtVcE"
+        },
+        {
+          "a": "nunchaku",
+          "b": "boomerang",
+          "winner": "nunchaku",
+          "seed": 1061314526,
+          "video": "https://youtu.be/-YMv-ATz1d8"
+        },
+        {
+          "a": "pistol",
+          "b": "war_axe",
+          "winner": "pistol",
+          "seed": 1044536907,
+          "video": "https://youtu.be/g5CKVN9pe8A"
+        },
+        {
+          "a": "dual_daggers",
+          "b": "axe",
+          "winner": "dual_daggers",
+          "seed": 1027759288,
+          "video": "https://youtu.be/rYag9lSgn-E"
+        }
+      ]
+    }
+  ],
   "champion": null,
   "started": "2026-09-28T05:44:45.362Z",
   "previousChampion": "halberd"
