@@ -13,7 +13,7 @@
     "axe"
   ],
   "round": 8,
-  "matchIndex": 2,
+  "matchIndex": 3,
   "bracket": [
     {
       "a": "whip",
@@ -32,9 +32,9 @@
     {
       "a": "pistol",
       "b": "war_axe",
-      "winner": null,
-      "seed": null,
-      "video": null
+      "winner": "pistol",
+      "seed": 1044536907,
+      "video": "https://youtu.be/g5CKVN9pe8A"
     },
     {
       "a": "dual_daggers",
