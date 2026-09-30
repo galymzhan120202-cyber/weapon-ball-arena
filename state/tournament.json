@@ -12,19 +12,12 @@
     "dual_daggers",
     "axe"
   ],
-  "round": 4,
-  "matchIndex": 1,
+  "round": 2,
+  "matchIndex": 0,
   "bracket": [
     {
-      "a": "whip",
-      "b": "nunchaku",
-      "winner": "nunchaku",
-      "seed": 4186267245,
-      "video": "https://youtu.be/PXmjM1Y4dvE"
-    },
-    {
-      "a": "pistol",
-      "b": "dual_daggers",
+      "a": "nunchaku",
+      "b": "pistol",
       "winner": null,
       "seed": null,
       "video": null
@@ -61,6 +54,25 @@
           "winner": "dual_daggers",
           "seed": 1027759288,
           "video": "https://youtu.be/rYag9lSgn-E"
+        }
+      ]
+    },
+    {
+      "round": 4,
+      "matches": [
+        {
+          "a": "whip",
+          "b": "nunchaku",
+          "winner": "nunchaku",
+          "seed": 4186267245,
+          "video": "https://youtu.be/PXmjM1Y4dvE"
+        },
+        {
+          "a": "pistol",
+          "b": "dual_daggers",
+          "winner": "pistol",
+          "seed": 4169489626,
+          "video": "https://youtu.be/pws1Kl_sr7I"
         }
       ]
     }
