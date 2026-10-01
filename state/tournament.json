@@ -13,7 +13,7 @@
     "flail"
   ],
   "round": 8,
-  "matchIndex": 1,
+  "matchIndex": 2,
   "bracket": [
     {
       "a": "hammer",
@@ -25,9 +25,9 @@
     {
       "a": "whip",
       "b": "staff",
-      "winner": null,
-      "seed": null,
-      "video": null
+      "winner": "whip",
+      "seed": 4135628225,
+      "video": "https://youtu.be/8YEPCzWr7rI"
     },
     {
       "a": "nunchaku",
