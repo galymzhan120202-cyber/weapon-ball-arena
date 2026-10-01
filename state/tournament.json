@@ -13,7 +13,7 @@
     "flail"
   ],
   "round": 8,
-  "matchIndex": 2,
+  "matchIndex": 3,
   "bracket": [
     {
       "a": "hammer",
@@ -32,9 +32,9 @@
     {
       "a": "nunchaku",
       "b": "axe",
-      "winner": null,
-      "seed": null,
-      "video": null
+      "winner": "axe",
+      "seed": 4085295368,
+      "video": "https://youtu.be/MMG2kB6Psss"
     },
     {
       "a": "katana",
