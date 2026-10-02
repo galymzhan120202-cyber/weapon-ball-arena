@@ -12,18 +12,11 @@
     "katana",
     "flail"
   ],
-  "round": 4,
-  "matchIndex": 1,
+  "round": 2,
+  "matchIndex": 0,
   "bracket": [
     {
-      "a": "hammer",
-      "b": "whip",
-      "winner": "whip",
-      "seed": 4151797842,
-      "video": "https://youtu.be/2BilUrKvdUk"
-    },
-    {
-      "a": "axe",
+      "a": "whip",
       "b": "flail",
       "winner": null,
       "seed": null,
@@ -61,6 +54,25 @@
           "winner": "flail",
           "seed": 4102072987,
           "video": "https://youtu.be/5-METnaukAg"
+        }
+      ]
+    },
+    {
+      "round": 4,
+      "matches": [
+        {
+          "a": "hammer",
+          "b": "whip",
+          "winner": "whip",
+          "seed": 4151797842,
+          "video": "https://youtu.be/2BilUrKvdUk"
+        },
+        {
+          "a": "axe",
+          "b": "flail",
+          "winner": "flail",
+          "seed": 4168575461,
+          "video": "https://youtu.be/8XSWcwvBLWw"
         }
       ]
     }
