@@ -13,14 +13,14 @@
     "cleaver"
   ],
   "round": 8,
-  "matchIndex": 0,
+  "matchIndex": 1,
   "bracket": [
     {
       "a": "spear",
       "b": "war_axe",
-      "winner": null,
-      "seed": null,
-      "video": null
+      "winner": "spear",
+      "seed": 1917083135,
+      "video": "https://youtu.be/Xx-GY9BuwS8"
     },
     {
       "a": "tomahawk",
