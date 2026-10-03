@@ -1,83 +1,51 @@
 {
-  "n": 13,
-  "id": 13,
+  "n": 14,
+  "id": 14,
   "size": 8,
   "entrants": [
-    "hammer",
+    "spear",
     "war_axe",
-    "whip",
-    "staff",
-    "nunchaku",
-    "axe",
-    "katana",
-    "flail"
+    "tomahawk",
+    "flail",
+    "claws",
+    "sword",
+    "scythe",
+    "cleaver"
   ],
-  "round": 2,
+  "round": 8,
   "matchIndex": 0,
   "bracket": [
     {
-      "a": "whip",
+      "a": "spear",
+      "b": "war_axe",
+      "winner": null,
+      "seed": null,
+      "video": null
+    },
+    {
+      "a": "tomahawk",
       "b": "flail",
+      "winner": null,
+      "seed": null,
+      "video": null
+    },
+    {
+      "a": "claws",
+      "b": "sword",
+      "winner": null,
+      "seed": null,
+      "video": null
+    },
+    {
+      "a": "scythe",
+      "b": "cleaver",
       "winner": null,
       "seed": null,
       "video": null
     }
   ],
-  "history": [
-    {
-      "round": 8,
-      "matches": [
-        {
-          "a": "hammer",
-          "b": "war_axe",
-          "winner": "hammer",
-          "seed": 4118850606,
-          "video": "https://youtu.be/7ALuB1877GM"
-        },
-        {
-          "a": "whip",
-          "b": "staff",
-          "winner": "whip",
-          "seed": 4135628225,
-          "video": "https://youtu.be/8YEPCzWr7rI"
-        },
-        {
-          "a": "nunchaku",
-          "b": "axe",
-          "winner": "axe",
-          "seed": 4085295368,
-          "video": "https://youtu.be/MMG2kB6Psss"
-        },
-        {
-          "a": "katana",
-          "b": "flail",
-          "winner": "flail",
-          "seed": 4102072987,
-          "video": "https://youtu.be/5-METnaukAg"
-        }
-      ]
-    },
-    {
-      "round": 4,
-      "matches": [
-        {
-          "a": "hammer",
-          "b": "whip",
-          "winner": "whip",
-          "seed": 4151797842,
-          "video": "https://youtu.be/2BilUrKvdUk"
-        },
-        {
-          "a": "axe",
-          "b": "flail",
-          "winner": "flail",
-          "seed": 4168575461,
-          "video": "https://youtu.be/8XSWcwvBLWw"
-        }
-      ]
-    }
-  ],
+  "history": [],
   "champion": null,
-  "started": "2026-09-30T21:00:14.427Z",
-  "previousChampion": "nunchaku"
+  "started": "2026-10-03T05:37:19.110Z",
+  "previousChampion": "whip"
 }
