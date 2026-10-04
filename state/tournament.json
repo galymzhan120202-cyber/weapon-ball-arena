@@ -12,39 +12,59 @@
     "scythe",
     "cleaver"
   ],
-  "round": 8,
-  "matchIndex": 3,
+  "round": 4,
+  "matchIndex": 0,
   "bracket": [
     {
       "a": "spear",
-      "b": "war_axe",
-      "winner": "spear",
-      "seed": 1917083135,
-      "video": "https://youtu.be/Xx-GY9BuwS8"
+      "b": "tomahawk",
+      "winner": null,
+      "seed": null,
+      "video": null
     },
     {
-      "a": "tomahawk",
-      "b": "flail",
-      "winner": "tomahawk",
-      "seed": 1900305516,
-      "video": "https://youtu.be/e3uhSc3Q44g"
-    },
-    {
-      "a": "claws",
-      "b": "sword",
-      "winner": "sword",
-      "seed": 1950638373,
-      "video": "https://youtu.be/JC3a2eS5B2Q"
-    },
-    {
-      "a": "scythe",
-      "b": "cleaver",
+      "a": "sword",
+      "b": "scythe",
       "winner": null,
       "seed": null,
       "video": null
     }
   ],
-  "history": [],
+  "history": [
+    {
+      "round": 8,
+      "matches": [
+        {
+          "a": "spear",
+          "b": "war_axe",
+          "winner": "spear",
+          "seed": 1917083135,
+          "video": "https://youtu.be/Xx-GY9BuwS8"
+        },
+        {
+          "a": "tomahawk",
+          "b": "flail",
+          "winner": "tomahawk",
+          "seed": 1900305516,
+          "video": "https://youtu.be/e3uhSc3Q44g"
+        },
+        {
+          "a": "claws",
+          "b": "sword",
+          "winner": "sword",
+          "seed": 1950638373,
+          "video": "https://youtu.be/JC3a2eS5B2Q"
+        },
+        {
+          "a": "scythe",
+          "b": "cleaver",
+          "winner": "scythe",
+          "seed": 1933860754,
+          "video": "https://youtu.be/Hh3w7cOlguM"
+        }
+      ]
+    }
+  ],
   "champion": null,
   "started": "2026-10-03T05:37:19.110Z",
   "previousChampion": "whip"
