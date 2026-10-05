@@ -13,14 +13,14 @@
     "nunchaku"
   ],
   "round": 8,
-  "matchIndex": 0,
+  "matchIndex": 1,
   "bracket": [
     {
       "a": "katana",
       "b": "dual_daggers",
-      "winner": null,
-      "seed": null,
-      "video": null
+      "winner": "katana",
+      "seed": 3361173756,
+      "video": "https://youtu.be/eSiHyukccNY"
     },
     {
       "a": "flail",
