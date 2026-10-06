@@ -12,39 +12,59 @@
     "halberd",
     "nunchaku"
   ],
-  "round": 8,
-  "matchIndex": 3,
+  "round": 4,
+  "matchIndex": 0,
   "bracket": [
     {
       "a": "katana",
-      "b": "dual_daggers",
-      "winner": "katana",
-      "seed": 3361173756,
-      "video": "https://youtu.be/eSiHyukccNY"
-    },
-    {
-      "a": "flail",
-      "b": "whip",
-      "winner": "flail",
-      "seed": 3377951375,
-      "video": "https://youtu.be/enVrpdi36CE"
+      "b": "flail",
+      "winner": null,
+      "seed": null,
+      "video": null
     },
     {
       "a": "shuriken",
-      "b": "spear",
-      "winner": "shuriken",
-      "seed": 3394728994,
-      "video": "https://youtu.be/HYfO8BngMWY"
-    },
-    {
-      "a": "halberd",
       "b": "nunchaku",
       "winner": null,
       "seed": null,
       "video": null
     }
   ],
-  "history": [],
+  "history": [
+    {
+      "round": 8,
+      "matches": [
+        {
+          "a": "katana",
+          "b": "dual_daggers",
+          "winner": "katana",
+          "seed": 3361173756,
+          "video": "https://youtu.be/eSiHyukccNY"
+        },
+        {
+          "a": "flail",
+          "b": "whip",
+          "winner": "flail",
+          "seed": 3377951375,
+          "video": "https://youtu.be/enVrpdi36CE"
+        },
+        {
+          "a": "shuriken",
+          "b": "spear",
+          "winner": "shuriken",
+          "seed": 3394728994,
+          "video": "https://youtu.be/HYfO8BngMWY"
+        },
+        {
+          "a": "halberd",
+          "b": "nunchaku",
+          "winner": "nunchaku",
+          "seed": 3411506613,
+          "video": "https://youtu.be/29WKK5TTHzI"
+        }
+      ]
+    }
+  ],
   "champion": null,
   "started": "2026-10-05T17:09:08.216Z",
   "previousChampion": "scythe"
