@@ -13,14 +13,14 @@
     "nunchaku"
   ],
   "round": 4,
-  "matchIndex": 0,
+  "matchIndex": 1,
   "bracket": [
     {
       "a": "katana",
       "b": "flail",
-      "winner": null,
-      "seed": null,
-      "video": null
+      "winner": "flail",
+      "seed": 3916728872,
+      "video": "https://youtu.be/cL_POxCagM0"
     },
     {
       "a": "shuriken",
