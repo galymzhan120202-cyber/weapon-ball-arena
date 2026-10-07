@@ -1,83 +1,51 @@
 {
-  "n": 15,
-  "id": 15,
+  "n": 16,
+  "id": 16,
   "size": 8,
   "entrants": [
-    "katana",
-    "dual_daggers",
-    "flail",
+    "staff",
+    "sword",
+    "boomerang",
     "whip",
-    "shuriken",
-    "spear",
-    "halberd",
-    "nunchaku"
+    "tomahawk",
+    "cleaver",
+    "pistol",
+    "hammer"
   ],
-  "round": 2,
+  "round": 8,
   "matchIndex": 0,
   "bracket": [
     {
-      "a": "flail",
-      "b": "shuriken",
+      "a": "staff",
+      "b": "sword",
+      "winner": null,
+      "seed": null,
+      "video": null
+    },
+    {
+      "a": "boomerang",
+      "b": "whip",
+      "winner": null,
+      "seed": null,
+      "video": null
+    },
+    {
+      "a": "tomahawk",
+      "b": "cleaver",
+      "winner": null,
+      "seed": null,
+      "video": null
+    },
+    {
+      "a": "pistol",
+      "b": "hammer",
       "winner": null,
       "seed": null,
       "video": null
     }
   ],
-  "history": [
-    {
-      "round": 8,
-      "matches": [
-        {
-          "a": "katana",
-          "b": "dual_daggers",
-          "winner": "katana",
-          "seed": 3361173756,
-          "video": "https://youtu.be/eSiHyukccNY"
-        },
-        {
-          "a": "flail",
-          "b": "whip",
-          "winner": "flail",
-          "seed": 3377951375,
-          "video": "https://youtu.be/enVrpdi36CE"
-        },
-        {
-          "a": "shuriken",
-          "b": "spear",
-          "winner": "shuriken",
-          "seed": 3394728994,
-          "video": "https://youtu.be/HYfO8BngMWY"
-        },
-        {
-          "a": "halberd",
-          "b": "nunchaku",
-          "winner": "nunchaku",
-          "seed": 3411506613,
-          "video": "https://youtu.be/29WKK5TTHzI"
-        }
-      ]
-    },
-    {
-      "round": 4,
-      "matches": [
-        {
-          "a": "katana",
-          "b": "flail",
-          "winner": "flail",
-          "seed": 3916728872,
-          "video": "https://youtu.be/cL_POxCagM0"
-        },
-        {
-          "a": "shuriken",
-          "b": "nunchaku",
-          "winner": "shuriken",
-          "seed": 3933506491,
-          "video": "https://youtu.be/Pjw_MbLmYus"
-        }
-      ]
-    }
-  ],
+  "history": [],
   "champion": null,
-  "started": "2026-10-05T17:09:08.216Z",
-  "previousChampion": "scythe"
+  "started": "2026-10-07T22:00:10.625Z",
+  "previousChampion": "shuriken"
 }
