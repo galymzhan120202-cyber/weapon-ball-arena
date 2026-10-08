@@ -13,14 +13,14 @@
     "hammer"
   ],
   "round": 8,
-  "matchIndex": 0,
+  "matchIndex": 1,
   "bracket": [
     {
       "a": "staff",
       "b": "sword",
-      "winner": null,
-      "seed": null,
-      "video": null
+      "winner": "sword",
+      "seed": 4133186381,
+      "video": "https://youtu.be/6-VubRekfQ0"
     },
     {
       "a": "boomerang",
