@@ -13,7 +13,7 @@
     "hammer"
   ],
   "round": 8,
-  "matchIndex": 2,
+  "matchIndex": 3,
   "bracket": [
     {
       "a": "staff",
@@ -32,9 +32,9 @@
     {
       "a": "tomahawk",
       "b": "cleaver",
-      "winner": null,
-      "seed": null,
-      "video": null
+      "winner": "cleaver",
+      "seed": 4099631143,
+      "video": "https://youtu.be/uRRm01j4aPU"
     },
     {
       "a": "pistol",
