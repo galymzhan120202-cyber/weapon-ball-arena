@@ -12,39 +12,59 @@
     "pistol",
     "hammer"
   ],
-  "round": 8,
-  "matchIndex": 3,
+  "round": 4,
+  "matchIndex": 0,
   "bracket": [
     {
-      "a": "staff",
-      "b": "sword",
-      "winner": "sword",
-      "seed": 4133186381,
-      "video": "https://youtu.be/6-VubRekfQ0"
+      "a": "sword",
+      "b": "boomerang",
+      "winner": null,
+      "seed": null,
+      "video": null
     },
     {
-      "a": "boomerang",
-      "b": "whip",
-      "winner": "boomerang",
-      "seed": 4116408762,
-      "video": "https://youtu.be/YJ42DINaXsc"
-    },
-    {
-      "a": "tomahawk",
-      "b": "cleaver",
-      "winner": "cleaver",
-      "seed": 4099631143,
-      "video": "https://youtu.be/uRRm01j4aPU"
-    },
-    {
-      "a": "pistol",
-      "b": "hammer",
+      "a": "cleaver",
+      "b": "pistol",
       "winner": null,
       "seed": null,
       "video": null
     }
   ],
-  "history": [],
+  "history": [
+    {
+      "round": 8,
+      "matches": [
+        {
+          "a": "staff",
+          "b": "sword",
+          "winner": "sword",
+          "seed": 4133186381,
+          "video": "https://youtu.be/6-VubRekfQ0"
+        },
+        {
+          "a": "boomerang",
+          "b": "whip",
+          "winner": "boomerang",
+          "seed": 4116408762,
+          "video": "https://youtu.be/YJ42DINaXsc"
+        },
+        {
+          "a": "tomahawk",
+          "b": "cleaver",
+          "winner": "cleaver",
+          "seed": 4099631143,
+          "video": "https://youtu.be/uRRm01j4aPU"
+        },
+        {
+          "a": "pistol",
+          "b": "hammer",
+          "winner": "pistol",
+          "seed": 4082853524,
+          "video": "https://youtu.be/OL7q_cpNSTg"
+        }
+      ]
+    }
+  ],
   "champion": null,
   "started": "2026-10-07T22:00:10.625Z",
   "previousChampion": "shuriken"
