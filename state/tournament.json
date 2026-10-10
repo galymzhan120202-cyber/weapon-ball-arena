@@ -12,18 +12,11 @@
     "pistol",
     "hammer"
   ],
-  "round": 4,
-  "matchIndex": 1,
+  "round": 2,
+  "matchIndex": 0,
   "bracket": [
     {
-      "a": "sword",
-      "b": "boomerang",
-      "winner": "boomerang",
-      "seed": 1025011281,
-      "video": "https://youtu.be/jeHKBsUr1oA"
-    },
-    {
-      "a": "cleaver",
+      "a": "boomerang",
       "b": "pistol",
       "winner": null,
       "seed": null,
@@ -61,6 +54,25 @@
           "winner": "pistol",
           "seed": 4082853524,
           "video": "https://youtu.be/OL7q_cpNSTg"
+        }
+      ]
+    },
+    {
+      "round": 4,
+      "matches": [
+        {
+          "a": "sword",
+          "b": "boomerang",
+          "winner": "boomerang",
+          "seed": 1025011281,
+          "video": "https://youtu.be/jeHKBsUr1oA"
+        },
+        {
+          "a": "cleaver",
+          "b": "pistol",
+          "winner": "pistol",
+          "seed": 1008233662,
+          "video": "https://youtu.be/UvuefcWkl5U"
         }
       ]
     }
