@@ -13,7 +13,7 @@
     "whip"
   ],
   "round": 8,
-  "matchIndex": 1,
+  "matchIndex": 2,
   "bracket": [
     {
       "a": "tomahawk",
@@ -25,9 +25,9 @@
     {
       "a": "dagger",
       "b": "mace",
-      "winner": null,
-      "seed": null,
-      "video": null
+      "winner": "dagger",
+      "seed": 1574882317,
+      "video": "https://youtu.be/224cblwhSmc"
     },
     {
       "a": "war_axe",
