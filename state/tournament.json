@@ -1,83 +1,51 @@
 {
-  "n": 17,
-  "id": 17,
+  "n": 18,
+  "id": 18,
   "size": 8,
   "entrants": [
+    "kunai",
+    "nunchaku",
+    "rapier",
+    "cleaver",
     "tomahawk",
-    "axe",
-    "dagger",
-    "mace",
-    "war_axe",
-    "pistol",
-    "spear",
-    "whip"
+    "katana",
+    "hammer",
+    "flail"
   ],
-  "round": 2,
+  "round": 8,
   "matchIndex": 0,
   "bracket": [
     {
-      "a": "axe",
-      "b": "pistol",
+      "a": "kunai",
+      "b": "nunchaku",
+      "winner": null,
+      "seed": null,
+      "video": null
+    },
+    {
+      "a": "rapier",
+      "b": "cleaver",
+      "winner": null,
+      "seed": null,
+      "video": null
+    },
+    {
+      "a": "tomahawk",
+      "b": "katana",
+      "winner": null,
+      "seed": null,
+      "video": null
+    },
+    {
+      "a": "hammer",
+      "b": "flail",
       "winner": null,
       "seed": null,
       "video": null
     }
   ],
-  "history": [
-    {
-      "round": 8,
-      "matches": [
-        {
-          "a": "tomahawk",
-          "b": "axe",
-          "winner": "axe",
-          "seed": 1558104698,
-          "video": "https://youtu.be/HkDxfBQPt24"
-        },
-        {
-          "a": "dagger",
-          "b": "mace",
-          "winner": "dagger",
-          "seed": 1574882317,
-          "video": "https://youtu.be/224cblwhSmc"
-        },
-        {
-          "a": "war_axe",
-          "b": "pistol",
-          "winner": "pistol",
-          "seed": 1524549460,
-          "video": "https://youtu.be/faV0NuxE4sw"
-        },
-        {
-          "a": "spear",
-          "b": "whip",
-          "winner": "whip",
-          "seed": 1541327079,
-          "video": "https://youtu.be/PVBgBgxjV-E"
-        }
-      ]
-    },
-    {
-      "round": 4,
-      "matches": [
-        {
-          "a": "axe",
-          "b": "dagger",
-          "winner": "axe",
-          "seed": 1395729798,
-          "video": "https://youtu.be/3p7eVato0sQ"
-        },
-        {
-          "a": "pistol",
-          "b": "whip",
-          "winner": "pistol",
-          "seed": 1412507417,
-          "video": "https://youtu.be/9oD9og8I5WA"
-        }
-      ]
-    }
-  ],
+  "history": [],
   "champion": null,
-  "started": "2026-10-10T14:28:32.437Z",
-  "previousChampion": "boomerang"
+  "started": "2026-10-12T23:12:58.200Z",
+  "previousChampion": "pistol"
 }
