@@ -12,19 +12,12 @@
     "spear",
     "whip"
   ],
-  "round": 4,
-  "matchIndex": 1,
+  "round": 2,
+  "matchIndex": 0,
   "bracket": [
     {
       "a": "axe",
-      "b": "dagger",
-      "winner": "axe",
-      "seed": 1395729798,
-      "video": "https://youtu.be/3p7eVato0sQ"
-    },
-    {
-      "a": "pistol",
-      "b": "whip",
+      "b": "pistol",
       "winner": null,
       "seed": null,
       "video": null
@@ -61,6 +54,25 @@
           "winner": "whip",
           "seed": 1541327079,
           "video": "https://youtu.be/PVBgBgxjV-E"
+        }
+      ]
+    },
+    {
+      "round": 4,
+      "matches": [
+        {
+          "a": "axe",
+          "b": "dagger",
+          "winner": "axe",
+          "seed": 1395729798,
+          "video": "https://youtu.be/3p7eVato0sQ"
+        },
+        {
+          "a": "pistol",
+          "b": "whip",
+          "winner": "pistol",
+          "seed": 1412507417,
+          "video": "https://youtu.be/9oD9og8I5WA"
         }
       ]
     }
