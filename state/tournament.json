@@ -13,14 +13,14 @@
     "flail"
   ],
   "round": 8,
-  "matchIndex": 0,
+  "matchIndex": 1,
   "bracket": [
     {
       "a": "kunai",
       "b": "nunchaku",
-      "winner": null,
-      "seed": null,
-      "video": null
+      "winner": "kunai",
+      "seed": 2781010315,
+      "video": "https://youtu.be/lx7tfZYotEE"
     },
     {
       "a": "rapier",
