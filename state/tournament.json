@@ -12,39 +12,59 @@
     "hammer",
     "flail"
   ],
-  "round": 8,
-  "matchIndex": 3,
+  "round": 4,
+  "matchIndex": 0,
   "bracket": [
     {
       "a": "kunai",
-      "b": "nunchaku",
-      "winner": "kunai",
-      "seed": 2781010315,
-      "video": "https://youtu.be/lx7tfZYotEE"
-    },
-    {
-      "a": "rapier",
       "b": "cleaver",
-      "winner": "cleaver",
-      "seed": 2764232696,
-      "video": "https://youtu.be/OEtRHqQkz0Q"
+      "winner": null,
+      "seed": null,
+      "video": null
     },
     {
-      "a": "tomahawk",
-      "b": "katana",
-      "winner": "katana",
-      "seed": 2814565553,
-      "video": "https://youtu.be/O1TOw2an6-Y"
-    },
-    {
-      "a": "hammer",
-      "b": "flail",
+      "a": "katana",
+      "b": "hammer",
       "winner": null,
       "seed": null,
       "video": null
     }
   ],
-  "history": [],
+  "history": [
+    {
+      "round": 8,
+      "matches": [
+        {
+          "a": "kunai",
+          "b": "nunchaku",
+          "winner": "kunai",
+          "seed": 2781010315,
+          "video": "https://youtu.be/lx7tfZYotEE"
+        },
+        {
+          "a": "rapier",
+          "b": "cleaver",
+          "winner": "cleaver",
+          "seed": 2764232696,
+          "video": "https://youtu.be/OEtRHqQkz0Q"
+        },
+        {
+          "a": "tomahawk",
+          "b": "katana",
+          "winner": "katana",
+          "seed": 2814565553,
+          "video": "https://youtu.be/O1TOw2an6-Y"
+        },
+        {
+          "a": "hammer",
+          "b": "flail",
+          "winner": "hammer",
+          "seed": 2797787934,
+          "video": "https://youtu.be/QO4hMJe-fzs"
+        }
+      ]
+    }
+  ],
   "champion": null,
   "started": "2026-10-12T23:12:58.200Z",
   "previousChampion": "pistol"
