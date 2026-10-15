@@ -13,14 +13,14 @@
     "chainsaw"
   ],
   "round": 8,
-  "matchIndex": 0,
+  "matchIndex": 1,
   "bracket": [
     {
       "a": "flail",
       "b": "hammer",
-      "winner": null,
-      "seed": null,
-      "video": null
+      "winner": "hammer",
+      "seed": 4209573608,
+      "video": "https://youtu.be/yaaEA5Xrx8k"
     },
     {
       "a": "halberd",
