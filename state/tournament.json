@@ -1,83 +1,51 @@
 {
-  "n": 18,
-  "id": 18,
+  "n": 19,
+  "id": 19,
   "size": 8,
   "entrants": [
-    "kunai",
-    "nunchaku",
-    "rapier",
-    "cleaver",
-    "tomahawk",
-    "katana",
+    "flail",
     "hammer",
-    "flail"
+    "halberd",
+    "whip",
+    "mace",
+    "dual_daggers",
+    "warhammer",
+    "chainsaw"
   ],
-  "round": 2,
+  "round": 8,
   "matchIndex": 0,
   "bracket": [
     {
-      "a": "kunai",
-      "b": "katana",
+      "a": "flail",
+      "b": "hammer",
+      "winner": null,
+      "seed": null,
+      "video": null
+    },
+    {
+      "a": "halberd",
+      "b": "whip",
+      "winner": null,
+      "seed": null,
+      "video": null
+    },
+    {
+      "a": "mace",
+      "b": "dual_daggers",
+      "winner": null,
+      "seed": null,
+      "video": null
+    },
+    {
+      "a": "warhammer",
+      "b": "chainsaw",
       "winner": null,
       "seed": null,
       "video": null
     }
   ],
-  "history": [
-    {
-      "round": 8,
-      "matches": [
-        {
-          "a": "kunai",
-          "b": "nunchaku",
-          "winner": "kunai",
-          "seed": 2781010315,
-          "video": "https://youtu.be/lx7tfZYotEE"
-        },
-        {
-          "a": "rapier",
-          "b": "cleaver",
-          "winner": "cleaver",
-          "seed": 2764232696,
-          "video": "https://youtu.be/OEtRHqQkz0Q"
-        },
-        {
-          "a": "tomahawk",
-          "b": "katana",
-          "winner": "katana",
-          "seed": 2814565553,
-          "video": "https://youtu.be/O1TOw2an6-Y"
-        },
-        {
-          "a": "hammer",
-          "b": "flail",
-          "winner": "hammer",
-          "seed": 2797787934,
-          "video": "https://youtu.be/QO4hMJe-fzs"
-        }
-      ]
-    },
-    {
-      "round": 4,
-      "matches": [
-        {
-          "a": "kunai",
-          "b": "cleaver",
-          "winner": "kunai",
-          "seed": 2448078111,
-          "video": "https://youtu.be/2kq3mB2O8iY"
-        },
-        {
-          "a": "katana",
-          "b": "hammer",
-          "winner": "katana",
-          "seed": 2431300492,
-          "video": "https://youtu.be/CvpRVFb86NQ"
-        }
-      ]
-    }
-  ],
+  "history": [],
   "champion": null,
-  "started": "2026-10-12T23:12:58.200Z",
-  "previousChampion": "pistol"
+  "started": "2026-10-15T05:02:11.530Z",
+  "previousChampion": "katana"
 }
