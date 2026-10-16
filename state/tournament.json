@@ -12,39 +12,59 @@
     "warhammer",
     "chainsaw"
   ],
-  "round": 8,
-  "matchIndex": 3,
+  "round": 4,
+  "matchIndex": 0,
   "bracket": [
     {
-      "a": "flail",
-      "b": "hammer",
-      "winner": "hammer",
-      "seed": 4209573608,
-      "video": "https://youtu.be/yaaEA5Xrx8k"
-    },
-    {
-      "a": "halberd",
+      "a": "hammer",
       "b": "whip",
-      "winner": "whip",
-      "seed": 4226351227,
-      "video": "https://youtu.be/YEQaFPUP1XU"
+      "winner": null,
+      "seed": null,
+      "video": null
     },
     {
-      "a": "mace",
-      "b": "dual_daggers",
-      "winner": "dual_daggers",
-      "seed": 4243128846,
-      "video": "https://youtu.be/NPTdrDckkEw"
-    },
-    {
-      "a": "warhammer",
-      "b": "chainsaw",
+      "a": "dual_daggers",
+      "b": "warhammer",
       "winner": null,
       "seed": null,
       "video": null
     }
   ],
-  "history": [],
+  "history": [
+    {
+      "round": 8,
+      "matches": [
+        {
+          "a": "flail",
+          "b": "hammer",
+          "winner": "hammer",
+          "seed": 4209573608,
+          "video": "https://youtu.be/yaaEA5Xrx8k"
+        },
+        {
+          "a": "halberd",
+          "b": "whip",
+          "winner": "whip",
+          "seed": 4226351227,
+          "video": "https://youtu.be/YEQaFPUP1XU"
+        },
+        {
+          "a": "mace",
+          "b": "dual_daggers",
+          "winner": "dual_daggers",
+          "seed": 4243128846,
+          "video": "https://youtu.be/NPTdrDckkEw"
+        },
+        {
+          "a": "warhammer",
+          "b": "chainsaw",
+          "winner": "warhammer",
+          "seed": 4259906465,
+          "video": "https://youtu.be/3nhKrCO47-8"
+        }
+      ]
+    }
+  ],
   "champion": null,
   "started": "2026-10-15T05:02:11.530Z",
   "previousChampion": "katana"
