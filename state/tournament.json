@@ -13,14 +13,14 @@
     "chainsaw"
   ],
   "round": 4,
-  "matchIndex": 0,
+  "matchIndex": 1,
   "bracket": [
     {
       "a": "hammer",
       "b": "whip",
-      "winner": null,
-      "seed": null,
-      "video": null
+      "winner": "whip",
+      "seed": 3654018492,
+      "video": "https://youtu.be/WZrA9ggnqIc"
     },
     {
       "a": "dual_daggers",
