@@ -12,39 +12,59 @@
     "rapier",
     "war_axe"
   ],
-  "round": 8,
-  "matchIndex": 3,
+  "round": 4,
+  "matchIndex": 0,
   "bracket": [
     {
       "a": "whip",
-      "b": "warhammer",
-      "winner": "whip",
-      "seed": 1596097228,
-      "video": "https://youtu.be/toUIfEgm6Ow"
-    },
-    {
-      "a": "claws",
       "b": "dagger",
-      "winner": "dagger",
-      "seed": 1612874847,
-      "video": "https://youtu.be/N5Bv4CDEHMk"
+      "winner": null,
+      "seed": null,
+      "video": null
     },
     {
-      "a": "hammer",
-      "b": "shuriken",
-      "winner": "shuriken",
-      "seed": 1629652466,
-      "video": "https://youtu.be/pwckwfPfjPY"
-    },
-    {
-      "a": "rapier",
-      "b": "war_axe",
+      "a": "shuriken",
+      "b": "rapier",
       "winner": null,
       "seed": null,
       "video": null
     }
   ],
-  "history": [],
+  "history": [
+    {
+      "round": 8,
+      "matches": [
+        {
+          "a": "whip",
+          "b": "warhammer",
+          "winner": "whip",
+          "seed": 1596097228,
+          "video": "https://youtu.be/toUIfEgm6Ow"
+        },
+        {
+          "a": "claws",
+          "b": "dagger",
+          "winner": "dagger",
+          "seed": 1612874847,
+          "video": "https://youtu.be/N5Bv4CDEHMk"
+        },
+        {
+          "a": "hammer",
+          "b": "shuriken",
+          "winner": "shuriken",
+          "seed": 1629652466,
+          "video": "https://youtu.be/pwckwfPfjPY"
+        },
+        {
+          "a": "rapier",
+          "b": "war_axe",
+          "winner": "rapier",
+          "seed": 1646430085,
+          "video": "https://youtu.be/xjB9Lpc8ll0"
+        }
+      ]
+    }
+  ],
   "champion": null,
   "started": "2026-10-17T12:11:22.416Z",
   "previousChampion": "whip"
