@@ -1,83 +1,51 @@
 {
-  "n": 20,
-  "id": 20,
+  "n": 21,
+  "id": 21,
   "size": 8,
   "entrants": [
-    "whip",
-    "warhammer",
-    "claws",
-    "dagger",
-    "hammer",
-    "shuriken",
     "rapier",
-    "war_axe"
+    "boomerang",
+    "trident",
+    "war_axe",
+    "flail",
+    "spear",
+    "staff",
+    "hammer"
   ],
-  "round": 2,
+  "round": 8,
   "matchIndex": 0,
   "bracket": [
     {
-      "a": "whip",
-      "b": "shuriken",
+      "a": "rapier",
+      "b": "boomerang",
+      "winner": null,
+      "seed": null,
+      "video": null
+    },
+    {
+      "a": "trident",
+      "b": "war_axe",
+      "winner": null,
+      "seed": null,
+      "video": null
+    },
+    {
+      "a": "flail",
+      "b": "spear",
+      "winner": null,
+      "seed": null,
+      "video": null
+    },
+    {
+      "a": "staff",
+      "b": "hammer",
       "winner": null,
       "seed": null,
       "video": null
     }
   ],
-  "history": [
-    {
-      "round": 8,
-      "matches": [
-        {
-          "a": "whip",
-          "b": "warhammer",
-          "winner": "whip",
-          "seed": 1596097228,
-          "video": "https://youtu.be/toUIfEgm6Ow"
-        },
-        {
-          "a": "claws",
-          "b": "dagger",
-          "winner": "dagger",
-          "seed": 1612874847,
-          "video": "https://youtu.be/N5Bv4CDEHMk"
-        },
-        {
-          "a": "hammer",
-          "b": "shuriken",
-          "winner": "shuriken",
-          "seed": 1629652466,
-          "video": "https://youtu.be/pwckwfPfjPY"
-        },
-        {
-          "a": "rapier",
-          "b": "war_axe",
-          "winner": "rapier",
-          "seed": 1646430085,
-          "video": "https://youtu.be/xjB9Lpc8ll0"
-        }
-      ]
-    },
-    {
-      "round": 4,
-      "matches": [
-        {
-          "a": "whip",
-          "b": "dagger",
-          "winner": "whip",
-          "seed": 1929029432,
-          "video": "https://youtu.be/ZkLN8xe6yYY"
-        },
-        {
-          "a": "shuriken",
-          "b": "rapier",
-          "winner": "shuriken",
-          "seed": 1945807051,
-          "video": "https://youtu.be/RxX0BhNV2_w"
-        }
-      ]
-    }
-  ],
+  "history": [],
   "champion": null,
-  "started": "2026-10-17T12:11:22.416Z",
+  "started": "2026-10-19T21:14:40.456Z",
   "previousChampion": "whip"
 }
