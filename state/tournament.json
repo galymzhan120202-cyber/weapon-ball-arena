@@ -12,19 +12,12 @@
     "rapier",
     "war_axe"
   ],
-  "round": 4,
-  "matchIndex": 1,
+  "round": 2,
+  "matchIndex": 0,
   "bracket": [
     {
       "a": "whip",
-      "b": "dagger",
-      "winner": "whip",
-      "seed": 1929029432,
-      "video": "https://youtu.be/ZkLN8xe6yYY"
-    },
-    {
-      "a": "shuriken",
-      "b": "rapier",
+      "b": "shuriken",
       "winner": null,
       "seed": null,
       "video": null
@@ -61,6 +54,25 @@
           "winner": "rapier",
           "seed": 1646430085,
           "video": "https://youtu.be/xjB9Lpc8ll0"
+        }
+      ]
+    },
+    {
+      "round": 4,
+      "matches": [
+        {
+          "a": "whip",
+          "b": "dagger",
+          "winner": "whip",
+          "seed": 1929029432,
+          "video": "https://youtu.be/ZkLN8xe6yYY"
+        },
+        {
+          "a": "shuriken",
+          "b": "rapier",
+          "winner": "shuriken",
+          "seed": 1945807051,
+          "video": "https://youtu.be/RxX0BhNV2_w"
         }
       ]
     }
