@@ -13,14 +13,14 @@
     "war_axe"
   ],
   "round": 4,
-  "matchIndex": 0,
+  "matchIndex": 1,
   "bracket": [
     {
       "a": "whip",
       "b": "dagger",
-      "winner": null,
-      "seed": null,
-      "video": null
+      "winner": "whip",
+      "seed": 1929029432,
+      "video": "https://youtu.be/ZkLN8xe6yYY"
     },
     {
       "a": "shuriken",
