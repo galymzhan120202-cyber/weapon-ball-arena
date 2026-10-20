@@ -13,7 +13,7 @@
     "hammer"
   ],
   "round": 8,
-  "matchIndex": 2,
+  "matchIndex": 3,
   "bracket": [
     {
       "a": "rapier",
@@ -32,9 +32,9 @@
     {
       "a": "flail",
       "b": "spear",
-      "winner": null,
-      "seed": null,
-      "video": null
+      "winner": "spear",
+      "seed": 3715698677,
+      "video": "https://youtu.be/3hQKRwxbWlg"
     },
     {
       "a": "staff",
