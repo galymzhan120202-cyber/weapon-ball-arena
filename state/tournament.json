@@ -12,39 +12,59 @@
     "staff",
     "hammer"
   ],
-  "round": 8,
-  "matchIndex": 3,
+  "round": 4,
+  "matchIndex": 0,
   "bracket": [
     {
       "a": "rapier",
-      "b": "boomerang",
-      "winner": "rapier",
-      "seed": 3682143439,
-      "video": "https://youtu.be/PRnaP-tPxm0"
-    },
-    {
-      "a": "trident",
       "b": "war_axe",
-      "winner": "war_axe",
-      "seed": 3665365820,
-      "video": "https://youtu.be/GxBPzFSBSWo"
+      "winner": null,
+      "seed": null,
+      "video": null
     },
     {
-      "a": "flail",
-      "b": "spear",
-      "winner": "spear",
-      "seed": 3715698677,
-      "video": "https://youtu.be/3hQKRwxbWlg"
-    },
-    {
-      "a": "staff",
-      "b": "hammer",
+      "a": "spear",
+      "b": "staff",
       "winner": null,
       "seed": null,
       "video": null
     }
   ],
-  "history": [],
+  "history": [
+    {
+      "round": 8,
+      "matches": [
+        {
+          "a": "rapier",
+          "b": "boomerang",
+          "winner": "rapier",
+          "seed": 3682143439,
+          "video": "https://youtu.be/PRnaP-tPxm0"
+        },
+        {
+          "a": "trident",
+          "b": "war_axe",
+          "winner": "war_axe",
+          "seed": 3665365820,
+          "video": "https://youtu.be/GxBPzFSBSWo"
+        },
+        {
+          "a": "flail",
+          "b": "spear",
+          "winner": "spear",
+          "seed": 3715698677,
+          "video": "https://youtu.be/3hQKRwxbWlg"
+        },
+        {
+          "a": "staff",
+          "b": "hammer",
+          "winner": "staff",
+          "seed": 3698921058,
+          "video": "https://youtu.be/uLbERMyWHPs"
+        }
+      ]
+    }
+  ],
   "champion": null,
   "started": "2026-10-19T21:14:40.456Z",
   "previousChampion": "whip"
