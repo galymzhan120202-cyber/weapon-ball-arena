@@ -12,18 +12,11 @@
     "staff",
     "hammer"
   ],
-  "round": 4,
-  "matchIndex": 1,
+  "round": 2,
+  "matchIndex": 0,
   "bracket": [
     {
       "a": "rapier",
-      "b": "war_axe",
-      "winner": "rapier",
-      "seed": 1877986171,
-      "video": "https://youtu.be/rNRQY4C1Dn4"
-    },
-    {
-      "a": "spear",
       "b": "staff",
       "winner": null,
       "seed": null,
@@ -61,6 +54,25 @@
           "winner": "staff",
           "seed": 3698921058,
           "video": "https://youtu.be/uLbERMyWHPs"
+        }
+      ]
+    },
+    {
+      "round": 4,
+      "matches": [
+        {
+          "a": "rapier",
+          "b": "war_axe",
+          "winner": "rapier",
+          "seed": 1877986171,
+          "video": "https://youtu.be/rNRQY4C1Dn4"
+        },
+        {
+          "a": "spear",
+          "b": "staff",
+          "winner": "staff",
+          "seed": 1861208552,
+          "video": "https://youtu.be/m21d4Ch7A5Q"
         }
       ]
     }
