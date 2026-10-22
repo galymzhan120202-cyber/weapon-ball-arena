@@ -1,83 +1,51 @@
 {
-  "n": 21,
-  "id": 21,
+  "n": 22,
+  "id": 22,
   "size": 8,
   "entrants": [
-    "rapier",
-    "boomerang",
-    "trident",
-    "war_axe",
-    "flail",
     "spear",
-    "staff",
-    "hammer"
+    "sword",
+    "nunchaku",
+    "dual_daggers",
+    "pistol",
+    "trident",
+    "shuriken",
+    "katana"
   ],
-  "round": 2,
+  "round": 8,
   "matchIndex": 0,
   "bracket": [
     {
-      "a": "rapier",
-      "b": "staff",
+      "a": "spear",
+      "b": "sword",
+      "winner": null,
+      "seed": null,
+      "video": null
+    },
+    {
+      "a": "nunchaku",
+      "b": "dual_daggers",
+      "winner": null,
+      "seed": null,
+      "video": null
+    },
+    {
+      "a": "pistol",
+      "b": "trident",
+      "winner": null,
+      "seed": null,
+      "video": null
+    },
+    {
+      "a": "shuriken",
+      "b": "katana",
       "winner": null,
       "seed": null,
       "video": null
     }
   ],
-  "history": [
-    {
-      "round": 8,
-      "matches": [
-        {
-          "a": "rapier",
-          "b": "boomerang",
-          "winner": "rapier",
-          "seed": 3682143439,
-          "video": "https://youtu.be/PRnaP-tPxm0"
-        },
-        {
-          "a": "trident",
-          "b": "war_axe",
-          "winner": "war_axe",
-          "seed": 3665365820,
-          "video": "https://youtu.be/GxBPzFSBSWo"
-        },
-        {
-          "a": "flail",
-          "b": "spear",
-          "winner": "spear",
-          "seed": 3715698677,
-          "video": "https://youtu.be/3hQKRwxbWlg"
-        },
-        {
-          "a": "staff",
-          "b": "hammer",
-          "winner": "staff",
-          "seed": 3698921058,
-          "video": "https://youtu.be/uLbERMyWHPs"
-        }
-      ]
-    },
-    {
-      "round": 4,
-      "matches": [
-        {
-          "a": "rapier",
-          "b": "war_axe",
-          "winner": "rapier",
-          "seed": 1877986171,
-          "video": "https://youtu.be/rNRQY4C1Dn4"
-        },
-        {
-          "a": "spear",
-          "b": "staff",
-          "winner": "staff",
-          "seed": 1861208552,
-          "video": "https://youtu.be/m21d4Ch7A5Q"
-        }
-      ]
-    }
-  ],
+  "history": [],
   "champion": null,
-  "started": "2026-10-19T21:14:40.456Z",
-  "previousChampion": "whip"
+  "started": "2026-10-22T05:14:27.590Z",
+  "previousChampion": "rapier"
 }
