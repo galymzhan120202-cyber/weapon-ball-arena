@@ -13,14 +13,14 @@
     "katana"
   ],
   "round": 8,
-  "matchIndex": 0,
+  "matchIndex": 1,
   "bracket": [
     {
       "a": "spear",
       "b": "sword",
-      "winner": null,
-      "seed": null,
-      "video": null
+      "winner": "sword",
+      "seed": 771049802,
+      "video": "https://youtu.be/cMz7ea_IaIo"
     },
     {
       "a": "nunchaku",
