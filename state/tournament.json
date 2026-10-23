@@ -13,7 +13,7 @@
     "katana"
   ],
   "round": 8,
-  "matchIndex": 1,
+  "matchIndex": 2,
   "bracket": [
     {
       "a": "spear",
@@ -25,9 +25,9 @@
     {
       "a": "nunchaku",
       "b": "dual_daggers",
-      "winner": null,
-      "seed": null,
-      "video": null
+      "winner": "dual_daggers",
+      "seed": 787827421,
+      "video": "https://youtu.be/1D0nC2uXW-c"
     },
     {
       "a": "pistol",
