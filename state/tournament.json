@@ -13,7 +13,7 @@
     "katana"
   ],
   "round": 8,
-  "matchIndex": 2,
+  "matchIndex": 3,
   "bracket": [
     {
       "a": "spear",
@@ -32,9 +32,9 @@
     {
       "a": "pistol",
       "b": "trident",
-      "winner": null,
-      "seed": null,
-      "video": null
+      "winner": "pistol",
+      "seed": 737494564,
+      "video": "https://youtu.be/jbK3qUIX_HY"
     },
     {
       "a": "shuriken",
