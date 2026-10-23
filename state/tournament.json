@@ -12,39 +12,59 @@
     "shuriken",
     "katana"
   ],
-  "round": 8,
-  "matchIndex": 3,
+  "round": 4,
+  "matchIndex": 0,
   "bracket": [
     {
-      "a": "spear",
-      "b": "sword",
-      "winner": "sword",
-      "seed": 771049802,
-      "video": "https://youtu.be/cMz7ea_IaIo"
-    },
-    {
-      "a": "nunchaku",
+      "a": "sword",
       "b": "dual_daggers",
-      "winner": "dual_daggers",
-      "seed": 787827421,
-      "video": "https://youtu.be/1D0nC2uXW-c"
+      "winner": null,
+      "seed": null,
+      "video": null
     },
     {
       "a": "pistol",
-      "b": "trident",
-      "winner": "pistol",
-      "seed": 737494564,
-      "video": "https://youtu.be/jbK3qUIX_HY"
-    },
-    {
-      "a": "shuriken",
-      "b": "katana",
+      "b": "shuriken",
       "winner": null,
       "seed": null,
       "video": null
     }
   ],
-  "history": [],
+  "history": [
+    {
+      "round": 8,
+      "matches": [
+        {
+          "a": "spear",
+          "b": "sword",
+          "winner": "sword",
+          "seed": 771049802,
+          "video": "https://youtu.be/cMz7ea_IaIo"
+        },
+        {
+          "a": "nunchaku",
+          "b": "dual_daggers",
+          "winner": "dual_daggers",
+          "seed": 787827421,
+          "video": "https://youtu.be/1D0nC2uXW-c"
+        },
+        {
+          "a": "pistol",
+          "b": "trident",
+          "winner": "pistol",
+          "seed": 737494564,
+          "video": "https://youtu.be/jbK3qUIX_HY"
+        },
+        {
+          "a": "shuriken",
+          "b": "katana",
+          "winner": "shuriken",
+          "seed": 754272183,
+          "video": "https://youtu.be/Bfcges2gYJw"
+        }
+      ]
+    }
+  ],
   "champion": null,
   "started": "2026-10-22T05:14:27.590Z",
   "previousChampion": "rapier"
