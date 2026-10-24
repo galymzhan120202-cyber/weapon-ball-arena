@@ -1,83 +1,51 @@
 {
-  "n": 22,
-  "id": 22,
+  "n": 23,
+  "id": 23,
   "size": 8,
   "entrants": [
-    "spear",
-    "sword",
-    "nunchaku",
-    "dual_daggers",
-    "pistol",
+    "staff",
+    "axe",
+    "dagger",
+    "mace",
+    "rapier",
     "trident",
-    "shuriken",
-    "katana"
+    "whip",
+    "halberd"
   ],
-  "round": 2,
+  "round": 8,
   "matchIndex": 0,
   "bracket": [
     {
-      "a": "sword",
-      "b": "shuriken",
+      "a": "staff",
+      "b": "axe",
+      "winner": null,
+      "seed": null,
+      "video": null
+    },
+    {
+      "a": "dagger",
+      "b": "mace",
+      "winner": null,
+      "seed": null,
+      "video": null
+    },
+    {
+      "a": "rapier",
+      "b": "trident",
+      "winner": null,
+      "seed": null,
+      "video": null
+    },
+    {
+      "a": "whip",
+      "b": "halberd",
       "winner": null,
       "seed": null,
       "video": null
     }
   ],
-  "history": [
-    {
-      "round": 8,
-      "matches": [
-        {
-          "a": "spear",
-          "b": "sword",
-          "winner": "sword",
-          "seed": 771049802,
-          "video": "https://youtu.be/cMz7ea_IaIo"
-        },
-        {
-          "a": "nunchaku",
-          "b": "dual_daggers",
-          "winner": "dual_daggers",
-          "seed": 787827421,
-          "video": "https://youtu.be/1D0nC2uXW-c"
-        },
-        {
-          "a": "pistol",
-          "b": "trident",
-          "winner": "pistol",
-          "seed": 737494564,
-          "video": "https://youtu.be/jbK3qUIX_HY"
-        },
-        {
-          "a": "shuriken",
-          "b": "katana",
-          "winner": "shuriken",
-          "seed": 754272183,
-          "video": "https://youtu.be/Bfcges2gYJw"
-        }
-      ]
-    },
-    {
-      "round": 4,
-      "matches": [
-        {
-          "a": "sword",
-          "b": "dual_daggers",
-          "winner": "sword",
-          "seed": 2724976022,
-          "video": "https://youtu.be/irWaXGp_ENA"
-        },
-        {
-          "a": "pistol",
-          "b": "shuriken",
-          "winner": "shuriken",
-          "seed": 2741753641,
-          "video": "https://youtu.be/eaDp4gdr_bE"
-        }
-      ]
-    }
-  ],
+  "history": [],
   "champion": null,
-  "started": "2026-10-22T05:14:27.590Z",
-  "previousChampion": "rapier"
+  "started": "2026-10-24T18:59:24.723Z",
+  "previousChampion": "shuriken"
 }
