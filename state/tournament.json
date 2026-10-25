@@ -13,7 +13,7 @@
     "halberd"
   ],
   "round": 8,
-  "matchIndex": 1,
+  "matchIndex": 2,
   "bracket": [
     {
       "a": "staff",
@@ -25,9 +25,9 @@
     {
       "a": "dagger",
       "b": "mace",
-      "winner": null,
-      "seed": null,
-      "video": null
+      "winner": "dagger",
+      "seed": 777425866,
+      "video": "https://youtu.be/9HM3metR68A"
     },
     {
       "a": "rapier",
