@@ -13,14 +13,14 @@
     "halberd"
   ],
   "round": 4,
-  "matchIndex": 0,
+  "matchIndex": 1,
   "bracket": [
     {
       "a": "staff",
       "b": "dagger",
-      "winner": null,
-      "seed": null,
-      "video": null
+      "winner": "dagger",
+      "seed": 2969463073,
+      "video": "https://youtu.be/rCXyobAsIo4"
     },
     {
       "a": "trident",
