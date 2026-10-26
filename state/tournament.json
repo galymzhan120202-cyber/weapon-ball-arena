@@ -12,19 +12,12 @@
     "whip",
     "halberd"
   ],
-  "round": 4,
-  "matchIndex": 1,
+  "round": 2,
+  "matchIndex": 0,
   "bracket": [
     {
-      "a": "staff",
-      "b": "dagger",
-      "winner": "dagger",
-      "seed": 2969463073,
-      "video": "https://youtu.be/rCXyobAsIo4"
-    },
-    {
-      "a": "trident",
-      "b": "halberd",
+      "a": "dagger",
+      "b": "trident",
       "winner": null,
       "seed": null,
       "video": null
@@ -61,6 +54,25 @@
           "winner": "halberd",
           "seed": 743870628,
           "video": "https://youtu.be/KnOpDA-K1TQ"
+        }
+      ]
+    },
+    {
+      "round": 4,
+      "matches": [
+        {
+          "a": "staff",
+          "b": "dagger",
+          "winner": "dagger",
+          "seed": 2969463073,
+          "video": "https://youtu.be/rCXyobAsIo4"
+        },
+        {
+          "a": "trident",
+          "b": "halberd",
+          "winner": "trident",
+          "seed": 2952685454,
+          "video": "https://youtu.be/unCzwJUbPac"
         }
       ]
     }
