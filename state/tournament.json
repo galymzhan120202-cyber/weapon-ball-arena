@@ -12,39 +12,59 @@
     "whip",
     "halberd"
   ],
-  "round": 8,
-  "matchIndex": 3,
+  "round": 4,
+  "matchIndex": 0,
   "bracket": [
     {
       "a": "staff",
-      "b": "axe",
-      "winner": "staff",
-      "seed": 794203485,
-      "video": "https://youtu.be/u0P2UYoZEP8"
+      "b": "dagger",
+      "winner": null,
+      "seed": null,
+      "video": null
     },
     {
-      "a": "dagger",
-      "b": "mace",
-      "winner": "dagger",
-      "seed": 777425866,
-      "video": "https://youtu.be/9HM3metR68A"
-    },
-    {
-      "a": "rapier",
-      "b": "trident",
-      "winner": "trident",
-      "seed": 760648247,
-      "video": "https://youtu.be/6NPsGxZuo-0"
-    },
-    {
-      "a": "whip",
+      "a": "trident",
       "b": "halberd",
       "winner": null,
       "seed": null,
       "video": null
     }
   ],
-  "history": [],
+  "history": [
+    {
+      "round": 8,
+      "matches": [
+        {
+          "a": "staff",
+          "b": "axe",
+          "winner": "staff",
+          "seed": 794203485,
+          "video": "https://youtu.be/u0P2UYoZEP8"
+        },
+        {
+          "a": "dagger",
+          "b": "mace",
+          "winner": "dagger",
+          "seed": 777425866,
+          "video": "https://youtu.be/9HM3metR68A"
+        },
+        {
+          "a": "rapier",
+          "b": "trident",
+          "winner": "trident",
+          "seed": 760648247,
+          "video": "https://youtu.be/6NPsGxZuo-0"
+        },
+        {
+          "a": "whip",
+          "b": "halberd",
+          "winner": "halberd",
+          "seed": 743870628,
+          "video": "https://youtu.be/KnOpDA-K1TQ"
+        }
+      ]
+    }
+  ],
   "champion": null,
   "started": "2026-10-24T18:59:24.723Z",
   "previousChampion": "shuriken"
