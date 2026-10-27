@@ -1,83 +1,51 @@
 {
-  "n": 23,
-  "id": 23,
+  "n": 24,
+  "id": 24,
   "size": 8,
   "entrants": [
-    "staff",
-    "axe",
-    "dagger",
-    "mace",
+    "scythe",
     "rapier",
-    "trident",
+    "cleaver",
+    "staff",
+    "katana",
     "whip",
-    "halberd"
+    "trident",
+    "tomahawk"
   ],
-  "round": 2,
+  "round": 8,
   "matchIndex": 0,
   "bracket": [
     {
-      "a": "dagger",
-      "b": "trident",
+      "a": "scythe",
+      "b": "rapier",
+      "winner": null,
+      "seed": null,
+      "video": null
+    },
+    {
+      "a": "cleaver",
+      "b": "staff",
+      "winner": null,
+      "seed": null,
+      "video": null
+    },
+    {
+      "a": "katana",
+      "b": "whip",
+      "winner": null,
+      "seed": null,
+      "video": null
+    },
+    {
+      "a": "trident",
+      "b": "tomahawk",
       "winner": null,
       "seed": null,
       "video": null
     }
   ],
-  "history": [
-    {
-      "round": 8,
-      "matches": [
-        {
-          "a": "staff",
-          "b": "axe",
-          "winner": "staff",
-          "seed": 794203485,
-          "video": "https://youtu.be/u0P2UYoZEP8"
-        },
-        {
-          "a": "dagger",
-          "b": "mace",
-          "winner": "dagger",
-          "seed": 777425866,
-          "video": "https://youtu.be/9HM3metR68A"
-        },
-        {
-          "a": "rapier",
-          "b": "trident",
-          "winner": "trident",
-          "seed": 760648247,
-          "video": "https://youtu.be/6NPsGxZuo-0"
-        },
-        {
-          "a": "whip",
-          "b": "halberd",
-          "winner": "halberd",
-          "seed": 743870628,
-          "video": "https://youtu.be/KnOpDA-K1TQ"
-        }
-      ]
-    },
-    {
-      "round": 4,
-      "matches": [
-        {
-          "a": "staff",
-          "b": "dagger",
-          "winner": "dagger",
-          "seed": 2969463073,
-          "video": "https://youtu.be/rCXyobAsIo4"
-        },
-        {
-          "a": "trident",
-          "b": "halberd",
-          "winner": "trident",
-          "seed": 2952685454,
-          "video": "https://youtu.be/unCzwJUbPac"
-        }
-      ]
-    }
-  ],
+  "history": [],
   "champion": null,
-  "started": "2026-10-24T18:59:24.723Z",
-  "previousChampion": "shuriken"
+  "started": "2026-10-27T05:53:30.918Z",
+  "previousChampion": "dagger"
 }
