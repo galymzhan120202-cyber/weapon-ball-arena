@@ -12,39 +12,59 @@
     "trident",
     "tomahawk"
   ],
-  "round": 8,
-  "matchIndex": 3,
+  "round": 4,
+  "matchIndex": 0,
   "bracket": [
     {
       "a": "scythe",
-      "b": "rapier",
-      "winner": "scythe",
-      "seed": 1791559648,
-      "video": "https://youtu.be/XKQtVvRob-U"
-    },
-    {
-      "a": "cleaver",
-      "b": "staff",
-      "winner": "cleaver",
-      "seed": 1808337267,
-      "video": "https://youtu.be/1pgQOzRbXvw"
+      "b": "cleaver",
+      "winner": null,
+      "seed": null,
+      "video": null
     },
     {
       "a": "katana",
-      "b": "whip",
-      "winner": "katana",
-      "seed": 1825114886,
-      "video": "https://youtu.be/N-NGsD-KctM"
-    },
-    {
-      "a": "trident",
-      "b": "tomahawk",
+      "b": "trident",
       "winner": null,
       "seed": null,
       "video": null
     }
   ],
-  "history": [],
+  "history": [
+    {
+      "round": 8,
+      "matches": [
+        {
+          "a": "scythe",
+          "b": "rapier",
+          "winner": "scythe",
+          "seed": 1791559648,
+          "video": "https://youtu.be/XKQtVvRob-U"
+        },
+        {
+          "a": "cleaver",
+          "b": "staff",
+          "winner": "cleaver",
+          "seed": 1808337267,
+          "video": "https://youtu.be/1pgQOzRbXvw"
+        },
+        {
+          "a": "katana",
+          "b": "whip",
+          "winner": "katana",
+          "seed": 1825114886,
+          "video": "https://youtu.be/N-NGsD-KctM"
+        },
+        {
+          "a": "trident",
+          "b": "tomahawk",
+          "winner": "trident",
+          "seed": 1841892505,
+          "video": "https://youtu.be/5IcN0xmJvr4"
+        }
+      ]
+    }
+  ],
   "champion": null,
   "started": "2026-10-27T05:53:30.918Z",
   "previousChampion": "dagger"
