@@ -13,14 +13,14 @@
     "tomahawk"
   ],
   "round": 4,
-  "matchIndex": 0,
+  "matchIndex": 1,
   "bracket": [
     {
       "a": "scythe",
       "b": "cleaver",
-      "winner": null,
-      "seed": null,
-      "video": null
+      "winner": "scythe",
+      "seed": 915095012,
+      "video": "https://youtu.be/vcz1a8AJ7h0"
     },
     {
       "a": "katana",
