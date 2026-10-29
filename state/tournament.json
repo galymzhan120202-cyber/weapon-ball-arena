@@ -12,18 +12,11 @@
     "trident",
     "tomahawk"
   ],
-  "round": 4,
-  "matchIndex": 1,
+  "round": 2,
+  "matchIndex": 0,
   "bracket": [
     {
       "a": "scythe",
-      "b": "cleaver",
-      "winner": "scythe",
-      "seed": 915095012,
-      "video": "https://youtu.be/vcz1a8AJ7h0"
-    },
-    {
-      "a": "katana",
       "b": "trident",
       "winner": null,
       "seed": null,
@@ -61,6 +54,25 @@
           "winner": "trident",
           "seed": 1841892505,
           "video": "https://youtu.be/5IcN0xmJvr4"
+        }
+      ]
+    },
+    {
+      "round": 4,
+      "matches": [
+        {
+          "a": "scythe",
+          "b": "cleaver",
+          "winner": "scythe",
+          "seed": 915095012,
+          "video": "https://youtu.be/vcz1a8AJ7h0"
+        },
+        {
+          "a": "katana",
+          "b": "trident",
+          "winner": "trident",
+          "seed": 931872631,
+          "video": "https://youtu.be/Azcf-bGVPXQ"
         }
       ]
     }
