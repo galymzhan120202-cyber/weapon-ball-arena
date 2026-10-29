@@ -13,14 +13,14 @@
     "sword"
   ],
   "round": 8,
-  "matchIndex": 0,
+  "matchIndex": 1,
   "bracket": [
     {
       "a": "katana",
       "b": "mace",
-      "winner": null,
-      "seed": null,
-      "video": null
+      "winner": "katana",
+      "seed": 3222113731,
+      "video": "https://youtu.be/YWpnPPiJfsk"
     },
     {
       "a": "boomerang",
