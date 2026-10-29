@@ -1,83 +1,51 @@
 {
-  "n": 24,
-  "id": 24,
+  "n": 25,
+  "id": 25,
   "size": 8,
   "entrants": [
-    "scythe",
-    "rapier",
-    "cleaver",
-    "staff",
     "katana",
-    "whip",
-    "trident",
-    "tomahawk"
+    "mace",
+    "boomerang",
+    "halberd",
+    "dual_daggers",
+    "pistol",
+    "claws",
+    "sword"
   ],
-  "round": 2,
+  "round": 8,
   "matchIndex": 0,
   "bracket": [
     {
-      "a": "scythe",
-      "b": "trident",
+      "a": "katana",
+      "b": "mace",
+      "winner": null,
+      "seed": null,
+      "video": null
+    },
+    {
+      "a": "boomerang",
+      "b": "halberd",
+      "winner": null,
+      "seed": null,
+      "video": null
+    },
+    {
+      "a": "dual_daggers",
+      "b": "pistol",
+      "winner": null,
+      "seed": null,
+      "video": null
+    },
+    {
+      "a": "claws",
+      "b": "sword",
       "winner": null,
       "seed": null,
       "video": null
     }
   ],
-  "history": [
-    {
-      "round": 8,
-      "matches": [
-        {
-          "a": "scythe",
-          "b": "rapier",
-          "winner": "scythe",
-          "seed": 1791559648,
-          "video": "https://youtu.be/XKQtVvRob-U"
-        },
-        {
-          "a": "cleaver",
-          "b": "staff",
-          "winner": "cleaver",
-          "seed": 1808337267,
-          "video": "https://youtu.be/1pgQOzRbXvw"
-        },
-        {
-          "a": "katana",
-          "b": "whip",
-          "winner": "katana",
-          "seed": 1825114886,
-          "video": "https://youtu.be/N-NGsD-KctM"
-        },
-        {
-          "a": "trident",
-          "b": "tomahawk",
-          "winner": "trident",
-          "seed": 1841892505,
-          "video": "https://youtu.be/5IcN0xmJvr4"
-        }
-      ]
-    },
-    {
-      "round": 4,
-      "matches": [
-        {
-          "a": "scythe",
-          "b": "cleaver",
-          "winner": "scythe",
-          "seed": 915095012,
-          "video": "https://youtu.be/vcz1a8AJ7h0"
-        },
-        {
-          "a": "katana",
-          "b": "trident",
-          "winner": "trident",
-          "seed": 931872631,
-          "video": "https://youtu.be/Azcf-bGVPXQ"
-        }
-      ]
-    }
-  ],
+  "history": [],
   "champion": null,
-  "started": "2026-10-27T05:53:30.918Z",
-  "previousChampion": "dagger"
+  "started": "2026-10-29T15:13:40.362Z",
+  "previousChampion": "scythe"
 }
