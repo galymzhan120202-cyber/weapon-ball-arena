@@ -12,39 +12,59 @@
     "claws",
     "sword"
   ],
-  "round": 8,
-  "matchIndex": 3,
+  "round": 4,
+  "matchIndex": 0,
   "bracket": [
     {
       "a": "katana",
-      "b": "mace",
-      "winner": "katana",
-      "seed": 3222113731,
-      "video": "https://youtu.be/YWpnPPiJfsk"
-    },
-    {
-      "a": "boomerang",
-      "b": "halberd",
-      "winner": "boomerang",
-      "seed": 3205336112,
-      "video": "https://youtu.be/oz9OLcPTw5w"
+      "b": "boomerang",
+      "winner": null,
+      "seed": null,
+      "video": null
     },
     {
       "a": "dual_daggers",
-      "b": "pistol",
-      "winner": "dual_daggers",
-      "seed": 3255668969,
-      "video": "https://youtu.be/va3ql953GQw"
-    },
-    {
-      "a": "claws",
       "b": "sword",
       "winner": null,
       "seed": null,
       "video": null
     }
   ],
-  "history": [],
+  "history": [
+    {
+      "round": 8,
+      "matches": [
+        {
+          "a": "katana",
+          "b": "mace",
+          "winner": "katana",
+          "seed": 3222113731,
+          "video": "https://youtu.be/YWpnPPiJfsk"
+        },
+        {
+          "a": "boomerang",
+          "b": "halberd",
+          "winner": "boomerang",
+          "seed": 3205336112,
+          "video": "https://youtu.be/oz9OLcPTw5w"
+        },
+        {
+          "a": "dual_daggers",
+          "b": "pistol",
+          "winner": "dual_daggers",
+          "seed": 3255668969,
+          "video": "https://youtu.be/va3ql953GQw"
+        },
+        {
+          "a": "claws",
+          "b": "sword",
+          "winner": "sword",
+          "seed": 3238891350,
+          "video": "https://youtu.be/Xq-TPxJ3ZmI"
+        }
+      ]
+    }
+  ],
   "champion": null,
   "started": "2026-10-29T15:13:40.362Z",
   "previousChampion": "scythe"
