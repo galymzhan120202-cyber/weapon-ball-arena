@@ -13,7 +13,7 @@
     "sword"
   ],
   "round": 8,
-  "matchIndex": 1,
+  "matchIndex": 2,
   "bracket": [
     {
       "a": "katana",
@@ -25,9 +25,9 @@
     {
       "a": "boomerang",
       "b": "halberd",
-      "winner": null,
-      "seed": null,
-      "video": null
+      "winner": "boomerang",
+      "seed": 3205336112,
+      "video": "https://youtu.be/oz9OLcPTw5w"
     },
     {
       "a": "dual_daggers",
