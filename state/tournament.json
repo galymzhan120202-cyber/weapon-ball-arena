@@ -1,83 +1,51 @@
 {
-  "n": 25,
-  "id": 25,
+  "n": 26,
+  "id": 26,
   "size": 8,
   "entrants": [
-    "katana",
-    "mace",
     "boomerang",
-    "halberd",
-    "dual_daggers",
+    "staff",
+    "tomahawk",
+    "sword",
     "pistol",
+    "katana",
     "claws",
-    "sword"
+    "dagger"
   ],
-  "round": 2,
+  "round": 8,
   "matchIndex": 0,
   "bracket": [
     {
       "a": "boomerang",
-      "b": "dual_daggers",
+      "b": "staff",
+      "winner": null,
+      "seed": null,
+      "video": null
+    },
+    {
+      "a": "tomahawk",
+      "b": "sword",
+      "winner": null,
+      "seed": null,
+      "video": null
+    },
+    {
+      "a": "pistol",
+      "b": "katana",
+      "winner": null,
+      "seed": null,
+      "video": null
+    },
+    {
+      "a": "claws",
+      "b": "dagger",
       "winner": null,
       "seed": null,
       "video": null
     }
   ],
-  "history": [
-    {
-      "round": 8,
-      "matches": [
-        {
-          "a": "katana",
-          "b": "mace",
-          "winner": "katana",
-          "seed": 3222113731,
-          "video": "https://youtu.be/YWpnPPiJfsk"
-        },
-        {
-          "a": "boomerang",
-          "b": "halberd",
-          "winner": "boomerang",
-          "seed": 3205336112,
-          "video": "https://youtu.be/oz9OLcPTw5w"
-        },
-        {
-          "a": "dual_daggers",
-          "b": "pistol",
-          "winner": "dual_daggers",
-          "seed": 3255668969,
-          "video": "https://youtu.be/va3ql953GQw"
-        },
-        {
-          "a": "claws",
-          "b": "sword",
-          "winner": "sword",
-          "seed": 3238891350,
-          "video": "https://youtu.be/Xq-TPxJ3ZmI"
-        }
-      ]
-    },
-    {
-      "round": 4,
-      "matches": [
-        {
-          "a": "katana",
-          "b": "boomerang",
-          "winner": "boomerang",
-          "seed": 3786721895,
-          "video": "https://youtu.be/G__HQOgq-mw"
-        },
-        {
-          "a": "dual_daggers",
-          "b": "sword",
-          "winner": "dual_daggers",
-          "seed": 3769944276,
-          "video": "https://youtu.be/QQOUHZP6-Z4"
-        }
-      ]
-    }
-  ],
+  "history": [],
   "champion": null,
-  "started": "2026-10-29T15:13:40.362Z",
-  "previousChampion": "scythe"
+  "started": "2026-10-31T20:17:36.865Z",
+  "previousChampion": "boomerang"
 }
