@@ -12,19 +12,12 @@
     "claws",
     "sword"
   ],
-  "round": 4,
-  "matchIndex": 1,
+  "round": 2,
+  "matchIndex": 0,
   "bracket": [
     {
-      "a": "katana",
-      "b": "boomerang",
-      "winner": "boomerang",
-      "seed": 3786721895,
-      "video": "https://youtu.be/G__HQOgq-mw"
-    },
-    {
-      "a": "dual_daggers",
-      "b": "sword",
+      "a": "boomerang",
+      "b": "dual_daggers",
       "winner": null,
       "seed": null,
       "video": null
@@ -61,6 +54,25 @@
           "winner": "sword",
           "seed": 3238891350,
           "video": "https://youtu.be/Xq-TPxJ3ZmI"
+        }
+      ]
+    },
+    {
+      "round": 4,
+      "matches": [
+        {
+          "a": "katana",
+          "b": "boomerang",
+          "winner": "boomerang",
+          "seed": 3786721895,
+          "video": "https://youtu.be/G__HQOgq-mw"
+        },
+        {
+          "a": "dual_daggers",
+          "b": "sword",
+          "winner": "dual_daggers",
+          "seed": 3769944276,
+          "video": "https://youtu.be/QQOUHZP6-Z4"
         }
       ]
     }
