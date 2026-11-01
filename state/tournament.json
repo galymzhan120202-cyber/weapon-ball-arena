@@ -13,7 +13,7 @@
     "dagger"
   ],
   "round": 8,
-  "matchIndex": 1,
+  "matchIndex": 2,
   "bracket": [
     {
       "a": "boomerang",
@@ -25,9 +25,9 @@
     {
       "a": "tomahawk",
       "b": "sword",
-      "winner": null,
-      "seed": null,
-      "video": null
+      "winner": "tomahawk",
+      "seed": 10839313,
+      "video": "https://youtu.be/sOVet1nUQog"
     },
     {
       "a": "pistol",
