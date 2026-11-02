@@ -12,19 +12,12 @@
     "claws",
     "dagger"
   ],
-  "round": 4,
-  "matchIndex": 1,
+  "round": 2,
+  "matchIndex": 0,
   "bracket": [
     {
       "a": "boomerang",
-      "b": "tomahawk",
-      "winner": "boomerang",
-      "seed": 3323166242,
-      "video": "https://youtu.be/EkIyVwf0acI"
-    },
-    {
-      "a": "pistol",
-      "b": "claws",
+      "b": "pistol",
       "winner": null,
       "seed": null,
       "video": null
@@ -61,6 +54,25 @@
           "winner": "claws",
           "seed": 4272251371,
           "video": "https://youtu.be/TvhiblxoTnY"
+        }
+      ]
+    },
+    {
+      "round": 4,
+      "matches": [
+        {
+          "a": "boomerang",
+          "b": "tomahawk",
+          "winner": "boomerang",
+          "seed": 3323166242,
+          "video": "https://youtu.be/EkIyVwf0acI"
+        },
+        {
+          "a": "pistol",
+          "b": "claws",
+          "winner": "pistol",
+          "seed": 3339943861,
+          "video": "https://youtu.be/ll6KrEPMcm8"
         }
       ]
     }
