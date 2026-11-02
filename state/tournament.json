@@ -12,39 +12,59 @@
     "claws",
     "dagger"
   ],
-  "round": 8,
-  "matchIndex": 3,
+  "round": 4,
+  "matchIndex": 0,
   "bracket": [
     {
       "a": "boomerang",
-      "b": "staff",
-      "winner": "boomerang",
-      "seed": 4289028990,
-      "video": "https://youtu.be/LGnD_jyFiJs"
-    },
-    {
-      "a": "tomahawk",
-      "b": "sword",
-      "winner": "tomahawk",
-      "seed": 10839313,
-      "video": "https://youtu.be/sOVet1nUQog"
+      "b": "tomahawk",
+      "winner": null,
+      "seed": null,
+      "video": null
     },
     {
       "a": "pistol",
-      "b": "katana",
-      "winner": "pistol",
-      "seed": 4255473752,
-      "video": "https://youtu.be/IRb8D7D7ASs"
-    },
-    {
-      "a": "claws",
-      "b": "dagger",
+      "b": "claws",
       "winner": null,
       "seed": null,
       "video": null
     }
   ],
-  "history": [],
+  "history": [
+    {
+      "round": 8,
+      "matches": [
+        {
+          "a": "boomerang",
+          "b": "staff",
+          "winner": "boomerang",
+          "seed": 4289028990,
+          "video": "https://youtu.be/LGnD_jyFiJs"
+        },
+        {
+          "a": "tomahawk",
+          "b": "sword",
+          "winner": "tomahawk",
+          "seed": 10839313,
+          "video": "https://youtu.be/sOVet1nUQog"
+        },
+        {
+          "a": "pistol",
+          "b": "katana",
+          "winner": "pistol",
+          "seed": 4255473752,
+          "video": "https://youtu.be/IRb8D7D7ASs"
+        },
+        {
+          "a": "claws",
+          "b": "dagger",
+          "winner": "claws",
+          "seed": 4272251371,
+          "video": "https://youtu.be/TvhiblxoTnY"
+        }
+      ]
+    }
+  ],
   "champion": null,
   "started": "2026-10-31T20:17:36.865Z",
   "previousChampion": "boomerang"
