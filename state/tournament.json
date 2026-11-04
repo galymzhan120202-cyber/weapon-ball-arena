@@ -12,39 +12,59 @@
     "shuriken",
     "dual_daggers"
   ],
-  "round": 8,
-  "matchIndex": 3,
+  "round": 4,
+  "matchIndex": 0,
   "bracket": [
     {
       "a": "whip",
-      "b": "sword",
-      "winner": "whip",
-      "seed": 3605886401,
-      "video": "https://youtu.be/JsVTW5NfLy8"
-    },
-    {
-      "a": "halberd",
       "b": "scythe",
-      "winner": "scythe",
-      "seed": 3589108782,
-      "video": "https://youtu.be/WOYcqXj9o8A"
+      "winner": null,
+      "seed": null,
+      "video": null
     },
     {
-      "a": "dagger",
-      "b": "katana",
-      "winner": "katana",
-      "seed": 3572331163,
-      "video": "https://youtu.be/k3vG69TJbE0"
-    },
-    {
-      "a": "shuriken",
-      "b": "dual_daggers",
+      "a": "katana",
+      "b": "shuriken",
       "winner": null,
       "seed": null,
       "video": null
     }
   ],
-  "history": [],
+  "history": [
+    {
+      "round": 8,
+      "matches": [
+        {
+          "a": "whip",
+          "b": "sword",
+          "winner": "whip",
+          "seed": 3605886401,
+          "video": "https://youtu.be/JsVTW5NfLy8"
+        },
+        {
+          "a": "halberd",
+          "b": "scythe",
+          "winner": "scythe",
+          "seed": 3589108782,
+          "video": "https://youtu.be/WOYcqXj9o8A"
+        },
+        {
+          "a": "dagger",
+          "b": "katana",
+          "winner": "katana",
+          "seed": 3572331163,
+          "video": "https://youtu.be/k3vG69TJbE0"
+        },
+        {
+          "a": "shuriken",
+          "b": "dual_daggers",
+          "winner": "shuriken",
+          "seed": 3555553544,
+          "video": "https://youtu.be/FVYgthLncsI"
+        }
+      ]
+    }
+  ],
   "champion": null,
   "started": "2026-11-03T07:08:31.689Z",
   "previousChampion": "boomerang"
