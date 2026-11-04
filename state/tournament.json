@@ -13,14 +13,14 @@
     "dual_daggers"
   ],
   "round": 4,
-  "matchIndex": 0,
+  "matchIndex": 1,
   "bracket": [
     {
       "a": "whip",
       "b": "scythe",
-      "winner": null,
-      "seed": null,
-      "video": null
+      "winner": "whip",
+      "seed": 1218449661,
+      "video": "https://youtu.be/8QIO99iP6iY"
     },
     {
       "a": "katana",
