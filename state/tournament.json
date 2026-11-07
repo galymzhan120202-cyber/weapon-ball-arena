@@ -12,19 +12,12 @@
     "dagger",
     "shuriken"
   ],
-  "round": 4,
-  "matchIndex": 1,
+  "round": 2,
+  "matchIndex": 0,
   "bracket": [
     {
       "a": "mace",
-      "b": "tomahawk",
-      "winner": "mace",
-      "seed": 3433064096,
-      "video": "https://youtu.be/Ddp__0RjhcI"
-    },
-    {
-      "a": "rapier",
-      "b": "dagger",
+      "b": "rapier",
       "winner": null,
       "seed": null,
       "video": null
@@ -61,6 +54,25 @@
           "winner": "dagger",
           "seed": 2565355613,
           "video": "https://youtu.be/xO2RAX85G6Q"
+        }
+      ]
+    },
+    {
+      "round": 4,
+      "matches": [
+        {
+          "a": "mace",
+          "b": "tomahawk",
+          "winner": "mace",
+          "seed": 3433064096,
+          "video": "https://youtu.be/Ddp__0RjhcI"
+        },
+        {
+          "a": "rapier",
+          "b": "dagger",
+          "winner": "rapier",
+          "seed": 3449841715,
+          "video": "https://youtu.be/M88Oq_Zx01c"
         }
       ]
     }
