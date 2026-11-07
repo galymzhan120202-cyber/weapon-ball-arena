@@ -1,83 +1,51 @@
 {
-  "n": 28,
-  "id": 28,
+  "n": 29,
+  "id": 29,
   "size": 8,
   "entrants": [
-    "mace",
-    "cleaver",
     "tomahawk",
-    "hammer",
-    "rapier",
+    "kunai",
+    "pistol",
+    "boomerang",
     "halberd",
-    "dagger",
-    "shuriken"
+    "war_axe",
+    "nunchaku",
+    "axe"
   ],
-  "round": 2,
+  "round": 8,
   "matchIndex": 0,
   "bracket": [
     {
-      "a": "mace",
-      "b": "rapier",
+      "a": "tomahawk",
+      "b": "kunai",
+      "winner": null,
+      "seed": null,
+      "video": null
+    },
+    {
+      "a": "pistol",
+      "b": "boomerang",
+      "winner": null,
+      "seed": null,
+      "video": null
+    },
+    {
+      "a": "halberd",
+      "b": "war_axe",
+      "winner": null,
+      "seed": null,
+      "video": null
+    },
+    {
+      "a": "nunchaku",
+      "b": "axe",
       "winner": null,
       "seed": null,
       "video": null
     }
   ],
-  "history": [
-    {
-      "round": 8,
-      "matches": [
-        {
-          "a": "mace",
-          "b": "cleaver",
-          "winner": "mace",
-          "seed": 2515022756,
-          "video": "https://youtu.be/53odlVNL1So"
-        },
-        {
-          "a": "tomahawk",
-          "b": "hammer",
-          "winner": "tomahawk",
-          "seed": 2531800375,
-          "video": "https://youtu.be/lDIYFyTQmXg"
-        },
-        {
-          "a": "rapier",
-          "b": "halberd",
-          "winner": "rapier",
-          "seed": 2548577994,
-          "video": "https://youtu.be/Bw-YC1QhRRU"
-        },
-        {
-          "a": "dagger",
-          "b": "shuriken",
-          "winner": "dagger",
-          "seed": 2565355613,
-          "video": "https://youtu.be/xO2RAX85G6Q"
-        }
-      ]
-    },
-    {
-      "round": 4,
-      "matches": [
-        {
-          "a": "mace",
-          "b": "tomahawk",
-          "winner": "mace",
-          "seed": 3433064096,
-          "video": "https://youtu.be/Ddp__0RjhcI"
-        },
-        {
-          "a": "rapier",
-          "b": "dagger",
-          "winner": "rapier",
-          "seed": 3449841715,
-          "video": "https://youtu.be/M88Oq_Zx01c"
-        }
-      ]
-    }
-  ],
+  "history": [],
   "champion": null,
-  "started": "2026-11-05T16:28:27.992Z",
-  "previousChampion": "whip"
+  "started": "2026-11-07T20:29:27.790Z",
+  "previousChampion": "mace"
 }
