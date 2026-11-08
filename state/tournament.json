@@ -13,14 +13,14 @@
     "axe"
   ],
   "round": 8,
-  "matchIndex": 0,
+  "matchIndex": 1,
   "bracket": [
     {
       "a": "tomahawk",
       "b": "kunai",
-      "winner": null,
-      "seed": null,
-      "video": null
+      "winner": "tomahawk",
+      "seed": 1904547847,
+      "video": "https://youtu.be/1pYe3QaSnW8"
     },
     {
       "a": "pistol",
