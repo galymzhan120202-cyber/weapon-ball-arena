@@ -13,7 +13,7 @@
     "axe"
   ],
   "round": 8,
-  "matchIndex": 2,
+  "matchIndex": 3,
   "bracket": [
     {
       "a": "tomahawk",
@@ -32,9 +32,9 @@
     {
       "a": "halberd",
       "b": "war_axe",
-      "winner": null,
-      "seed": null,
-      "video": null
+      "winner": "halberd",
+      "seed": 1938103085,
+      "video": "https://youtu.be/4L40H9ml_oA"
     },
     {
       "a": "nunchaku",
