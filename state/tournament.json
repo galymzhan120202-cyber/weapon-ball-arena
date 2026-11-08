@@ -13,7 +13,7 @@
     "axe"
   ],
   "round": 8,
-  "matchIndex": 1,
+  "matchIndex": 2,
   "bracket": [
     {
       "a": "tomahawk",
@@ -25,9 +25,9 @@
     {
       "a": "pistol",
       "b": "boomerang",
-      "winner": null,
-      "seed": null,
-      "video": null
+      "winner": "boomerang",
+      "seed": 1887770228,
+      "video": "https://youtu.be/OPnXyQi70pc"
     },
     {
       "a": "halberd",
