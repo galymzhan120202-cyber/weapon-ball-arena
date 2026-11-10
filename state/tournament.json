@@ -1,83 +1,51 @@
 {
-  "n": 29,
-  "id": 29,
+  "n": 30,
+  "id": 30,
   "size": 8,
   "entrants": [
+    "trident",
     "tomahawk",
-    "kunai",
-    "pistol",
-    "boomerang",
     "halberd",
-    "war_axe",
     "nunchaku",
-    "axe"
+    "pistol",
+    "scythe",
+    "cleaver",
+    "warhammer"
   ],
-  "round": 2,
+  "round": 8,
   "matchIndex": 0,
   "bracket": [
     {
-      "a": "boomerang",
-      "b": "halberd",
+      "a": "trident",
+      "b": "tomahawk",
+      "winner": null,
+      "seed": null,
+      "video": null
+    },
+    {
+      "a": "halberd",
+      "b": "nunchaku",
+      "winner": null,
+      "seed": null,
+      "video": null
+    },
+    {
+      "a": "pistol",
+      "b": "scythe",
+      "winner": null,
+      "seed": null,
+      "video": null
+    },
+    {
+      "a": "cleaver",
+      "b": "warhammer",
       "winner": null,
       "seed": null,
       "video": null
     }
   ],
-  "history": [
-    {
-      "round": 8,
-      "matches": [
-        {
-          "a": "tomahawk",
-          "b": "kunai",
-          "winner": "tomahawk",
-          "seed": 1904547847,
-          "video": "https://youtu.be/1pYe3QaSnW8"
-        },
-        {
-          "a": "pistol",
-          "b": "boomerang",
-          "winner": "boomerang",
-          "seed": 1887770228,
-          "video": "https://youtu.be/OPnXyQi70pc"
-        },
-        {
-          "a": "halberd",
-          "b": "war_axe",
-          "winner": "halberd",
-          "seed": 1938103085,
-          "video": "https://youtu.be/4L40H9ml_oA"
-        },
-        {
-          "a": "nunchaku",
-          "b": "axe",
-          "winner": "nunchaku",
-          "seed": 1921325466,
-          "video": "https://youtu.be/sBd44IX4se8"
-        }
-      ]
-    },
-    {
-      "round": 4,
-      "matches": [
-        {
-          "a": "tomahawk",
-          "b": "boomerang",
-          "winner": "boomerang",
-          "seed": 3275194595,
-          "video": "https://youtu.be/6sswWZ4whIM"
-        },
-        {
-          "a": "halberd",
-          "b": "nunchaku",
-          "winner": "halberd",
-          "seed": 3258416976,
-          "video": "https://youtu.be/3s987WQ1hYM"
-        }
-      ]
-    }
-  ],
+  "history": [],
   "champion": null,
-  "started": "2026-11-07T20:29:27.790Z",
-  "previousChampion": "mace"
+  "started": "2026-11-10T07:38:43.884Z",
+  "previousChampion": "halberd"
 }
