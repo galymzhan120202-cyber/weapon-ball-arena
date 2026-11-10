@@ -13,7 +13,7 @@
     "warhammer"
   ],
   "round": 8,
-  "matchIndex": 1,
+  "matchIndex": 2,
   "bracket": [
     {
       "a": "trident",
@@ -25,9 +25,9 @@
     {
       "a": "halberd",
       "b": "nunchaku",
-      "winner": null,
-      "seed": null,
-      "video": null
+      "winner": "nunchaku",
+      "seed": 2337484314,
+      "video": "https://youtu.be/-VmJrqYPcB0"
     },
     {
       "a": "pistol",
