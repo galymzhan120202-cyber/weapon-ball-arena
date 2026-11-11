@@ -12,39 +12,59 @@
     "cleaver",
     "warhammer"
   ],
-  "round": 8,
-  "matchIndex": 3,
+  "round": 4,
+  "matchIndex": 0,
   "bracket": [
     {
       "a": "trident",
-      "b": "tomahawk",
-      "winner": "trident",
-      "seed": 2354261933,
-      "video": "https://youtu.be/mCD5aRRwOvI"
-    },
-    {
-      "a": "halberd",
       "b": "nunchaku",
-      "winner": "nunchaku",
-      "seed": 2337484314,
-      "video": "https://youtu.be/-VmJrqYPcB0"
+      "winner": null,
+      "seed": null,
+      "video": null
     },
     {
       "a": "pistol",
-      "b": "scythe",
-      "winner": "pistol",
-      "seed": 2320706695,
-      "video": "https://youtu.be/WY9meMP-Okg"
-    },
-    {
-      "a": "cleaver",
-      "b": "warhammer",
+      "b": "cleaver",
       "winner": null,
       "seed": null,
       "video": null
     }
   ],
-  "history": [],
+  "history": [
+    {
+      "round": 8,
+      "matches": [
+        {
+          "a": "trident",
+          "b": "tomahawk",
+          "winner": "trident",
+          "seed": 2354261933,
+          "video": "https://youtu.be/mCD5aRRwOvI"
+        },
+        {
+          "a": "halberd",
+          "b": "nunchaku",
+          "winner": "nunchaku",
+          "seed": 2337484314,
+          "video": "https://youtu.be/-VmJrqYPcB0"
+        },
+        {
+          "a": "pistol",
+          "b": "scythe",
+          "winner": "pistol",
+          "seed": 2320706695,
+          "video": "https://youtu.be/WY9meMP-Okg"
+        },
+        {
+          "a": "cleaver",
+          "b": "warhammer",
+          "winner": "cleaver",
+          "seed": 2303929076,
+          "video": "https://youtu.be/pfWHFJ2o_Mg"
+        }
+      ]
+    }
+  ],
   "champion": null,
   "started": "2026-11-10T07:38:43.884Z",
   "previousChampion": "halberd"
