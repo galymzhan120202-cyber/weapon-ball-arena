@@ -1,83 +1,51 @@
 {
-  "n": 30,
-  "id": 30,
+  "n": 31,
+  "id": 31,
   "size": 8,
   "entrants": [
-    "trident",
-    "tomahawk",
-    "halberd",
-    "nunchaku",
     "pistol",
-    "scythe",
-    "cleaver",
-    "warhammer"
+    "whip",
+    "flail",
+    "boomerang",
+    "mace",
+    "katana",
+    "claws",
+    "cleaver"
   ],
-  "round": 2,
+  "round": 8,
   "matchIndex": 0,
   "bracket": [
     {
-      "a": "nunchaku",
+      "a": "pistol",
+      "b": "whip",
+      "winner": null,
+      "seed": null,
+      "video": null
+    },
+    {
+      "a": "flail",
+      "b": "boomerang",
+      "winner": null,
+      "seed": null,
+      "video": null
+    },
+    {
+      "a": "mace",
+      "b": "katana",
+      "winner": null,
+      "seed": null,
+      "video": null
+    },
+    {
+      "a": "claws",
       "b": "cleaver",
       "winner": null,
       "seed": null,
       "video": null
     }
   ],
-  "history": [
-    {
-      "round": 8,
-      "matches": [
-        {
-          "a": "trident",
-          "b": "tomahawk",
-          "winner": "trident",
-          "seed": 2354261933,
-          "video": "https://youtu.be/mCD5aRRwOvI"
-        },
-        {
-          "a": "halberd",
-          "b": "nunchaku",
-          "winner": "nunchaku",
-          "seed": 2337484314,
-          "video": "https://youtu.be/-VmJrqYPcB0"
-        },
-        {
-          "a": "pistol",
-          "b": "scythe",
-          "winner": "pistol",
-          "seed": 2320706695,
-          "video": "https://youtu.be/WY9meMP-Okg"
-        },
-        {
-          "a": "cleaver",
-          "b": "warhammer",
-          "winner": "cleaver",
-          "seed": 2303929076,
-          "video": "https://youtu.be/pfWHFJ2o_Mg"
-        }
-      ]
-    },
-    {
-      "round": 4,
-      "matches": [
-        {
-          "a": "trident",
-          "b": "nunchaku",
-          "winner": "nunchaku",
-          "seed": 3582630833,
-          "video": "https://youtu.be/WfB71EOQoQg"
-        },
-        {
-          "a": "pistol",
-          "b": "cleaver",
-          "winner": "cleaver",
-          "seed": 3565853214,
-          "video": "https://youtu.be/29h-EI60nDs"
-        }
-      ]
-    }
-  ],
+  "history": [],
   "champion": null,
-  "started": "2026-11-10T07:38:43.884Z",
-  "previousChampion": "halberd"
+  "started": "2026-11-12T22:27:06.456Z",
+  "previousChampion": "cleaver"
 }
