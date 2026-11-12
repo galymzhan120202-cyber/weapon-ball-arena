@@ -12,18 +12,11 @@
     "cleaver",
     "warhammer"
   ],
-  "round": 4,
-  "matchIndex": 1,
+  "round": 2,
+  "matchIndex": 0,
   "bracket": [
     {
-      "a": "trident",
-      "b": "nunchaku",
-      "winner": "nunchaku",
-      "seed": 3582630833,
-      "video": "https://youtu.be/WfB71EOQoQg"
-    },
-    {
-      "a": "pistol",
+      "a": "nunchaku",
       "b": "cleaver",
       "winner": null,
       "seed": null,
@@ -61,6 +54,25 @@
           "winner": "cleaver",
           "seed": 2303929076,
           "video": "https://youtu.be/pfWHFJ2o_Mg"
+        }
+      ]
+    },
+    {
+      "round": 4,
+      "matches": [
+        {
+          "a": "trident",
+          "b": "nunchaku",
+          "winner": "nunchaku",
+          "seed": 3582630833,
+          "video": "https://youtu.be/WfB71EOQoQg"
+        },
+        {
+          "a": "pistol",
+          "b": "cleaver",
+          "winner": "cleaver",
+          "seed": 3565853214,
+          "video": "https://youtu.be/29h-EI60nDs"
         }
       ]
     }
