@@ -12,39 +12,59 @@
     "claws",
     "cleaver"
   ],
-  "round": 8,
-  "matchIndex": 3,
+  "round": 4,
+  "matchIndex": 0,
   "bracket": [
     {
       "a": "pistol",
-      "b": "whip",
-      "winner": "pistol",
-      "seed": 4115724250,
-      "video": "https://youtu.be/eVvt148HLOg"
-    },
-    {
-      "a": "flail",
       "b": "boomerang",
-      "winner": "boomerang",
-      "seed": 4132501869,
-      "video": "https://youtu.be/iMjEXo2Mbts"
+      "winner": null,
+      "seed": null,
+      "video": null
     },
     {
       "a": "mace",
-      "b": "katana",
-      "winner": "mace",
-      "seed": 4082169012,
-      "video": "https://youtu.be/VZcnqAwOQfw"
-    },
-    {
-      "a": "claws",
       "b": "cleaver",
       "winner": null,
       "seed": null,
       "video": null
     }
   ],
-  "history": [],
+  "history": [
+    {
+      "round": 8,
+      "matches": [
+        {
+          "a": "pistol",
+          "b": "whip",
+          "winner": "pistol",
+          "seed": 4115724250,
+          "video": "https://youtu.be/eVvt148HLOg"
+        },
+        {
+          "a": "flail",
+          "b": "boomerang",
+          "winner": "boomerang",
+          "seed": 4132501869,
+          "video": "https://youtu.be/iMjEXo2Mbts"
+        },
+        {
+          "a": "mace",
+          "b": "katana",
+          "winner": "mace",
+          "seed": 4082169012,
+          "video": "https://youtu.be/VZcnqAwOQfw"
+        },
+        {
+          "a": "claws",
+          "b": "cleaver",
+          "winner": "cleaver",
+          "seed": 4098946631,
+          "video": "https://youtu.be/gdptGJ9Edv8"
+        }
+      ]
+    }
+  ],
   "champion": null,
   "started": "2026-11-12T22:27:06.456Z",
   "previousChampion": "cleaver"
