@@ -12,39 +12,59 @@
     "hammer",
     "boomerang"
   ],
-  "round": 8,
-  "matchIndex": 3,
+  "round": 4,
+  "matchIndex": 0,
   "bracket": [
     {
       "a": "staff",
-      "b": "war_axe",
-      "winner": "staff",
-      "seed": 343903,
-      "video": "https://youtu.be/1TEVTrSv2tw"
-    },
-    {
-      "a": "whip",
-      "b": "sword",
-      "winner": "whip",
-      "seed": 4278533580,
-      "video": "https://youtu.be/RG3qyZCfIC0"
+      "b": "whip",
+      "winner": null,
+      "seed": null,
+      "video": null
     },
     {
       "a": "nunchaku",
-      "b": "trident",
-      "winner": "nunchaku",
-      "seed": 33899141,
-      "video": "https://youtu.be/ynHTUgaxG0I"
-    },
-    {
-      "a": "hammer",
-      "b": "boomerang",
+      "b": "hammer",
       "winner": null,
       "seed": null,
       "video": null
     }
   ],
-  "history": [],
+  "history": [
+    {
+      "round": 8,
+      "matches": [
+        {
+          "a": "staff",
+          "b": "war_axe",
+          "winner": "staff",
+          "seed": 343903,
+          "video": "https://youtu.be/1TEVTrSv2tw"
+        },
+        {
+          "a": "whip",
+          "b": "sword",
+          "winner": "whip",
+          "seed": 4278533580,
+          "video": "https://youtu.be/RG3qyZCfIC0"
+        },
+        {
+          "a": "nunchaku",
+          "b": "trident",
+          "winner": "nunchaku",
+          "seed": 33899141,
+          "video": "https://youtu.be/ynHTUgaxG0I"
+        },
+        {
+          "a": "hammer",
+          "b": "boomerang",
+          "winner": "hammer",
+          "seed": 17121522,
+          "video": "https://youtu.be/GneRPJ5QI10"
+        }
+      ]
+    }
+  ],
   "champion": null,
   "started": "2026-11-15T07:00:24.350Z",
   "previousChampion": "boomerang"
