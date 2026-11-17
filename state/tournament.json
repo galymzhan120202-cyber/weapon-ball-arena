@@ -12,19 +12,12 @@
     "hammer",
     "boomerang"
   ],
-  "round": 4,
-  "matchIndex": 1,
+  "round": 2,
+  "matchIndex": 0,
   "bracket": [
     {
-      "a": "staff",
-      "b": "whip",
-      "winner": "whip",
-      "seed": 374852811,
-      "video": "https://youtu.be/rBLOBvmGy_U"
-    },
-    {
-      "a": "nunchaku",
-      "b": "hammer",
+      "a": "whip",
+      "b": "nunchaku",
       "winner": null,
       "seed": null,
       "video": null
@@ -61,6 +54,25 @@
           "winner": "hammer",
           "seed": 17121522,
           "video": "https://youtu.be/GneRPJ5QI10"
+        }
+      ]
+    },
+    {
+      "round": 4,
+      "matches": [
+        {
+          "a": "staff",
+          "b": "whip",
+          "winner": "whip",
+          "seed": 374852811,
+          "video": "https://youtu.be/rBLOBvmGy_U"
+        },
+        {
+          "a": "nunchaku",
+          "b": "hammer",
+          "winner": "nunchaku",
+          "seed": 358075192,
+          "video": "https://youtu.be/bdl6xeTroNY"
         }
       ]
     }
