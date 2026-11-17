@@ -1,83 +1,51 @@
 {
-  "n": 32,
-  "id": 32,
+  "n": 33,
+  "id": 33,
   "size": 8,
   "entrants": [
     "staff",
-    "war_axe",
-    "whip",
-    "sword",
-    "nunchaku",
-    "trident",
     "hammer",
-    "boomerang"
+    "axe",
+    "chainsaw",
+    "warhammer",
+    "cleaver",
+    "sword",
+    "scythe"
   ],
-  "round": 2,
+  "round": 8,
   "matchIndex": 0,
   "bracket": [
     {
-      "a": "whip",
-      "b": "nunchaku",
+      "a": "staff",
+      "b": "hammer",
+      "winner": null,
+      "seed": null,
+      "video": null
+    },
+    {
+      "a": "axe",
+      "b": "chainsaw",
+      "winner": null,
+      "seed": null,
+      "video": null
+    },
+    {
+      "a": "warhammer",
+      "b": "cleaver",
+      "winner": null,
+      "seed": null,
+      "video": null
+    },
+    {
+      "a": "sword",
+      "b": "scythe",
       "winner": null,
       "seed": null,
       "video": null
     }
   ],
-  "history": [
-    {
-      "round": 8,
-      "matches": [
-        {
-          "a": "staff",
-          "b": "war_axe",
-          "winner": "staff",
-          "seed": 343903,
-          "video": "https://youtu.be/1TEVTrSv2tw"
-        },
-        {
-          "a": "whip",
-          "b": "sword",
-          "winner": "whip",
-          "seed": 4278533580,
-          "video": "https://youtu.be/RG3qyZCfIC0"
-        },
-        {
-          "a": "nunchaku",
-          "b": "trident",
-          "winner": "nunchaku",
-          "seed": 33899141,
-          "video": "https://youtu.be/ynHTUgaxG0I"
-        },
-        {
-          "a": "hammer",
-          "b": "boomerang",
-          "winner": "hammer",
-          "seed": 17121522,
-          "video": "https://youtu.be/GneRPJ5QI10"
-        }
-      ]
-    },
-    {
-      "round": 4,
-      "matches": [
-        {
-          "a": "staff",
-          "b": "whip",
-          "winner": "whip",
-          "seed": 374852811,
-          "video": "https://youtu.be/rBLOBvmGy_U"
-        },
-        {
-          "a": "nunchaku",
-          "b": "hammer",
-          "winner": "nunchaku",
-          "seed": 358075192,
-          "video": "https://youtu.be/bdl6xeTroNY"
-        }
-      ]
-    }
-  ],
+  "history": [],
   "champion": null,
-  "started": "2026-11-15T07:00:24.350Z",
-  "previousChampion": "boomerang"
+  "started": "2026-11-17T17:38:12.022Z",
+  "previousChampion": "nunchaku"
 }
