@@ -13,7 +13,7 @@
     "scythe"
   ],
   "round": 8,
-  "matchIndex": 1,
+  "matchIndex": 2,
   "bracket": [
     {
       "a": "staff",
@@ -25,9 +25,9 @@
     {
       "a": "axe",
       "b": "chainsaw",
-      "winner": null,
-      "seed": null,
-      "video": null
+      "winner": "chainsaw",
+      "seed": 843826031,
+      "video": "https://youtu.be/rVNHCq9sqbI"
     },
     {
       "a": "warhammer",
