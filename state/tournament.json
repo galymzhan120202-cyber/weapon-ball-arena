@@ -12,39 +12,59 @@
     "sword",
     "scythe"
   ],
-  "round": 8,
-  "matchIndex": 3,
+  "round": 4,
+  "matchIndex": 0,
   "bracket": [
     {
       "a": "staff",
-      "b": "hammer",
-      "winner": "staff",
-      "seed": 827048412,
-      "video": "https://youtu.be/ELRQtuVinrE"
-    },
-    {
-      "a": "axe",
       "b": "chainsaw",
-      "winner": "chainsaw",
-      "seed": 843826031,
-      "video": "https://youtu.be/rVNHCq9sqbI"
+      "winner": null,
+      "seed": null,
+      "video": null
     },
     {
       "a": "warhammer",
-      "b": "cleaver",
-      "winner": "warhammer",
-      "seed": 860603650,
-      "video": "https://youtu.be/7FNHScpyEpM"
-    },
-    {
-      "a": "sword",
       "b": "scythe",
       "winner": null,
       "seed": null,
       "video": null
     }
   ],
-  "history": [],
+  "history": [
+    {
+      "round": 8,
+      "matches": [
+        {
+          "a": "staff",
+          "b": "hammer",
+          "winner": "staff",
+          "seed": 827048412,
+          "video": "https://youtu.be/ELRQtuVinrE"
+        },
+        {
+          "a": "axe",
+          "b": "chainsaw",
+          "winner": "chainsaw",
+          "seed": 843826031,
+          "video": "https://youtu.be/rVNHCq9sqbI"
+        },
+        {
+          "a": "warhammer",
+          "b": "cleaver",
+          "winner": "warhammer",
+          "seed": 860603650,
+          "video": "https://youtu.be/7FNHScpyEpM"
+        },
+        {
+          "a": "sword",
+          "b": "scythe",
+          "winner": "scythe",
+          "seed": 877381269,
+          "video": "https://youtu.be/MLsJYrk12Fk"
+        }
+      ]
+    }
+  ],
   "champion": null,
   "started": "2026-11-17T17:38:12.022Z",
   "previousChampion": "nunchaku"
