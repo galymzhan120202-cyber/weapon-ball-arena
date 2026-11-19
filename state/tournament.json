@@ -12,18 +12,11 @@
     "sword",
     "scythe"
   ],
-  "round": 4,
-  "matchIndex": 1,
+  "round": 2,
+  "matchIndex": 0,
   "bracket": [
     {
       "a": "staff",
-      "b": "chainsaw",
-      "winner": "staff",
-      "seed": 1170323208,
-      "video": "https://youtu.be/itjJT4sXE6I"
-    },
-    {
-      "a": "warhammer",
       "b": "scythe",
       "winner": null,
       "seed": null,
@@ -61,6 +54,25 @@
           "winner": "scythe",
           "seed": 877381269,
           "video": "https://youtu.be/MLsJYrk12Fk"
+        }
+      ]
+    },
+    {
+      "round": 4,
+      "matches": [
+        {
+          "a": "staff",
+          "b": "chainsaw",
+          "winner": "staff",
+          "seed": 1170323208,
+          "video": "https://youtu.be/itjJT4sXE6I"
+        },
+        {
+          "a": "warhammer",
+          "b": "scythe",
+          "winner": "scythe",
+          "seed": 1187100827,
+          "video": "https://youtu.be/ykL-Yy1VKzc"
         }
       ]
     }
