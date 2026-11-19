@@ -1,83 +1,51 @@
 {
-  "n": 33,
-  "id": 33,
+  "n": 34,
+  "id": 34,
   "size": 8,
   "entrants": [
-    "staff",
-    "hammer",
-    "axe",
-    "chainsaw",
-    "warhammer",
     "cleaver",
-    "sword",
-    "scythe"
+    "rapier",
+    "dual_daggers",
+    "nunchaku",
+    "warhammer",
+    "scythe",
+    "spear",
+    "dagger"
   ],
-  "round": 2,
+  "round": 8,
   "matchIndex": 0,
   "bracket": [
     {
-      "a": "staff",
+      "a": "cleaver",
+      "b": "rapier",
+      "winner": null,
+      "seed": null,
+      "video": null
+    },
+    {
+      "a": "dual_daggers",
+      "b": "nunchaku",
+      "winner": null,
+      "seed": null,
+      "video": null
+    },
+    {
+      "a": "warhammer",
       "b": "scythe",
+      "winner": null,
+      "seed": null,
+      "video": null
+    },
+    {
+      "a": "spear",
+      "b": "dagger",
       "winner": null,
       "seed": null,
       "video": null
     }
   ],
-  "history": [
-    {
-      "round": 8,
-      "matches": [
-        {
-          "a": "staff",
-          "b": "hammer",
-          "winner": "staff",
-          "seed": 827048412,
-          "video": "https://youtu.be/ELRQtuVinrE"
-        },
-        {
-          "a": "axe",
-          "b": "chainsaw",
-          "winner": "chainsaw",
-          "seed": 843826031,
-          "video": "https://youtu.be/rVNHCq9sqbI"
-        },
-        {
-          "a": "warhammer",
-          "b": "cleaver",
-          "winner": "warhammer",
-          "seed": 860603650,
-          "video": "https://youtu.be/7FNHScpyEpM"
-        },
-        {
-          "a": "sword",
-          "b": "scythe",
-          "winner": "scythe",
-          "seed": 877381269,
-          "video": "https://youtu.be/MLsJYrk12Fk"
-        }
-      ]
-    },
-    {
-      "round": 4,
-      "matches": [
-        {
-          "a": "staff",
-          "b": "chainsaw",
-          "winner": "staff",
-          "seed": 1170323208,
-          "video": "https://youtu.be/itjJT4sXE6I"
-        },
-        {
-          "a": "warhammer",
-          "b": "scythe",
-          "winner": "scythe",
-          "seed": 1187100827,
-          "video": "https://youtu.be/ykL-Yy1VKzc"
-        }
-      ]
-    }
-  ],
+  "history": [],
   "champion": null,
-  "started": "2026-11-17T17:38:12.022Z",
-  "previousChampion": "nunchaku"
+  "started": "2026-11-19T23:13:53.352Z",
+  "previousChampion": "staff"
 }
