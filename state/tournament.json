@@ -13,14 +13,14 @@
     "dagger"
   ],
   "round": 8,
-  "matchIndex": 0,
+  "matchIndex": 1,
   "bracket": [
     {
       "a": "cleaver",
       "b": "rapier",
-      "winner": null,
-      "seed": null,
-      "video": null
+      "winner": "rapier",
+      "seed": 4219054161,
+      "video": "https://youtu.be/x8KL0zyA4Sk"
     },
     {
       "a": "dual_daggers",
