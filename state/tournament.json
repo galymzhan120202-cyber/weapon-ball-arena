@@ -13,7 +13,7 @@
     "dagger"
   ],
   "round": 8,
-  "matchIndex": 1,
+  "matchIndex": 2,
   "bracket": [
     {
       "a": "cleaver",
@@ -25,9 +25,9 @@
     {
       "a": "dual_daggers",
       "b": "nunchaku",
-      "winner": null,
-      "seed": null,
-      "video": null
+      "winner": "nunchaku",
+      "seed": 4202276542,
+      "video": "https://youtu.be/z7pNY-JKsXY"
     },
     {
       "a": "warhammer",
