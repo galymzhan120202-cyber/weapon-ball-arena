@@ -12,39 +12,59 @@
     "spear",
     "dagger"
   ],
-  "round": 8,
-  "matchIndex": 3,
+  "round": 4,
+  "matchIndex": 0,
   "bracket": [
     {
-      "a": "cleaver",
-      "b": "rapier",
-      "winner": "rapier",
-      "seed": 4219054161,
-      "video": "https://youtu.be/x8KL0zyA4Sk"
-    },
-    {
-      "a": "dual_daggers",
+      "a": "rapier",
       "b": "nunchaku",
-      "winner": "nunchaku",
-      "seed": 4202276542,
-      "video": "https://youtu.be/z7pNY-JKsXY"
+      "winner": null,
+      "seed": null,
+      "video": null
     },
     {
       "a": "warhammer",
-      "b": "scythe",
-      "winner": "warhammer",
-      "seed": 4185498923,
-      "video": "https://youtu.be/hYmO5gfTwKU"
-    },
-    {
-      "a": "spear",
-      "b": "dagger",
+      "b": "spear",
       "winner": null,
       "seed": null,
       "video": null
     }
   ],
-  "history": [],
+  "history": [
+    {
+      "round": 8,
+      "matches": [
+        {
+          "a": "cleaver",
+          "b": "rapier",
+          "winner": "rapier",
+          "seed": 4219054161,
+          "video": "https://youtu.be/x8KL0zyA4Sk"
+        },
+        {
+          "a": "dual_daggers",
+          "b": "nunchaku",
+          "winner": "nunchaku",
+          "seed": 4202276542,
+          "video": "https://youtu.be/z7pNY-JKsXY"
+        },
+        {
+          "a": "warhammer",
+          "b": "scythe",
+          "winner": "warhammer",
+          "seed": 4185498923,
+          "video": "https://youtu.be/hYmO5gfTwKU"
+        },
+        {
+          "a": "spear",
+          "b": "dagger",
+          "winner": "spear",
+          "seed": 4168721304,
+          "video": "https://youtu.be/-eAGmQS6G-k"
+        }
+      ]
+    }
+  ],
   "champion": null,
   "started": "2026-11-19T23:13:53.352Z",
   "previousChampion": "staff"
