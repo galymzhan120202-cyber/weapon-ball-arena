@@ -12,19 +12,12 @@
     "spear",
     "dagger"
   ],
-  "round": 4,
-  "matchIndex": 1,
+  "round": 2,
+  "matchIndex": 0,
   "bracket": [
     {
-      "a": "rapier",
-      "b": "nunchaku",
-      "winner": "nunchaku",
-      "seed": 3032261965,
-      "video": "https://youtu.be/iOTrzZPWWao"
-    },
-    {
-      "a": "warhammer",
-      "b": "spear",
+      "a": "nunchaku",
+      "b": "warhammer",
       "winner": null,
       "seed": null,
       "video": null
@@ -61,6 +54,25 @@
           "winner": "spear",
           "seed": 4168721304,
           "video": "https://youtu.be/-eAGmQS6G-k"
+        }
+      ]
+    },
+    {
+      "round": 4,
+      "matches": [
+        {
+          "a": "rapier",
+          "b": "nunchaku",
+          "winner": "nunchaku",
+          "seed": 3032261965,
+          "video": "https://youtu.be/iOTrzZPWWao"
+        },
+        {
+          "a": "warhammer",
+          "b": "spear",
+          "winner": "warhammer",
+          "seed": 3015484346,
+          "video": "https://youtu.be/J65yNYqz6TQ"
         }
       ]
     }
