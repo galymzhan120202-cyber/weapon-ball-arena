@@ -1,83 +1,51 @@
 {
-  "n": 34,
-  "id": 34,
+  "n": 35,
+  "id": 35,
   "size": 8,
   "entrants": [
-    "cleaver",
+    "boomerang",
+    "trident",
     "rapier",
-    "dual_daggers",
+    "halberd",
     "nunchaku",
-    "warhammer",
-    "scythe",
-    "spear",
-    "dagger"
+    "kunai",
+    "dagger",
+    "whip"
   ],
-  "round": 2,
+  "round": 8,
   "matchIndex": 0,
   "bracket": [
     {
+      "a": "boomerang",
+      "b": "trident",
+      "winner": null,
+      "seed": null,
+      "video": null
+    },
+    {
+      "a": "rapier",
+      "b": "halberd",
+      "winner": null,
+      "seed": null,
+      "video": null
+    },
+    {
       "a": "nunchaku",
-      "b": "warhammer",
+      "b": "kunai",
+      "winner": null,
+      "seed": null,
+      "video": null
+    },
+    {
+      "a": "dagger",
+      "b": "whip",
       "winner": null,
       "seed": null,
       "video": null
     }
   ],
-  "history": [
-    {
-      "round": 8,
-      "matches": [
-        {
-          "a": "cleaver",
-          "b": "rapier",
-          "winner": "rapier",
-          "seed": 4219054161,
-          "video": "https://youtu.be/x8KL0zyA4Sk"
-        },
-        {
-          "a": "dual_daggers",
-          "b": "nunchaku",
-          "winner": "nunchaku",
-          "seed": 4202276542,
-          "video": "https://youtu.be/z7pNY-JKsXY"
-        },
-        {
-          "a": "warhammer",
-          "b": "scythe",
-          "winner": "warhammer",
-          "seed": 4185498923,
-          "video": "https://youtu.be/hYmO5gfTwKU"
-        },
-        {
-          "a": "spear",
-          "b": "dagger",
-          "winner": "spear",
-          "seed": 4168721304,
-          "video": "https://youtu.be/-eAGmQS6G-k"
-        }
-      ]
-    },
-    {
-      "round": 4,
-      "matches": [
-        {
-          "a": "rapier",
-          "b": "nunchaku",
-          "winner": "nunchaku",
-          "seed": 3032261965,
-          "video": "https://youtu.be/iOTrzZPWWao"
-        },
-        {
-          "a": "warhammer",
-          "b": "spear",
-          "winner": "warhammer",
-          "seed": 3015484346,
-          "video": "https://youtu.be/J65yNYqz6TQ"
-        }
-      ]
-    }
-  ],
+  "history": [],
   "champion": null,
-  "started": "2026-11-19T23:13:53.352Z",
-  "previousChampion": "staff"
+  "started": "2026-11-22T07:17:57.111Z",
+  "previousChampion": "warhammer"
 }
