@@ -13,7 +13,7 @@
     "whip"
   ],
   "round": 8,
-  "matchIndex": 2,
+  "matchIndex": 3,
   "bracket": [
     {
       "a": "boomerang",
@@ -32,9 +32,9 @@
     {
       "a": "nunchaku",
       "b": "kunai",
-      "winner": null,
-      "seed": null,
-      "video": null
+      "winner": "nunchaku",
+      "seed": 4207582184,
+      "video": "https://youtu.be/Z6m2YcfD_Tk"
     },
     {
       "a": "dagger",
