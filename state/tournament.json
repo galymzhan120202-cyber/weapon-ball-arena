@@ -12,39 +12,59 @@
     "dagger",
     "whip"
   ],
-  "round": 8,
-  "matchIndex": 3,
+  "round": 4,
+  "matchIndex": 0,
   "bracket": [
     {
       "a": "boomerang",
-      "b": "trident",
-      "winner": "boomerang",
-      "seed": 4241137422,
-      "video": "https://youtu.be/kUaQ21ozv1k"
-    },
-    {
-      "a": "rapier",
       "b": "halberd",
-      "winner": "halberd",
-      "seed": 4257915041,
-      "video": "https://youtu.be/N4Ydh4EbpH4"
+      "winner": null,
+      "seed": null,
+      "video": null
     },
     {
       "a": "nunchaku",
-      "b": "kunai",
-      "winner": "nunchaku",
-      "seed": 4207582184,
-      "video": "https://youtu.be/Z6m2YcfD_Tk"
-    },
-    {
-      "a": "dagger",
       "b": "whip",
       "winner": null,
       "seed": null,
       "video": null
     }
   ],
-  "history": [],
+  "history": [
+    {
+      "round": 8,
+      "matches": [
+        {
+          "a": "boomerang",
+          "b": "trident",
+          "winner": "boomerang",
+          "seed": 4241137422,
+          "video": "https://youtu.be/kUaQ21ozv1k"
+        },
+        {
+          "a": "rapier",
+          "b": "halberd",
+          "winner": "halberd",
+          "seed": 4257915041,
+          "video": "https://youtu.be/N4Ydh4EbpH4"
+        },
+        {
+          "a": "nunchaku",
+          "b": "kunai",
+          "winner": "nunchaku",
+          "seed": 4207582184,
+          "video": "https://youtu.be/Z6m2YcfD_Tk"
+        },
+        {
+          "a": "dagger",
+          "b": "whip",
+          "winner": "whip",
+          "seed": 4224359803,
+          "video": "https://youtu.be/EdU-KMq-vqU"
+        }
+      ]
+    }
+  ],
   "champion": null,
   "started": "2026-11-22T07:17:57.111Z",
   "previousChampion": "warhammer"
