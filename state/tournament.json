@@ -12,19 +12,12 @@
     "dagger",
     "whip"
   ],
-  "round": 4,
-  "matchIndex": 1,
+  "round": 2,
+  "matchIndex": 0,
   "bracket": [
     {
-      "a": "boomerang",
-      "b": "halberd",
-      "winner": "halberd",
-      "seed": 191294514,
-      "video": "https://youtu.be/8_pVYcnTwno"
-    },
-    {
-      "a": "nunchaku",
-      "b": "whip",
+      "a": "halberd",
+      "b": "nunchaku",
       "winner": null,
       "seed": null,
       "video": null
@@ -61,6 +54,25 @@
           "winner": "whip",
           "seed": 4224359803,
           "video": "https://youtu.be/EdU-KMq-vqU"
+        }
+      ]
+    },
+    {
+      "round": 4,
+      "matches": [
+        {
+          "a": "boomerang",
+          "b": "halberd",
+          "winner": "halberd",
+          "seed": 191294514,
+          "video": "https://youtu.be/8_pVYcnTwno"
+        },
+        {
+          "a": "nunchaku",
+          "b": "whip",
+          "winner": "nunchaku",
+          "seed": 208072133,
+          "video": "https://youtu.be/RnD6VL4apn0"
         }
       ]
     }
