@@ -1,83 +1,51 @@
 {
-  "n": 35,
-  "id": 35,
+  "n": 36,
+  "id": 36,
   "size": 8,
   "entrants": [
-    "boomerang",
-    "trident",
+    "scythe",
     "rapier",
-    "halberd",
-    "nunchaku",
+    "tomahawk",
+    "pistol",
+    "staff",
     "kunai",
-    "dagger",
-    "whip"
+    "hammer",
+    "shuriken"
   ],
-  "round": 2,
+  "round": 8,
   "matchIndex": 0,
   "bracket": [
     {
-      "a": "halberd",
-      "b": "nunchaku",
+      "a": "scythe",
+      "b": "rapier",
+      "winner": null,
+      "seed": null,
+      "video": null
+    },
+    {
+      "a": "tomahawk",
+      "b": "pistol",
+      "winner": null,
+      "seed": null,
+      "video": null
+    },
+    {
+      "a": "staff",
+      "b": "kunai",
+      "winner": null,
+      "seed": null,
+      "video": null
+    },
+    {
+      "a": "hammer",
+      "b": "shuriken",
       "winner": null,
       "seed": null,
       "video": null
     }
   ],
-  "history": [
-    {
-      "round": 8,
-      "matches": [
-        {
-          "a": "boomerang",
-          "b": "trident",
-          "winner": "boomerang",
-          "seed": 4241137422,
-          "video": "https://youtu.be/kUaQ21ozv1k"
-        },
-        {
-          "a": "rapier",
-          "b": "halberd",
-          "winner": "halberd",
-          "seed": 4257915041,
-          "video": "https://youtu.be/N4Ydh4EbpH4"
-        },
-        {
-          "a": "nunchaku",
-          "b": "kunai",
-          "winner": "nunchaku",
-          "seed": 4207582184,
-          "video": "https://youtu.be/Z6m2YcfD_Tk"
-        },
-        {
-          "a": "dagger",
-          "b": "whip",
-          "winner": "whip",
-          "seed": 4224359803,
-          "video": "https://youtu.be/EdU-KMq-vqU"
-        }
-      ]
-    },
-    {
-      "round": 4,
-      "matches": [
-        {
-          "a": "boomerang",
-          "b": "halberd",
-          "winner": "halberd",
-          "seed": 191294514,
-          "video": "https://youtu.be/8_pVYcnTwno"
-        },
-        {
-          "a": "nunchaku",
-          "b": "whip",
-          "winner": "nunchaku",
-          "seed": 208072133,
-          "video": "https://youtu.be/RnD6VL4apn0"
-        }
-      ]
-    }
-  ],
+  "history": [],
   "champion": null,
-  "started": "2026-11-22T07:17:57.111Z",
-  "previousChampion": "warhammer"
+  "started": "2026-11-24T19:30:24.210Z",
+  "previousChampion": "halberd"
 }
