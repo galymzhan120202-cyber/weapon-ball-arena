@@ -13,7 +13,7 @@
     "shuriken"
   ],
   "round": 8,
-  "matchIndex": 1,
+  "matchIndex": 2,
   "bracket": [
     {
       "a": "scythe",
@@ -25,9 +25,9 @@
     {
       "a": "tomahawk",
       "b": "pistol",
-      "winner": null,
-      "seed": null,
-      "video": null
+      "winner": "tomahawk",
+      "seed": 1523440256,
+      "video": "https://youtu.be/sR_Zv81Haa4"
     },
     {
       "a": "staff",
