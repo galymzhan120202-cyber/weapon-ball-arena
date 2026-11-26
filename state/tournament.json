@@ -12,19 +12,12 @@
     "hammer",
     "shuriken"
   ],
-  "round": 4,
-  "matchIndex": 1,
+  "round": 2,
+  "matchIndex": 0,
   "bracket": [
     {
       "a": "scythe",
-      "b": "tomahawk",
-      "winner": "scythe",
-      "seed": 3305470583,
-      "video": "https://youtu.be/AWpabyNplFQ"
-    },
-    {
-      "a": "staff",
-      "b": "hammer",
+      "b": "staff",
       "winner": null,
       "seed": null,
       "video": null
@@ -61,6 +54,25 @@
           "winner": "hammer",
           "seed": 1556995494,
           "video": "https://youtu.be/7uFf6Ervmw4"
+        }
+      ]
+    },
+    {
+      "round": 4,
+      "matches": [
+        {
+          "a": "scythe",
+          "b": "tomahawk",
+          "winner": "scythe",
+          "seed": 3305470583,
+          "video": "https://youtu.be/AWpabyNplFQ"
+        },
+        {
+          "a": "staff",
+          "b": "hammer",
+          "winner": "staff",
+          "seed": 3288692964,
+          "video": "https://youtu.be/5KdFNU30JcU"
         }
       ]
     }
