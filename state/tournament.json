@@ -1,83 +1,51 @@
 {
-  "n": 36,
-  "id": 36,
+  "n": 37,
+  "id": 37,
   "size": 8,
   "entrants": [
+    "axe",
+    "whip",
     "scythe",
-    "rapier",
-    "tomahawk",
-    "pistol",
-    "staff",
-    "kunai",
     "hammer",
-    "shuriken"
+    "sword",
+    "rapier",
+    "chainsaw",
+    "warhammer"
   ],
-  "round": 2,
+  "round": 8,
   "matchIndex": 0,
   "bracket": [
     {
+      "a": "axe",
+      "b": "whip",
+      "winner": null,
+      "seed": null,
+      "video": null
+    },
+    {
       "a": "scythe",
-      "b": "staff",
+      "b": "hammer",
+      "winner": null,
+      "seed": null,
+      "video": null
+    },
+    {
+      "a": "sword",
+      "b": "rapier",
+      "winner": null,
+      "seed": null,
+      "video": null
+    },
+    {
+      "a": "chainsaw",
+      "b": "warhammer",
       "winner": null,
       "seed": null,
       "video": null
     }
   ],
-  "history": [
-    {
-      "round": 8,
-      "matches": [
-        {
-          "a": "scythe",
-          "b": "rapier",
-          "winner": "scythe",
-          "seed": 1540217875,
-          "video": "https://youtu.be/xRn19mcrmz8"
-        },
-        {
-          "a": "tomahawk",
-          "b": "pistol",
-          "winner": "tomahawk",
-          "seed": 1523440256,
-          "video": "https://youtu.be/sR_Zv81Haa4"
-        },
-        {
-          "a": "staff",
-          "b": "kunai",
-          "winner": "staff",
-          "seed": 1573773113,
-          "video": "https://youtu.be/DVVsUm06mZ0"
-        },
-        {
-          "a": "hammer",
-          "b": "shuriken",
-          "winner": "hammer",
-          "seed": 1556995494,
-          "video": "https://youtu.be/7uFf6Ervmw4"
-        }
-      ]
-    },
-    {
-      "round": 4,
-      "matches": [
-        {
-          "a": "scythe",
-          "b": "tomahawk",
-          "winner": "scythe",
-          "seed": 3305470583,
-          "video": "https://youtu.be/AWpabyNplFQ"
-        },
-        {
-          "a": "staff",
-          "b": "hammer",
-          "winner": "staff",
-          "seed": 3288692964,
-          "video": "https://youtu.be/5KdFNU30JcU"
-        }
-      ]
-    }
-  ],
+  "history": [],
   "champion": null,
-  "started": "2026-11-24T19:30:24.210Z",
-  "previousChampion": "halberd"
+  "started": "2026-11-27T00:47:58.656Z",
+  "previousChampion": "scythe"
 }
