@@ -13,14 +13,14 @@
     "warhammer"
   ],
   "round": 8,
-  "matchIndex": 0,
+  "matchIndex": 1,
   "bracket": [
     {
       "a": "axe",
       "b": "whip",
-      "winner": null,
-      "seed": null,
-      "video": null
+      "winner": "whip",
+      "seed": 288426288,
+      "video": "https://youtu.be/Q1GZwfxBzYQ"
     },
     {
       "a": "scythe",
