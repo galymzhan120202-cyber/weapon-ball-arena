@@ -12,39 +12,59 @@
     "chainsaw",
     "warhammer"
   ],
-  "round": 8,
-  "matchIndex": 3,
+  "round": 4,
+  "matchIndex": 0,
   "bracket": [
     {
-      "a": "axe",
-      "b": "whip",
-      "winner": "whip",
-      "seed": 288426288,
-      "video": "https://youtu.be/Q1GZwfxBzYQ"
-    },
-    {
-      "a": "scythe",
-      "b": "hammer",
-      "winner": "scythe",
-      "seed": 305203907,
-      "video": "https://youtu.be/RzDcP3s2rBw"
+      "a": "whip",
+      "b": "scythe",
+      "winner": null,
+      "seed": null,
+      "video": null
     },
     {
       "a": "sword",
-      "b": "rapier",
-      "winner": "sword",
-      "seed": 321981526,
-      "video": "https://youtu.be/0tPqyXbEpDk"
-    },
-    {
-      "a": "chainsaw",
       "b": "warhammer",
       "winner": null,
       "seed": null,
       "video": null
     }
   ],
-  "history": [],
+  "history": [
+    {
+      "round": 8,
+      "matches": [
+        {
+          "a": "axe",
+          "b": "whip",
+          "winner": "whip",
+          "seed": 288426288,
+          "video": "https://youtu.be/Q1GZwfxBzYQ"
+        },
+        {
+          "a": "scythe",
+          "b": "hammer",
+          "winner": "scythe",
+          "seed": 305203907,
+          "video": "https://youtu.be/RzDcP3s2rBw"
+        },
+        {
+          "a": "sword",
+          "b": "rapier",
+          "winner": "sword",
+          "seed": 321981526,
+          "video": "https://youtu.be/0tPqyXbEpDk"
+        },
+        {
+          "a": "chainsaw",
+          "b": "warhammer",
+          "winner": "warhammer",
+          "seed": 338759145,
+          "video": "https://youtu.be/-352dda_37E"
+        }
+      ]
+    }
+  ],
   "champion": null,
   "started": "2026-11-27T00:47:58.656Z",
   "previousChampion": "scythe"
